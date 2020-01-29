@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "6d5f262b_e34e4b11",
+        "filename": "contrail-collector/main.cc",
+        "patchSetId": 1
+      },
+      "lineNbr": 120,
+      "author": {
+        "id": 213
+      },
+      "writtenOn": "2020-01-29T03:11:46Z",
+      "side": 1,
+      "message": "Do we really need this log? specially in a function which is called periodically?\nAlso, should we be calling it every minute? Not sure if there will be an adverse impact on performance where in earlier we could reuse this heap memory but now we won\u0027t be able to.",
+      "range": {
+        "startLine": 120,
+        "startChar": 14,
+        "endLine": 120,
+        "endChar": 35
+      },
+      "revId": "d01eaa3dcad6c6653afdc225f73e81883f150062",
+      "serverId": "c72cd27d-1743-4a55-84a4-cd13b8400c52",
+      "unresolved": true
+    }
+  ]
+}
