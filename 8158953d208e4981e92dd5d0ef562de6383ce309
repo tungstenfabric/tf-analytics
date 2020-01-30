@@ -16,6 +16,24 @@
       "revId": "8158953d208e4981e92dd5d0ef562de6383ce309",
       "serverId": "c72cd27d-1743-4a55-84a4-cd13b8400c52",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "7030bd4f_b1045fc3",
+        "filename": "contrail-collector/main.cc",
+        "patchSetId": 2
+      },
+      "lineNbr": 119,
+      "author": {
+        "id": 752
+      },
+      "writtenOn": "2020-01-30T09:59:54Z",
+      "side": 1,
+      "message": "Hi Siva,\n\nmalloc_trim returns either 1 or 0, based upon success or failure. So, I didn\u0027t add error code.\n\nhttp://man7.org/linux/man-pages/man3/malloc_trim.3.html\n\nThanks,\nPradeep",
+      "parentUuid": "70638f65_a6f0e898",
+      "revId": "8158953d208e4981e92dd5d0ef562de6383ce309",
+      "serverId": "c72cd27d-1743-4a55-84a4-cd13b8400c52",
+      "unresolved": true
     }
   ]
 }
