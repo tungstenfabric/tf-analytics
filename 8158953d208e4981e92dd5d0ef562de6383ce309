@@ -34,6 +34,24 @@
       "revId": "8158953d208e4981e92dd5d0ef562de6383ce309",
       "serverId": "c72cd27d-1743-4a55-84a4-cd13b8400c52",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "42bbae05_e922504e",
+        "filename": "contrail-collector/main.cc",
+        "patchSetId": 2
+      },
+      "lineNbr": 119,
+      "author": {
+        "id": 641
+      },
+      "writtenOn": "2020-01-31T04:22:50Z",
+      "side": 1,
+      "message": "This can change in the future and we cannot assume this. Let us print it.",
+      "parentUuid": "7030bd4f_b1045fc3",
+      "revId": "8158953d208e4981e92dd5d0ef562de6383ce309",
+      "serverId": "c72cd27d-1743-4a55-84a4-cd13b8400c52",
+      "unresolved": true
     }
   ]
 }
