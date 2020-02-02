@@ -34,7 +34,7 @@ def start_kafka(zk_client_port, broker_listen_port, broker_id=0):
     if not os.path.exists(kafka_bdir):
         output,_ = call_command_("mkdir " + kafka_bdir)
     kafka_download = 'wget -O ' + kafka_bdir + kafka_dl + \
-        ' https://github.com/Juniper/contrail-third-party-cache/blob/master/kafka' + \
+        ' https://github.com/tungstenfabric/tf-third-party-cache/blob/master/kafka' + \
         kafka_dl + '?raw=true'
     if not os.path.exists(kafka_bdir + kafka_dl):
         process = subprocess.Popen(kafka_download.split(' '))

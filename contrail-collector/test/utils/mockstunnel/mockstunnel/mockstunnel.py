@@ -34,7 +34,7 @@ def install_stunnel():
 
     if not os.path.exists(stunnel_url):
         process = subprocess.Popen(['wget', '-O', stunnel_url,
-                'https://github.com/Juniper/contrail-third-party-cache/blob/master/stunnel/stunnel-'\
+                'https://github.com/tungstenfabric/tf-third-party-cache/blob/master/stunnel/stunnel-'\
                                     + stunnel_ver + '.tar.gz?raw=true'])
         process.wait()
         if process.returncode is not 0:
