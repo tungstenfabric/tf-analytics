@@ -523,7 +523,7 @@ class QueryEngine(object):
         self.cassandra_password = self.analytics_fixture.cassandra_password
         if self.analytics_fixture.redis_uves[0].password:
            self.redis_password = str(self.analytics_fixture.redis_uves[0].password) 
-        self._generator_id = self.hostname+':'+NodeTypeNames[NodeType.ANALYTICS]+\
+        self._generator_id = self.hostname+':'+NodeTypeNames[NodeType.DATABASE]+\
                             ':'+ModuleNames[Module.QUERY_ENGINE]+':0'
         self.cluster_id = cluster_id
         self.sandesh_config = sandesh_config
