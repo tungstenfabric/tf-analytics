@@ -2429,6 +2429,60 @@ class AnalyticsUveTest(testtools.TestCase, fixtures.TestWithFixtures):
                                                msg_count=5)
         #end test_19_analytics_ssl_params_client_ssl_not_enabled
 
+
+    #@unittest.skip('Skipping redis HA test')
+    def test_20_redis_ha(self):
+        '''
+        This test starts redis, vizd, opserver, qed, and a python generator
+        that simulates vrouter and sends UveVirtualMachineAgentTrace messages.
+        Then it checks that the VM UVE (via redis) can be accessed from
+        opserver after stopping any one of the two running redis.
+        '''
+        logging.info('%%% test_redis_ha %%%')
+
+        vizd_obj = self.useFixture(
+            AnalyticsFixture(logging, builddir, 0,
+                             collector_ha_test=True))
+        assert vizd_obj.verify_on_setup()
+        collectors = [vizd_obj.collectors[1].get_addr(),
+                      vizd_obj.collectors[0].get_addr()]
+        generator_obj = self.useFixture(
+            GeneratorFixture("contrail-vrouter-agent", collectors,
+                             logging, vizd_obj.get_opserver_port()))
+        assert generator_obj.verify_on_setup()
+        #Sending the UVEs from generator
+        generator_obj.send_vm_uve(vm_id='abcd',
+                                  num_vm_ifs=5,
+                                  msg_count=5)
+        assert generator_obj.verify_vm_uve(vm_id='abcd',
+                                           num_vm_ifs=5,
+                                           msg_count=5)
+
+        # stopping redis-uve and verifying vm_uve
+        vizd_obj.redis_uves[0].stop()
+        assert generator_obj.verify_vm_uve(vm_id='abcd',
+                                           num_vm_ifs=5,
+                                           msg_count=5)
+
+        vizd_obj.redis_uves[0].start()
+
+        #Stopping other redis and verifying the vm uve
+        vizd_obj.redis_uves[1].stop()
+        assert generator_obj.verify_vm_uve(vm_id='abcd',
+                                           num_vm_ifs=5,
+                                           msg_count=5)
+
+        vizd_obj.redis_uves[1].start()
+
+        #Stopping both redis and verifying. It should fail.
+        vizd_obj.redis_uves[0].stop()
+        vizd_obj.redis_uves[1].stop()
+        assert not generator_obj.verify_vm_uve(vm_id='abcd',
+                                           num_vm_ifs=5,
+                                           msg_count=5)
+
+        #end test_20_redis_ha
+
     @staticmethod
     def get_free_port():
         cs = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
