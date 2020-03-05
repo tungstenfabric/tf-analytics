@@ -2430,7 +2430,7 @@ class AnalyticsUveTest(testtools.TestCase, fixtures.TestWithFixtures):
         #end test_19_analytics_ssl_params_client_ssl_not_enabled
 
 
-    #@unittest.skip('Skipping redis HA test')
+    @unittest.skip('Skipping redis HA test')
     def test_20_redis_ha(self):
         '''
         This test starts two redis,two vizd, opserver, qed, and a python generator
