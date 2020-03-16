@@ -229,7 +229,7 @@ class AnalyticsUveTest(testtools.TestCase, fixtures.TestWithFixtures):
         # verify that UVEs are resynced with redis-uve
         assert vizd_obj.verify_generator_uve_list(gen_list)
 
-    @unittest.skip('Skipping contrail-collector HA test')
+    #@unittest.skip('Skipping contrail-collector HA test')
     def test_05_collector_ha(self):
         logging.info('%%% test_05_collector_ha %%%')
         
@@ -255,6 +255,7 @@ class AnalyticsUveTest(testtools.TestCase, fixtures.TestWithFixtures):
                                               exp_genlist)
         # stop collectors[0] and verify that all the generators are connected
         # to collectors[1]
+        logging.info('Aadarsh: Stopping collector 0')
         vizd_obj.collectors[0].stop()
         exp_genlist = [
             source+'dup:Analytics:contrail-collector:0',
@@ -262,21 +263,26 @@ class AnalyticsUveTest(testtools.TestCase, fixtures.TestWithFixtures):
             source+':Database:contrail-query-engine:0',
             source+':Test:contrail-vrouter-agent:0'
         ]
+        logging.info('Aadarsh: Callg verify_generator_list at line 266')
         assert vizd_obj.verify_generator_list([vizd_obj.collectors[1]],
                                               exp_genlist)
         # start collectors[0]
+        logging.info('Aadarsh: Starting collector 0')
         vizd_obj.collectors[0].start()
         exp_genlist = [source+':Analytics:contrail-collector:0']
+        logging.info('Aadarsh: Callg verify_generator_list at line 273')
         assert vizd_obj.verify_generator_list([vizd_obj.collectors[0]],
                                               exp_genlist)
         # verify that the old UVEs are flushed from redis when collector restarts
         exp_genlist = [vizd_obj.collectors[0].get_generator_id()]
+        logging.info('Aadarsh: Callg verify_generator_list in redis at line 278')
         assert vizd_obj.verify_generator_list_in_redis(\
                                 vizd_obj.collectors[0].get_redis_uve(),
                                 exp_genlist)
 
         # stop collectors[1] and verify that all the generators are connected
         # to collectors[0]
+        logging.info('Aadarsh: Stopping collector 1')
         vizd_obj.collectors[1].stop()
         exp_genlist = [
             source+':Analytics:contrail-collector:0',
@@ -284,6 +290,7 @@ class AnalyticsUveTest(testtools.TestCase, fixtures.TestWithFixtures):
             source+':Database:contrail-query-engine:0',
             source+':Test:contrail-vrouter-agent:0'
         ]
+        logging.info('Aadarsh: Callg verify_generator_list at line 293')
         assert vizd_obj.verify_generator_list([vizd_obj.collectors[0]],
                                               exp_genlist)
         # verify the generator list in redis
@@ -291,6 +298,7 @@ class AnalyticsUveTest(testtools.TestCase, fixtures.TestWithFixtures):
                        vr_agent.get_generator_id(),
                        vizd_obj.opserver.get_generator_id(),
                        vizd_obj.query_engine.get_generator_id()]
+        logging.info('Aadarsh: Callg verify_generator_list in redis at line 301')
         assert vizd_obj.verify_generator_list_in_redis(\
                                 vizd_obj.collectors[0].get_redis_uve(),
                                 exp_genlist)
@@ -302,6 +310,7 @@ class AnalyticsUveTest(testtools.TestCase, fixtures.TestWithFixtures):
             source+':Analytics:contrail-analytics-api:0',
             source+':Test:contrail-vrouter-agent:0'
         ]
+        logging.info('Aadarsh: Callg verify_generator_list at line 314')
         assert vizd_obj.verify_generator_list([vizd_obj.collectors[0]],
                                               exp_genlist)
 
@@ -309,6 +318,7 @@ class AnalyticsUveTest(testtools.TestCase, fixtures.TestWithFixtures):
         exp_genlist = [vizd_obj.collectors[0].get_generator_id(),
                        vizd_obj.opserver.get_generator_id(),
                        vr_agent.get_generator_id()]
+        logging.info('Aadarsh: Callg verify_generator_list at line 321')
         assert vizd_obj.verify_generator_list_in_redis(\
                                 vizd_obj.collectors[0].get_redis_uve(),
                                 exp_genlist)
@@ -329,11 +339,13 @@ class AnalyticsUveTest(testtools.TestCase, fixtures.TestWithFixtures):
             source+':Database:contrail-query-engine:0',
             source+':Test:contrail-snmp-collector:0'
         ]
+        logging.info('Aadarsh: Callg verify_generator_list at line 342')
         assert vizd_obj.verify_generator_list([vizd_obj.collectors[0]],
                                               exp_genlist)
         # stop the collectors[0] - both collectors[0] and collectors[1] are down
         # send the VM UVE and verify that the VM UVE is synced after connection
         # to the collector
+        logging.info('Aadarsh: Stopping collector 0 at340')
         vizd_obj.collectors[0].stop()
         # Make sure the connection to the collector is teared down before 
         # sending the VM UVE
@@ -347,11 +359,12 @@ class AnalyticsUveTest(testtools.TestCase, fixtures.TestWithFixtures):
             source+'dup:Analytics:contrail-collector:0',
             source+':Analytics:contrail-analytics-api:0',
             source+':Test:contrail-vrouter-agent:0',
-            source+':Database:contrail-query-engine:0',
             source+':Test:contrail-snmp-collector:0'
         ]
+        logging.info('Aadarsh: Calling Verify generator list at line 365')
         assert vizd_obj.verify_generator_list([vizd_obj.collectors[1]],
                                               exp_genlist)
+        logging.info('Aadarsh: Calling Verify vm uve at line 368')
         assert vr_agent.verify_vm_uve(vm_id='abcd-1234-efgh-5678',
                                       num_vm_ifs=5, msg_count=5)
     # end test_05_collector_ha
@@ -2391,6 +2404,66 @@ class AnalyticsUveTest(testtools.TestCase, fixtures.TestWithFixtures):
         #end test_18_analytics_ssl_params_wrong_cacert
 
 
+    #@unittest.skip('Skipping redis HA test')
+    def test_20_redis_ha(self):
+        '''
+        This test starts two redis,two vizd, opserver, qed, and a python generator
+        that simulates vrouter and sends UveVirtualMachineAgentTrace messages.
+        Then it checks that the VM UVE (via redis) can be accessed from
+        opserver after stopping any one of the two running redis.
+        '''
+        logging.info('%%% test_redis_ha %%%')
+
+        vizd_obj = self.useFixture(
+            AnalyticsFixture(logging, builddir, 0,
+                             collector_ha_test=True))
+        assert vizd_obj.verify_on_setup()
+        collectors = [vizd_obj.collectors[1].get_addr(),
+                      vizd_obj.collectors[0].get_addr()]
+        generator_obj = self.useFixture(
+            GeneratorFixture("contrail-vrouter-agent", collectors,
+                             logging, vizd_obj.get_opserver_port()))
+        assert generator_obj.verify_on_setup()
+        #Sending the UVEs from generator
+        generator_obj.send_vm_uve(vm_id='abcd',
+                                  num_vm_ifs=5,
+                                  msg_count=5)
+        assert generator_obj.verify_vm_uve(vm_id='abcd',
+                                           num_vm_ifs=5,
+                                           msg_count=5)
+
+        # stopping redis-uve and verifying vm_uve
+        logging.info('Aadarsh: Stopping redis 0')
+        vizd_obj.redis_uves[0].stop()
+        logging.info('Aadarsh: redis 0 stopped')
+        assert generator_obj.verify_vm_uve(vm_id='abcd',
+                                           num_vm_ifs=5,
+                                           msg_count=5)
+        logging.info('Aadarsh: Starting redis 0')
+        vizd_obj.redis_uves[0].start()
+        logging.info('Aadarsh: Started redis 0')
+
+        #Stopping other redis and verifying the vm uve
+        logging.info('Aadarsh: Stopping redis 1')
+        vizd_obj.redis_uves[1].stop()
+        logging.info('Aadarsh: Stopped redis 1')
+        assert generator_obj.verify_vm_uve(vm_id='abcd',
+                                           num_vm_ifs=5,
+                                           msg_count=5)
+        logging.info('Aadarsh: Starting redis 1')
+        vizd_obj.redis_uves[1].start()
+        logging.info('Aadarsh: Started redis 1')
+        #Stopping both redis and verifying. It should fail.
+        logging.info('Aadarsh: Stopping both redis 0 and redis 1')
+        vizd_obj.redis_uves[0].stop()
+        vizd_obj.redis_uves[1].stop()
+        logging.info('Aadarsh: Stopped both redis 0 and redis 1')
+        assert not generator_obj.verify_vm_uve(vm_id='abcd',
+                                           num_vm_ifs=5,
+                                           msg_count=5)
+
+        #end test_20_redis_ha
+
     #@unittest.skip('Skipping analytics_ssl_params_client_ssl_not_enabled test')
     def test_19_analytics_ssl_params_client_ssl_not_enabled(self):
 
@@ -2430,58 +2503,6 @@ class AnalyticsUveTest(testtools.TestCase, fixtures.TestWithFixtures):
         #end test_19_analytics_ssl_params_client_ssl_not_enabled
 
 
-    @unittest.skip('Skipping redis HA test')
-    def test_20_redis_ha(self):
-        '''
-        This test starts two redis,two vizd, opserver, qed, and a python generator
-        that simulates vrouter and sends UveVirtualMachineAgentTrace messages.
-        Then it checks that the VM UVE (via redis) can be accessed from
-        opserver after stopping any one of the two running redis.
-        '''
-        logging.info('%%% test_redis_ha %%%')
-
-        vizd_obj = self.useFixture(
-            AnalyticsFixture(logging, builddir, 0,
-                             collector_ha_test=True))
-        assert vizd_obj.verify_on_setup()
-        collectors = [vizd_obj.collectors[1].get_addr(),
-                      vizd_obj.collectors[0].get_addr()]
-        generator_obj = self.useFixture(
-            GeneratorFixture("contrail-vrouter-agent", collectors,
-                             logging, vizd_obj.get_opserver_port()))
-        assert generator_obj.verify_on_setup()
-        #Sending the UVEs from generator
-        generator_obj.send_vm_uve(vm_id='abcd',
-                                  num_vm_ifs=5,
-                                  msg_count=5)
-        assert generator_obj.verify_vm_uve(vm_id='abcd',
-                                           num_vm_ifs=5,
-                                           msg_count=5)
-
-        # stopping redis-uve and verifying vm_uve
-        vizd_obj.redis_uves[0].stop()
-        assert generator_obj.verify_vm_uve(vm_id='abcd',
-                                           num_vm_ifs=5,
-                                           msg_count=5)
-
-        vizd_obj.redis_uves[0].start()
-
-        #Stopping other redis and verifying the vm uve
-        vizd_obj.redis_uves[1].stop()
-        assert generator_obj.verify_vm_uve(vm_id='abcd',
-                                           num_vm_ifs=5,
-                                           msg_count=5)
-
-        vizd_obj.redis_uves[1].start()
-
-        #Stopping both redis and verifying. It should fail.
-        vizd_obj.redis_uves[0].stop()
-        vizd_obj.redis_uves[1].stop()
-        assert not generator_obj.verify_vm_uve(vm_id='abcd',
-                                           num_vm_ifs=5,
-                                           msg_count=5)
-
-        #end test_20_redis_ha
 
     @staticmethod
     def get_free_port():
