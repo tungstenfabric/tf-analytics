@@ -366,21 +366,28 @@ class GeneratorFixture(fixtures.Fixture):
     @retry(delay=2, tries=5)
     def verify_vm_uve(self, vm_id, num_vm_ifs, msg_count, opserver_port=None):
         if opserver_port is not None:
+            self._logger.info('Aadarsh: opserver port is not None')
             vns = VerificationOpsSrv(socket.getfqdn("127.0.0.1"), opserver_port, sandesh_config=self._sandesh_config)
         else:
+            self._logger.info('Aadarsh: opserver port is None')
             vns = VerificationOpsSrv(socket.getfqdn("127.0.0.1"), self._opserver_port, sandesh_config=self._sandesh_config)
         res = vns.get_ops_vm(vm_id)
         if res == {}:
+            self._logger.info('Aadarsh: res is empty')
             return False
         else:
+            self._logger.info('Aadarsh: res is not empty')
             assert(len(res) > 0)
             self._logger.info(str(res))
             anum_vm_ifs = len(res.get_attr('Agent', 'interface_list'))
+            self._logger.info('Aadarsh: Near assert anum_vm_ifs = num_vm_ifs')
             assert anum_vm_ifs == num_vm_ifs
             for i in range(num_vm_ifs):
+                self._logger.info('Aadarsh: Inside for loop')
                 vm_if_dict = res.get_attr('Agent', 'interface_list')[i]
                 evm_if_name = self._VM_IF_PREFIX + str(i)
                 avm_if_name = vm_if_dict['name']
+                self._logger.info('Aadarsh: Near assert avm_if_name = vm_if_dict')
                 assert avm_if_name == evm_if_name
             return True
     # end verify_uve_vm
