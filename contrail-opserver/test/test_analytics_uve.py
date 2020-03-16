@@ -229,7 +229,7 @@ class AnalyticsUveTest(testtools.TestCase, fixtures.TestWithFixtures):
         # verify that UVEs are resynced with redis-uve
         assert vizd_obj.verify_generator_uve_list(gen_list)
 
-    @unittest.skip('Skipping contrail-collector HA test')
+    #@unittest.skip('Skipping contrail-collector HA test')
     def test_05_collector_ha(self):
         logging.info('%%% test_05_collector_ha %%%')
         
@@ -2459,24 +2459,31 @@ class AnalyticsUveTest(testtools.TestCase, fixtures.TestWithFixtures):
                                            msg_count=5)
 
         # stopping redis-uve and verifying vm_uve
+        logging.info('Aadarsh: Stopping redis 0')
         vizd_obj.redis_uves[0].stop()
+        logging.info('Aadarsh: redis 0 stopped')
         assert generator_obj.verify_vm_uve(vm_id='abcd',
                                            num_vm_ifs=5,
                                            msg_count=5)
-
+        logging.info('Aadarsh: Starting redis 0')
         vizd_obj.redis_uves[0].start()
+        logging.info('Aadarsh: Started redis 0')
 
         #Stopping other redis and verifying the vm uve
+        logging.info('Aadarsh: Stopping redis 1')
         vizd_obj.redis_uves[1].stop()
+        logging.info('Aadarsh: Stopped redis 1')
         assert generator_obj.verify_vm_uve(vm_id='abcd',
                                            num_vm_ifs=5,
                                            msg_count=5)
-
+        logging.info('Aadarsh: Starting redis 1')
         vizd_obj.redis_uves[1].start()
-
+        logging.info('Aadarsh: Started redis 1')
         #Stopping both redis and verifying. It should fail.
+        logging.info('Aadarsh: Stopping both redis 0 and redis 1')
         vizd_obj.redis_uves[0].stop()
         vizd_obj.redis_uves[1].stop()
+        logging.info('Aadarsh: Stopped both redis 0 and redis 1')
         assert not generator_obj.verify_vm_uve(vm_id='abcd',
                                            num_vm_ifs=5,
                                            msg_count=5)
