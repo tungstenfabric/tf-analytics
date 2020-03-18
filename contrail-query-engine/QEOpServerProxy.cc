@@ -769,7 +769,7 @@ public:
 
         string redis_host = redis_host_port_pairs_[redis_host_idx].first;
         int redis_port = redis_host_port_pairs_[redis_host_idx].second;
-        QE_LOG_NOQID(ERROR, "StartPipeline on :" << " Redis:" << redis_host << " Port:" << redis_port);
+        QE_LOG_NOQID(INFO, "StartPipeline on :" << " Redis:" << redis_host << " Port:" << redis_port);
         redisContext *c = redisConnect(redis_host.c_str(), redis_port);
 
         if (c->err) {
