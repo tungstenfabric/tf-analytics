@@ -9,5 +9,6 @@ setup(name='mockstunnel',
       author_email='contrail-sw@juniper.net',
       url='http://opencontrail.org/',
       packages=['mockstunnel', ],
-      data_files=[('lib/python2.7/site-packages/mockstunnel', ['stunnel.conf']),],
+      data_files=[('lib/python2.7/site-packages/mockstunnel', ['stunnel.conf']),
+                  ('lib/python3.6/site-packages/mockstunnel', ['stunnel.conf']),],
      )

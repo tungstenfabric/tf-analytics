@@ -163,23 +163,16 @@ def replace_string_(filePath, findreplace):
 def verify_cassandra(thriftport, cqlport, cassandra_user, cassandra_password):
     retry_threshold = 10
     retry = 1
+    cassbase = "/tmp/cassandra.%s.%d/" % (os.getenv('USER', 'None'), cqlport)
+    cql_command = cassbase + "apache-cassandra-3.10/bin/cqlsh " + "127.0.0.1 " + str(cqlport) + " -e \"show version\""
     while retry < retry_threshold:
-         try:
-             creds = None
-             if cassandra_user is not None and cassandra_password is not None:
-                 creds = PlainTextAuthProvider(username=cassandra_user,
-                            password=cassandra_password)
-
-             cluster = Cluster(['127.0.0.1'], auth_provider = creds, port = int(cqlport))
-             session = cluster.connect()
-             session.cluster.shutdown()
-             session.shutdown()
-             return True
-         except Exception as e:
-             logging.info("Exception: Failure in connection to "
-                "AnalyticsDb: Retry %d: %s" % (retry, e))
-             retry = retry +1
-             time.sleep(5)
+        process = subprocess.Popen(cql_command.split(' '))
+        process.wait()
+        if process.returncode == 0:
+            return True
+        else:
+            retry = retry + 1
+            time.sleep(5)
     return False
 
 def call_command_(command ,jpath=None):

@@ -38,7 +38,11 @@ from sandesh_common.vns.constants import NodeTypeNames, ModuleNames
 from sandesh_common.vns.ttypes import NodeType, Module
 from pysandesh.util import UTCTimestampUsec
 from pysandesh.sandesh_base import SandeshConfig
-from sets import Set
+from operator import itemgetter
+try:
+    from sets import Set
+except ImportError:
+    Set = set
 
 class Query(object):
     table = None
@@ -3228,8 +3232,8 @@ class AnalyticsFixture(fixtures.Fixture):
                 for tk in item['value']:
                     if '__T' in item['value'][tk]:
                         del item['value'][tk]['__T']
-            exp_uve_value.sort()
-            actual_uve_value.sort()
+            exp_uve_value.sort(key=itemgetter('name'))
+            actual_uve_value.sort(key=itemgetter('name'))
             self.logger.info('Expected UVE value: %s' % (str(exp_uve_value)))
             self.logger.info('Actual UVE value: %s' % (str(actual_uve_value)))
             if actual_uve_value != exp_uve_value:
@@ -3404,7 +3408,7 @@ class AnalyticsFixture(fixtures.Fixture):
                 table_stat_info = stats_info['statistics_table_info']
             for table in table_stat_info:
                 if (str(table['table_name']).strip() == str(table_name).strip()):
-                    return table[field_name]
+                    return int(table[field_name])
         except Exception as err:
             self.logger.error('Exception: %s' % err)
     # end get_db_read_stats_from_qe
@@ -3499,7 +3503,7 @@ class AnalyticsFixture(fixtures.Fixture):
                 self.logger.info('%s returned %d' % (name,rcode))
                 self.logger.info('%s terminated stdout: %s' % (name, p_out))
                 self.logger.info('%s terminated stderr: %s' % (name, p_err))
-                with open(log_file, 'r') as fin:
+                with open(log_file, 'rb') as fin:
                     self.logger.info('%s' % ((35+len(name))*'*'))
                     self.logger.info('Log for %s' % (name))
                     self.logger.info('%s' % ((35+len(name))*'*'))
@@ -3525,7 +3529,7 @@ class AnalyticsFixture(fixtures.Fixture):
             except:
                 pass
             os.mkfifo(pipe_name)
-            pipein = open(pipe_name, 'r+')
+            pipein = open(pipe_name, 'rb+', buffering=0)
             flags = fcntl(pipein, F_GETFL)
             fcntl(pipein, F_SETFL, flags | os.O_NONBLOCK)
             pipes[pname] = pipein , pipe_name

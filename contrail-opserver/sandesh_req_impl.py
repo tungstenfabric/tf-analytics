@@ -7,8 +7,8 @@
 #
 
 from builtins import object
-from sandesh.redis.ttypes import RedisUveInfo, RedisUVERequest, RedisUVEResponse
-from sandesh.analytics.ttypes import DbInfoSetRequest, \
+from .sandesh.redis.ttypes import RedisUveInfo, RedisUVERequest, RedisUVEResponse
+from .sandesh.analytics.ttypes import DbInfoSetRequest, \
      DbInfoGetRequest, DbInfoResponse, DbInfo
 
 class OpserverSandeshReqImpl(object):

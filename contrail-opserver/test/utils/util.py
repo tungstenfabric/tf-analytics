@@ -7,6 +7,7 @@ import subprocess
 import os
 import time
 import socket
+import six
 
 # Code borrowed from http://wiki.python.org/moin/PythonDecoratorLibrary#Retry
 
@@ -59,11 +60,11 @@ def obj_to_dict(obj):
         for k, v in obj.items():
             data[k] = obj_to_dict(v)
         return data
-    elif hasattr(obj, '__iter__'):
+    elif hasattr(obj, '__iter__') and not isinstance(obj, six.string_types):
         return [obj_to_dict(v) for v in obj]
     elif hasattr(obj, '__dict__'):
         data = dict([(key, obj_to_dict(value)) 
-            for key, value in obj.__dict__.items() 
+            for key, value in list(obj.__dict__.items())
             if value is not None and not callable(value) and \
                not key.startswith('_')])
         return data
