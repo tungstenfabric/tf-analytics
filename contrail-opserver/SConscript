@@ -164,6 +164,8 @@ test_sources = [
     'requirements.txt',
     'test-requirements.txt',
     '.testr.conf',
+    '.stestr.conf',
+    'tox.ini',
     '.coveragerc',
     'test',
     '../../../controller/src/config/utils/contrail_alarm.py',
@@ -257,11 +259,9 @@ elif OpEnv['PYTESTARG']:
     OpEnv.Depends(test_cmd, [OpEnv['TOP']+x for x in test_depends])
     OpEnv.Depends(test_cmd, sdist_depends)
 else:
-    test_cmd = OpEnv.Command('test.log', sdist_gen + sandesh_pkgs,
-                             testr_str % ('', 'test'))
+    test_cmd = OpEnv.SetupPyTestSuiteWithDeps(sdist_gen + sandesh_pkgs,
+                             sdist_depends=test_depends, use_tox=True)
 
-# XXX Need to extend SetupPyTestSuite*() to handle above variations
-#
 if 'BUILD_ONLY' in OpEnv['ENV']:
     test_cmd = OpEnv.Command('build_only.log', sdist_gen, 'touch $TARGET')
 

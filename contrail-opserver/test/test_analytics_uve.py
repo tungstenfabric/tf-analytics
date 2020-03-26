@@ -47,10 +47,8 @@ class AnalyticsUveTest(testtools.TestCase, fixtures.TestWithFixtures):
 
     @classmethod
     def setUpClass(cls):
+        pass
 
-        if (os.getenv('LD_LIBRARY_PATH', '').find('build/lib') < 0):
-            if (os.getenv('DYLD_LIBRARY_PATH', '').find('build/lib') < 0):
-                assert(False)
 
     @classmethod
     def tearDownClass(cls):

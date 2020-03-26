@@ -52,10 +52,6 @@ class AnalyticsTest(testtools.TestCase, fixtures.TestWithFixtures):
         if AnalyticsTest._check_skip_test() is True:
             return
 
-        if (os.getenv('LD_LIBRARY_PATH', '').find('build/lib') < 0):
-            if (os.getenv('DYLD_LIBRARY_PATH', '').find('build/lib') < 0):
-                assert(False)
-
         cls.cassandra_port = AnalyticsTest.get_free_port()
         mockcassandra.start_cassandra(cls.cassandra_port)
 
