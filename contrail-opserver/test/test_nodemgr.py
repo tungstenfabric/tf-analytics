@@ -60,7 +60,7 @@ class NodemgrTest(unittest.TestCase):
     @mock.patch('os.path.getmtime')
     @mock.patch('glob.glob')
     @mock.patch('os.remove')
-    @mock.patch('__builtin__.open')
+    @mock.patch('builtins.open')
     @mock.patch('nodemgr.control_nodemgr.event_manager.ControlEventManager.send_process_state_db')
     @mock.patch('pysandesh.connection_info.ConnectionState.get_conn_state_cb')
     @mock.patch('nodemgr.common.utils.is_running_in_kubepod')

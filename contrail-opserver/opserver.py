@@ -94,6 +94,11 @@ from .sandesh.analytics_api_info.ttypes import AnalyticsApiInfoUVE, \
     UVEDbCacheTableKey, UVEDbCacheTableKeysResponse, \
     UVEDbCacheUveRequest, UVEDbCacheUveResponse
 from cfgm_common.exceptions import BadRequest, HttpError, PermissionDenied, AuthFailed
+from .opserver_util import convert_to_string
+try:
+    basestring
+except NameError:
+    basestring = str
 
 
 _ERRORS = {
@@ -220,8 +225,8 @@ def redis_query_status(host, port, redis_password, redis_ssl_params, qid):
     if int(ttl) != -1:
         chunk_resp["ttl"] = int(ttl)
     query_time = redish.hmget("QUERY:" + qid, ["start_time", "end_time"])
-    chunk_resp["start_time"] = query_time[0]
-    chunk_resp["end_time"] = query_time[1]
+    chunk_resp["start_time"] = convert_to_string(query_time[0])
+    chunk_resp["end_time"] = convert_to_string(query_time[1])
     if chunk_resp["progress"] == 100:
         chunk_resp["href"] = "/analytics/query/%s/chunk-final/%d" % (qid, 0)
     chunks.append(chunk_resp)
@@ -271,6 +276,7 @@ def redis_query_chunk(host, port, redis_password, redis_ssl_params, qid, chunk_i
 
         fin = True
         for elem in elems:
+            elem = convert_to_string(elem)
             fin = False
             outcount += 1
             if starter:
@@ -366,7 +372,7 @@ class OpStateServer(object):
     def redis_publish(self, msg_type, destination, msg):
         # Get the sandesh encoded in XML format
         sandesh = SandeshWriter.encode_sandesh(msg)
-        msg_encode = base64.b64encode(sandesh)
+        msg_encode = base64.b64encode(sandesh.encode('utf-8')).decode('utf-8')
         redis_msg = '{"type":"%s","destination":"%s","message":"%s"}' \
             % (msg_type, destination, msg_encode)
         # Publish message in the Redis bus
@@ -713,13 +719,13 @@ class OpServer(object):
         opserver_sandesh_req_impl = OpserverSandeshReqImpl(self)
         self.random_collectors = self._args.collectors
         if self._args.collectors:
-            self._chksum = hashlib.md5("".join(self._args.collectors)).hexdigest()
+            self._chksum = hashlib.md5(("".join(self._args.collectors)).encode()).hexdigest()
             self.random_collectors = random.sample(self._args.collectors, \
                                                    len(self._args.collectors))
         self._api_server_checksum = ''
         if self._args.api_server:
-            self._api_server_checksum = hashlib.md5(''.join(
-                self._args.api_server)).hexdigest()
+            self._api_server_checksum = hashlib.md5((''.join(
+                self._args.api_server)).encode()).hexdigest()
             self._args.api_server = random.sample(self._args.api_server,
                 len(self._args.api_server))
 
@@ -2670,7 +2676,7 @@ class OpServer(object):
                 else:
                     if isinstance(collectors, (basestring, str)):
                         collectors = collectors.split()
-                        new_chksum = hashlib.md5("".join(collectors)).hexdigest()
+                        new_chksum = hashlib.md5(("".join(collectors)).encode()).hexdigest()
                         if new_chksum != self._chksum:
                             self._chksum = new_chksum
                             self.random_collectors = random.sample(collectors, len(collectors))
@@ -2683,8 +2689,8 @@ class OpServer(object):
                 else:
                     if isinstance(api_servers, (basestring, str)):
                         api_servers = api_servers.split()
-                    new_api_server_checksum = hashlib.md5(''.join(
-                        api_servers)).hexdigest()
+                    new_api_server_checksum = hashlib.md5((''.join(
+                        api_servers)).encode()).hexdigest()
                     if new_api_server_checksum != self._api_server_checksum:
                         self._api_server_checksum = new_api_server_checksum
                         random_api_servers = random.sample(api_servers,

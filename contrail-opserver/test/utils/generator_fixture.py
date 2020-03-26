@@ -455,8 +455,12 @@ class GeneratorFixture(fixtures.Fixture):
                 build_info="testinfo"
                 if non_ascii:
                     build_info += ' ' + chr(201) + chr(203) + chr(213) + ' ' + build_info
-                if isinstance(build_info, unicode):
-                    build_info = build_info.encode('utf-8')
+                # Python3 doesn't support unicode
+                try:
+                    if isinstance(build_info, unicode):
+                        build_info = build_info.encode('utf-8')
+                except:
+                    build_info = str(build_info)
                 vinfo = VrouterAgent(name=name,
                                      build_info=build_info,
                                      state="OK")

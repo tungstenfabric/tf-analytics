@@ -35,6 +35,7 @@ from collections import namedtuple
 from .strict_redis_wrapper import StrictRedisWrapper
 from kazoo.client import KazooClient
 from kazoo.client import KazooState
+from .opserver_util import convert_to_string
 
 RedisInfo = namedtuple("RedisInfo",["ip","port","pid"])
 
@@ -102,7 +103,7 @@ class UVEServer(object):
             # A redis instance is only valid if we also know the collector pid
             if rinst.redis_handle is not None and \
                     rinst.collector_pid is not None:
-                cpid = rinst.collector_pid.split(':')[3]
+                cpid = convert_to_string(rinst.collector_pid).split(':')[3]
                 ril.append(RedisInfo(ip=rkey.ip, port=rkey.port, pid=cpid))
         return set(ril)
 
@@ -162,7 +163,7 @@ class UVEServer(object):
                     # read the collector pid string
                     if rinst.collector_pid is None:
                         for gen in rinst.redis_handle.smembers("NGENERATORS"):
-                            module = gen.split(':')[2]
+                            module = convert_to_string(gen).split(':')[2]
                             if module == "contrail-collector":
                                 rinst.collector_pid = gen
                 except gevent.GreenletExit:
@@ -224,6 +225,7 @@ class UVEServer(object):
             redish = self._redis_uve_map[rik].redis_handle
             gen_uves = {}
             for elems in redish.smembers("PART2KEY:" + str(part)):
+                elems = convert_to_string(elems)
                 info = elems.split(":", 5)
                 gen = info[0] + ":" + info[1] + ":" + info[2] + ":" + info[3]
                 typ = info[4]
@@ -246,7 +248,7 @@ class UVEServer(object):
             else:
                 redish = r_inst.redis_handle
             try:
-                tbs = [elem.split(":",1)[1] for elem in redish.keys("TABLE:*")]
+                tbs = [convert_to_string(elem).split(":",1)[1] for elem in redish.keys("TABLE:*")]
                 tables.update(set(tbs))
             except Exception as e:
                 self._logger.error("get_tables failed %s for : (%s,%s) tb %s" \
@@ -292,6 +294,7 @@ class UVEServer(object):
                 origins = set()
                 for origset in pperes:
                     for smt in origset:
+                        smt = convert_to_string(smt)
                         tt = smt.rsplit(":",1)[1]
                         sm = smt.rsplit(":",1)[0]
                         source = sm.split(":", 1)[0]
@@ -328,6 +331,8 @@ class UVEServer(object):
 
                     del_uvealarms = False
                     for attr, value in odict.items():
+                        attr = convert_to_string(attr)
+                        value = convert_to_string(value)
                         if len(afilter_list):
                             if attr not in afilter_list:
                                 continue
@@ -383,7 +388,7 @@ class UVEServer(object):
                         # To timestamp, we only keep latest source
                         if attr == '__T' and flat:
                             if len(state[key][typ][attr]) > 0:
-                                if list(state[key][typ][attr].values())[0] > snhdict[attr]:
+                                if list(state[key][typ][attr].values())[0]['#text'] > snhdict[attr]['#text']:
                                     continue
                                 else:
                                     state[key][typ][attr].clear()
@@ -509,6 +514,7 @@ class UVEServer(object):
                 if not is_alarm:
                     entries = entries.union(redish.smembers('TABLE:' + table))
                 for entry in entries:
+                    entry = convert_to_string(entry)
                     info = (entry.split(':', 1)[1]).rsplit(':', 5)
                     uve_key = info[0]
                     if kfilter is not None:
