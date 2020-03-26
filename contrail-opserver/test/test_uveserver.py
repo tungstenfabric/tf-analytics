@@ -266,9 +266,9 @@ class UVEServerTest(unittest.TestCase):
         acl2 = uvevn2["abc-corp:vn-00"]['UVEVirtualNetwork'][
             'total_acl_rules']["10.10.10.11"]
         self.assertEqual(
-            sorted([acl1, acl2]),
+            sorted([acl1, acl2], key = lambda k:k['#text']),
             sorted([res['UVEVirtualNetwork']['total_acl_rules'][0][0],
-                    res['UVEVirtualNetwork']['total_acl_rules'][1][0]]))
+                    res['UVEVirtualNetwork']['total_acl_rules'][1][0]], key = lambda k:k['#text']))
         self.assertEqual(
             sorted(["10.10.10.10", "10.10.10.11"]),
             sorted([res['UVEVirtualNetwork']['total_acl_rules'][0][1],
@@ -412,7 +412,7 @@ class UVEServerTest(unittest.TestCase):
         logging.info(json.dumps(res, indent=4, sort_keys=True))
 
         res['UVEVirtualNetwork']['in_stats']["list"]["VnStats"] = \
-            sorted(res['UVEVirtualNetwork']['in_stats']["list"]["VnStats"])
+            sorted(res['UVEVirtualNetwork']['in_stats']["list"]["VnStats"], key = lambda k:k['bytes']['#text'])
 
         uvetest = MakeUVEVirtualNetwork(
             None,  "abc-corp:vn-00", "sample",
@@ -423,7 +423,7 @@ class UVEServerTest(unittest.TestCase):
         uvetest["abc-corp:vn-00"]["UVEVirtualNetwork"]["in_stats"][
             "sample"]["list"]["VnStats"] = \
             sorted(uvetest["abc-corp:vn-00"]["UVEVirtualNetwork"][
-                   "in_stats"]["sample"]["list"]["VnStats"])
+                   "in_stats"]["sample"]["list"]["VnStats"], key = lambda k:k['bytes']['#text'])
 
         in_stats = uvetest["abc-corp:vn-00"][
             "UVEVirtualNetwork"]["in_stats"]["sample"]

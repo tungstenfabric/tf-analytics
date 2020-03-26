@@ -10,7 +10,7 @@ monkey.patch_all()
 import logging
 import gevent
 from gevent.lock import BoundedSemaphore
-from kafka import KeyedProducer, KafkaConsumer, common
+from kafka import KafkaConsumer, common
 from .uveserver import UVEServer
 import os
 import ast
@@ -28,6 +28,7 @@ import errno
 import time
 from collections import namedtuple
 from .strict_redis_wrapper import StrictRedisWrapper
+from .opserver_util import convert_to_string
 
 PartInfo = namedtuple("PartInfo",["ip_address","instance_id","redis_agg_db","acq_time","port"])
 
@@ -964,7 +965,7 @@ class UveStreamProc(PartitionHandler):
         self._partoffset = om.offset
         chg = {}
         try:
-            params = om.key.split("|")
+            params = convert_to_string(om.key).split("|")
             gen = params[2]
             coll = params[3]
             uv = {}
@@ -973,7 +974,7 @@ class UveStreamProc(PartitionHandler):
             if om.value is None or len(om.value) == 0:
                 uv["value"] = None
             else:
-                uv["value"] = json.loads(om.value)
+                uv["value"] = json.loads(convert_to_string(om.value))
 
             if coll not in self._uvedb:
                 # This partition is not synced yet.

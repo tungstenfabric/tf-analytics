@@ -64,7 +64,7 @@ class LocalApp(object):
             except Exception as e:
                 bottle.abort(401, 'Auth Exception: %s' %(str(e)))
             enc_user_passwd = auth_hdr_val.split()[1]
-            user_passwd = base64.b64decode(enc_user_passwd)
+            user_passwd = base64.b64decode(enc_user_passwd.encode('utf-8')).decode('utf-8')
             user, passwd = user_passwd.split(':')
             if (not self._conf_info.get('admin_user') == user or
                 not self._conf_info.get('admin_password') == passwd):

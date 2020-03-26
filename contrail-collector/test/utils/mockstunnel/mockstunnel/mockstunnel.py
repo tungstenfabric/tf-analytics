@@ -64,7 +64,7 @@ def get_stunnel_path():
     # Check if stunnel is already installed in system
     output, _ = call_command_("which stunnel")
     output = output.rstrip()
-    if output is not None and 'stunnel' in output:
+    if output is not None and b'stunnel' in output:
         return output.rstrip()  # Output has trailing \n
 
     # Check if stunnel is already downloaded in system

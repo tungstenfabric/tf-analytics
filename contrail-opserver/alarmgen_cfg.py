@@ -13,6 +13,11 @@ from pysandesh.gen_py.sandesh.ttypes import SandeshLevel
 from sandesh_common.vns.constants import SERVICE_ALARM_GENERATOR, \
     ServicesDefaultConfigurationFiles
 
+try:
+  basestring
+except NameError:
+  basestring = str
+
 ALARMGEN_REDIS_AGGREGATE_DB_BASE_INDEX = 7
 
 class CfgParser(object):
