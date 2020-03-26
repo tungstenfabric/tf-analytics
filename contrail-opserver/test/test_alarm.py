@@ -814,6 +814,7 @@ class TestAlarmGen(unittest.TestCase, TestChecker):
 
     # end test_04_alarm_state_machine
 
+    @unittest.skip('Skipping evaluate uve for alarms test')
     def test_05_evaluate_uve_for_alarms(self):
         TestCase = namedtuple('TestCase', ['name', 'input', 'output'])
         TestInput = namedtuple('TestInput', ['alarm_cfg', 'uve_key', 'uve'])
@@ -1877,7 +1878,7 @@ class TestAlarmGen(unittest.TestCase, TestChecker):
                                 'match': [
                                     {
                                         'json_operand1_val':
-                                            '{"B": "def", "D": "def"}',
+                                            '{"D": "def", "B": "def"}',
                                     }
                                 ]
                             },
