@@ -21,6 +21,7 @@ import gevent
 from gevent import monkey
 monkey.patch_all()
 import os
+import subprocess
 import unittest
 import testtools
 import fixtures
@@ -76,22 +77,19 @@ class AnalyticsTest(testtools.TestCase, fixtures.TestWithFixtures):
         self.addCleanup(mock_is_role_cloud_admin.stop)
 
     def _update_analytics_start_time(self, start_time):
-        cluster = Cluster([socket.getfqdn("127.0.0.1")],
-            port=int(self.__class__.cassandra_port))
-        session = cluster.connect(COLLECTOR_KEYSPACE_CQL)
         query = "INSERT INTO {0} (key, \"{1}\") VALUES ('{2}', {3})".format(
             SYSTEM_OBJECT_TABLE, SYSTEM_OBJECT_START_TIME,
             SYSTEM_OBJECT_ANALYTICS, start_time)
-        try:
-            session.execute(query)
-        except Exception as e:
+        cassbase = "/tmp/cassandra.%s.%d/" % (os.getenv('USER', 'None'), int(self.__class__.cassandra_port))
+        cql_command = cassbase + "apache-cassandra-3.10/bin/cqlsh " + "127.0.0.1 " + str(self.__class__.cassandra_port) + " -k " + COLLECTOR_KEYSPACE_CQL + " -e \"" + query + "\""
+        process = subprocess.Popen(cql_command.split(' '))
+        process.wait()
+        if process.returncode != 0:
             logging.error("INSERT INTO %s: Key %s Column %s Value %d "
-                "FAILED: %s" % (SYSTEM_OBJECT_TABLE,
+                "FAILED" % (SYSTEM_OBJECT_TABLE,
                 SYSTEM_OBJECT_ANALYTICS, SYSTEM_OBJECT_START_TIME,
-                start_time, str(e)))
+                start_time))
             assert False
-        else:
-            cluster.shutdown()
     # end _update_analytics_start_time
 
     #@unittest.skip('Skipping cassandra test with vizd')
