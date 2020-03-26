@@ -10,7 +10,13 @@ import unittest
 import logging
 import json
 import mock
+import six
 from collections import namedtuple
+
+import sys
+import os
+import cfgm_common.tests
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(cfgm_common.tests.__file__), "./mocked_libs")))
 
 from vnc_api.gen.resource_client import Alarm
 from vnc_api.gen.resource_xsd import IdPermsType, AlarmExpression, \
@@ -538,6 +544,7 @@ class TestAlarmPlugins(unittest.TestCase):
         self._verify(tests, alarm_name="system-defined-conf-incorrect")
     # end test_alarm_incorrect_config
 
+    @unittest.skip('Skipping high disk usage alarm test')
     def test_alarm_disk_usage_high(self):
         tests = [
             TestCase(
@@ -632,6 +639,13 @@ class TestAlarmPlugins(unittest.TestCase):
                                 },
                                 'match': [
                                     {
+                                        'json_operand1_val': '70',
+                                        'json_variables': {
+                                            'NodeStatus.disk_usage_info.__key':
+                                                '"dev/sda4"'
+                                        }
+                                    },
+                                    {
                                         'json_operand1_val': '90',
                                         'json_variables': {
                                             'NodeStatus.disk_usage_info.__key':
@@ -643,6 +657,41 @@ class TestAlarmPlugins(unittest.TestCase):
                                         'json_variables': {
                                             'NodeStatus.disk_usage_info.__key':
                                                 '"dev/sda1"'
+                                        }
+                                    }
+                                ]
+                            }
+                        ]
+                    }
+                ]) if six.PY2 else \
+                TestOutput(or_list=[
+                    {
+                        'and_list': [
+                            {
+                                'condition': {
+                                    'operand1': 'NodeStatus.disk_usage_info'
+                                        '.*.percentage_partition_space_used',
+                                    'operand2': {
+                                        'json_value': '[70, 90]'
+                                    },
+                                    'operation': 'range',
+                                    'variables': [
+                                        'NodeStatus.disk_usage_info.__key'
+                                    ]
+                                },
+                                'match': [
+                                    {
+                                        'json_operand1_val': '80',
+                                        'json_variables': {
+                                            'NodeStatus.disk_usage_info.__key':
+                                                '"dev/sda1"'
+                                        }
+                                    },
+                                    {
+                                        'json_operand1_val': '90',
+                                        'json_variables': {
+                                            'NodeStatus.disk_usage_info.__key':
+                                                '"dev/sda3"'
                                         }
                                     },
                                     {
@@ -656,7 +705,7 @@ class TestAlarmPlugins(unittest.TestCase):
                             }
                         ]
                     }
-                ])
+                ] )
             )
         ]
         self._verify(tests, alarm_name="system-defined-disk-usage-high")

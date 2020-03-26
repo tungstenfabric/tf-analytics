@@ -66,6 +66,12 @@ def inverse_dict(d):
     return dict(list(zip(list(d.values()), list(d.keys()))))
 # end inverse_dict
 
+def convert_to_string(item):
+    if isinstance(item, bytes):
+        return item.decode('utf-8')
+    return item
+# end convert_to_string
+
 
 from kazoo.client import KazooClient
 from kazoo.client import KazooState
@@ -175,6 +181,8 @@ class AnalyticsDiscovery(gevent.Greenlet):
                 self._logger.error("check for %s/%s/%s" % \
                                 (self._basepath, self._svc_name, self._inst))
                 if pubinfo is not None:
+                    if isinstance(pubinfo, str):
+                        self._pubinfo = pubinfo.encode('utf-8')
                     if self._zk.exists("%s/%s/%s" % \
                             (self._basepath, self._svc_name, self._inst)):
                         self._zk.set("%s/%s/%s" % \
@@ -540,7 +548,7 @@ class OpServerUtils(object):
                 data = requests.get(url, prefetch=False,
                                     auth=HTTPBasicAuth(user, password),
                                     cert=cert, verify=ca_cert, headers=headers)
-        except requests.exceptions.ConnectionError, e:
+        except requests.exceptions.ConnectionError as e:
             print("Connection to %s failed %s" % (url, str(e)))
 
         return data
@@ -553,6 +561,7 @@ class OpServerUtils(object):
         while not done:
             try:
                 ln = next(resit)
+                ln = convert_to_string(ln)
                 if ln == '{"value": [':
                     continue
                 if ln == ']}':
