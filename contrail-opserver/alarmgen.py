@@ -31,6 +31,10 @@ import signal
 import random
 import hashlib
 import logging
+import sys
+import os
+import cfgm_common.tests
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(cfgm_common.tests.__file__), "./mocked_libs")))
 from six.moves import configparser
 try:
     from collections import OrderedDict
@@ -79,6 +83,10 @@ import redis
 from collections import namedtuple
 from .strict_redis_wrapper import StrictRedisWrapper
 from kafka import common, KafkaProducer
+try:
+  basestring
+except NameError:
+  basestring = str
 
 OutputRow = namedtuple("OutputRow",["key","typ","val"])
 
@@ -147,7 +155,7 @@ class AGKeyInfo(object):
         self.set_removed = set()
         self.set_added = set()
         self.set_changed = set()
-        self.set_unchanged = self.current_dict.keys()
+        self.set_unchanged = list(self.current_dict)
 
         if typ in self.current_dict:
             # the "added" set must stay empty in this case
@@ -367,12 +375,32 @@ class AlarmProcessor(object):
         elif operation == '!=':
             return val1 != val2
         elif operation == '<':
+            if val1 is None and val2 is None:
+                return False
+            if val1 is None:
+                return True
+            if val2 is None:
+                return False
             return val1 < val2
         elif operation == '<=':
+            if val1 is None:
+                return True
+            if val2 is None:
+                return False
             return val1 <= val2
         elif operation == '>':
+            if val1 is None and val2 is None:
+                return False
+            if val2 is None:
+                return True
+            if val1 is None:
+                return False
             return val1 > val2
         elif operation == '>=':
+            if val2 is None:
+                return True
+            if val1 is None:
+                return False
             return val1 >= val2
         elif operation == 'in':
             if not isinstance(val2, list):
@@ -847,7 +875,7 @@ class AlarmStateMachine(object):
                 del_timers.append(curr_index)
         for timeout in del_timers:
             del AlarmStateMachine.tab_alarms_timer[timeout]
-        if timeout_val >= 0:
+        if timeout_val is not None and timeout_val >= 0:
             if not timeout_val in AlarmStateMachine.tab_alarms_timer:
                 AlarmStateMachine.tab_alarms_timer[timeout_val] = set()
             if (tab, uv, nm) in AlarmStateMachine.tab_alarms_timer\
@@ -867,7 +895,7 @@ class Controller(object):
         token = {'host_ip': sandesh.host_ip(),
                  'http_port': sandesh._http_server.get_port(),
                  'timestamp': timestamp}
-        return base64.b64encode(json.dumps(token))
+        return base64.b64encode(json.dumps(token).encode('utf-8')).decode('utf-8')
 
     def fail_cb(self, manager, entrypoint, exception):
         self._sandesh._logger.info("Load failed for %s with exception %s" % \
@@ -895,7 +923,7 @@ class Controller(object):
         self._sandesh = Sandesh()
         self._conf.random_collectors = self._conf.collectors()
         if self._conf.collectors():
-            self._chksum = hashlib.md5("".join(self._conf.collectors())).hexdigest()
+            self._chksum = hashlib.md5("".join(self._conf.collectors()).encode()).hexdigest()
             self._conf.random_collectors = random.sample(self._conf.collectors(), \
                                                         len(self._conf.collectors()))
         self._sandesh.init_generator(self._moduleid, self._hostname,
@@ -1205,7 +1233,7 @@ class Controller(object):
                 self._workers[pp].acq_time())
             self.stop_uve_partition(pp)
 
-        for part in self._uveq.keys():
+        for part in list(self._uveq.keys()):
             self._logger.info("Clearing part %d uveQ : %s" % \
                     (part,str(self._uveq[part].keys())))
             uveq_trace = UVEQTrace()
@@ -1434,7 +1462,7 @@ class Controller(object):
         oldworkerset = None
         redis_changed = False
         while True:
-            for part in self._uveqf.keys():
+            for part in list(self._uveqf.keys()):
                 self._logger.error("Stop UVE processing for %d:%d" % \
                         (part, self._uveqf[part]))
                 self.stop_uve_partition(part)
@@ -1768,9 +1796,9 @@ class Controller(object):
     def stop_uve_partition(self, part):
         if not part in self.ptab_info:
             return
-        for tk in self.ptab_info[part].keys():
+        for tk in list(self.ptab_info[part].keys()):
             tcount = len(self.ptab_info[part][tk])
-            for rkey in self.ptab_info[part][tk].keys():
+            for rkey in list(self.ptab_info[part][tk].keys()):
                 uk = tk + ":" + rkey
                 if tk in self.tab_alarms:
                     if uk in self.tab_alarms[tk]:
@@ -2592,7 +2620,7 @@ class Controller(object):
                     collectors = config.get('DEFAULTS', 'collectors')
                     if isinstance(collectors, (basestring, str)):
                         collectors = collectors.split()
-                        new_chksum = hashlib.md5("".join(collectors)).hexdigest()
+                        new_chksum = hashlib.md5("".join(collectors).encode()).hexdigest()
                         if new_chksum != self._chksum:
                             self._chksum = new_chksum
                             self._conf.random_collectors = \
