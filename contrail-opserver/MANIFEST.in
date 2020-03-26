@@ -4,3 +4,6 @@
 
 recursive-include opserver/sandesh *.html *.xml *.css
 recursive-include opserver/doc *
+recursive-include opserver/test *
+include requirements.txt
+include test-requirements.txt
