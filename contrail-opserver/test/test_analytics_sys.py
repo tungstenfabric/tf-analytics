@@ -59,6 +59,7 @@ class AnalyticsTest(testtools.TestCase, fixtures.TestWithFixtures):
         cls.cassandra_port = AnalyticsTest.get_free_port()
         mockcassandra.start_cassandra(cls.cassandra_port)
 
+
     @classmethod
     def tearDownClass(cls):
         if AnalyticsTest._check_skip_test() is True:
