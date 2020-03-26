@@ -1877,7 +1877,7 @@ class TestAlarmGen(unittest.TestCase, TestChecker):
                                 'match': [
                                     {
                                         'json_operand1_val':
-                                            '{"B": "def", "D": "def"}',
+                                            '{"D": "def", "B": "def"}',
                                     }
                                 ]
                             },

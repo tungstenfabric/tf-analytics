@@ -632,6 +632,13 @@ class TestAlarmPlugins(unittest.TestCase):
                                 },
                                 'match': [
                                     {
+                                        'json_operand1_val': '70',
+                                        'json_variables': {
+                                            'NodeStatus.disk_usage_info.__key':
+                                                '"dev/sda4"'
+                                        }
+                                    },
+                                    {
                                         'json_operand1_val': '90',
                                         'json_variables': {
                                             'NodeStatus.disk_usage_info.__key':
@@ -643,13 +650,6 @@ class TestAlarmPlugins(unittest.TestCase):
                                         'json_variables': {
                                             'NodeStatus.disk_usage_info.__key':
                                                 '"dev/sda1"'
-                                        }
-                                    },
-                                    {
-                                        'json_operand1_val': '70',
-                                        'json_variables': {
-                                            'NodeStatus.disk_usage_info.__key':
-                                                '"dev/sda4"'
                                         }
                                     }
                                 ]
