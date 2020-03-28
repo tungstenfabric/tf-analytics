@@ -5,7 +5,10 @@ from builtins import map
 from builtins import str
 from builtins import range
 from builtins import object
-from consistent_hash import ConsistentHash
+try:
+    from consistent_hash import ConsistentHash
+except ImportError:
+    from libpartition.consistent_hash import ConsistentHash
 import gevent
 import os
 import hashlib
