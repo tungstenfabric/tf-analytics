@@ -28,6 +28,7 @@ from fcntl import fcntl, F_GETFL, F_SETFL
 from operator import itemgetter
 from .opserver_introspect_utils import VerificationOpsSrv, \
      VerificationOpsSrvIntrospect
+from opserver.opserver_util import convert_to_string
 from .collector_introspect_utils import VerificationCollector
 from .alarmgen_introspect_utils import VerificationAlarmGen
 from .generator_introspect_utils import VerificationGenerator
@@ -1064,8 +1065,9 @@ class AnalyticsFixture(fixtures.Fixture):
             assert(len(res) > 0)
             return True
 
-    @retry(delay=1, tries=30)
+    @retry(delay=1, tries=60)
     def verify_generator_list(self, collectors, exp_genlist):
+        self.logger.info('Verify generator list')
         actual_genlist = []
         for collector in collectors:
             actual_genlist.extend(self.get_generator_list(collector))
@@ -3103,6 +3105,7 @@ class AnalyticsFixture(fixtures.Fixture):
     def verify_generator_list_in_redis(self, redis_uve, exp_gen_list):
         self.logger.info('Verify generator list in redis')
         try:
+            self.logger.info('Aadarsh: Inside try block')
             r = redis.StrictRedis(db=1, port=redis_uve.port, password=redis_uve.password)
             gen_list = r.smembers('NGENERATORS')
         except Exception as e:
@@ -3111,7 +3114,7 @@ class AnalyticsFixture(fixtures.Fixture):
         else:
             self.logger.info('Expected generator list: %s' % str(exp_gen_list))
             self.logger.info('Actual generator list: %s' % str(gen_list))
-            return gen_list == set(exp_gen_list)
+            return convert_to_string(gen_list) == set(exp_gen_list)
     # end verify_generator_list_in_redis
 
     def delete_generator_from_ngenerator(self, redis_uve, generator):
