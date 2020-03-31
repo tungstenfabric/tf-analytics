@@ -6,14 +6,48 @@
 
 
 #include <map>
+#include <iostream>
+#include <string>
+#include <vector>
+#include <algorithm>
+#include <stdint.h>
+#include <cstdio>
 #include <tbb/atomic.h>
 #include <boost/shared_ptr.hpp>
 #include <boost/regex.hpp>
+#include <boost/thread/mutex.hpp>
 #include <boost/algorithm/string.hpp>
 #include "config_client_collector.h"
 #include "parser_util.h"
 
 class Options;
+
+
+
+struct IPNetwork
+{
+  IPNetwork(uint32_t lower, uint32_t upper, std::string net_name) {
+    address_begin = lower;
+    address_end   = upper;
+    id            = net_name;
+  }
+
+  bool operator < (const IPNetwork& other) const{
+    return address_begin < other.address_begin;
+  }
+
+  IPNetwork& operator = (const IPNetwork& other) {
+    this->address_begin = other.address_begin;
+    this->address_end = other.address_end;
+    this->id = other.id;
+    return *this;
+  }
+
+  uint32_t address_begin;
+  uint32_t address_end;
+  std::string id;
+
+};
 
 class HostnameRecord {
     public:
@@ -72,6 +106,65 @@ class HostnameRecord {
         std::string            device_;
         std::string            tags_;
         std::map< std::string, std::string > linkmap_;
+};
+
+class TenantRecord {
+    public:
+        explicit TenantRecord(const std::string &name, const std::string &tenantaddr,
+        const std::string &tenant, const std::string &tags,
+        const std::map< std::string, std::string > &dscpmap_ipv4,
+        const std::map< std::string, std::string > &dscpmap_ipv6):
+            refreshed_(true), name_(name), tenantaddr_(tenantaddr), tenant_(tenant),
+            tags_(tags), dscpmap_ipv4_(dscpmap_ipv4), dscpmap_ipv6_(dscpmap_ipv6) {
+        }
+        bool operator==(const TenantRecord &rhs) {
+            return rhs.IsMe(name_) &&  rhs.tenantaddr() == tenantaddr_ &&
+            rhs.tenant() == tenant_ && rhs.tags() == tags_ &&
+            rhs.dscpmap_ipv4().size() == dscpmap_ipv4_.size() &&
+            std::equal(rhs.dscpmap_ipv4().begin(), rhs.dscpmap_ipv4().end(), dscpmap_ipv4_.begin()) &&
+            rhs.dscpmap_ipv6().size() == dscpmap_ipv6_.size() &&
+            std::equal(rhs.dscpmap_ipv6().begin(), rhs.dscpmap_ipv6().end(), dscpmap_ipv6_.begin());
+        }
+
+        const std::string name() { return name_; }
+        const std::string tenantaddr() const { return tenantaddr_; }
+        const std::string tenant() const { return tenant_; }
+        const std::string tags() const { return tags_; }
+        const std::map< std::string, std::string > dscpmap_ipv4() const { return dscpmap_ipv4_; }
+        const std::map< std::string, std::string > dscpmap_ipv6() const { return dscpmap_ipv6_; }
+
+        bool IsMe(const std::string &name) const { return name == name_; }
+        void Refresh(const std::string &name, const std::string &tenantaddr,
+                     const std::string &tenant, const std::string &tags,
+                     const std::map< std::string, std::string > &dscpmap_ipv4,
+                     const std::map< std::string, std::string > &dscpmap_ipv6) {
+             if (tenantaddr_ != tenantaddr)
+                tenantaddr_ = tenantaddr;
+             if (tenant_ != tenant)
+                tenant_ = tenant;
+             if (tags_ != tags)
+                tags_ = tags;
+            if (dscpmap_ipv4.size() != dscpmap_ipv4_.size()) {
+                dscpmap_ipv4_ = dscpmap_ipv4;
+            } else if (!(std::equal(dscpmap_ipv4.begin(), dscpmap_ipv4.end(), dscpmap_ipv4_.begin()))) {
+                dscpmap_ipv4_ = dscpmap_ipv4;
+            }
+            if (dscpmap_ipv6.size() != dscpmap_ipv6_.size()) {
+                dscpmap_ipv6_ = dscpmap_ipv6;
+            } else if (!(std::equal(dscpmap_ipv6.begin(), dscpmap_ipv6.end(), dscpmap_ipv6_.begin()))) {
+                dscpmap_ipv6_ = dscpmap_ipv6;
+            }
+            refreshed_ = true;
+        }
+        bool GetandClearRefreshed() { bool r = refreshed_; refreshed_ = false; return r;}
+    private:
+        bool                   refreshed_;
+        std::string            name_;
+        std::string            tenantaddr_;
+        std::string            tenant_;
+        std::string            tags_;
+        std::map< std::string, std::string > dscpmap_ipv4_;
+        std::map< std::string, std::string > dscpmap_ipv6_;
 };
 
 class ApplicationRecord {
@@ -276,19 +369,32 @@ class SlaProfileRecord {
 };
 
 typedef std::map<std::string, boost::shared_ptr<HostnameRecord> > Chr_t;
+typedef std::map<std::string, boost::shared_ptr<TenantRecord> > Ctr_t;
 typedef std::map<std::string, boost::shared_ptr<ApplicationRecord> > Car_t;
 typedef std::map<std::string, boost::shared_ptr<TenantApplicationRecord> > Ctar_t;
 typedef std::map<std::string, boost::shared_ptr<MessageConfig> > Cmc_t;
 typedef std::map<std::string, boost::shared_ptr<SlaProfileRecord> > Csr_t;
+typedef std::vector<IPNetwork> IPNetworks;
+typedef std::map<std::string, IPNetworks> IPNetworks_map;
 
 class StructuredSyslogConfig {
     public:
         StructuredSyslogConfig(ConfigClientCollector *config_client);
         ~StructuredSyslogConfig();
+        uint32_t IPToUInt(std::string ip);
+        int get_ip_version (const std::string ip);
+        std::vector<std::string> split_into_vector(std::string  str, char delimiter) ;
+        bool AddNetwork(const std::string& key, const std::string& network, const std::string& mask, const std::string& location);
+        bool RefreshNetworksMap(const std::string location);
+        std::string FindNetwork(std::string ip, std::string key);
         void AddHostnameRecord(const std::string &name, const std::string &hostaddr,
                                   const std::string &tenant, const std::string &location,
                                   const std::string &device, const std::string &tags,
                                   const std::map< std::string, std::string > &linkmap);
+        void AddTenantRecord(const std::string &name, const std::string &tenantaddr,
+                                  const std::string &tenant, const std::string &tags,
+                                  const std::map< std::string, std::string > &dscpmap_ipv4,
+                                  const std::map< std::string, std::string > &dscpmap_ipv6);
         void AddApplicationRecord(const std::string &name, const std::string &app_category,
                                   const std::string &app_subcategory, const std::string &app_groups,
                                   const std::string &app_risk, const std::string &app_service_tags);
@@ -300,6 +406,7 @@ class StructuredSyslogConfig {
                                   const std::string &forward, bool process_and_summarize, bool process_and_summarize_user);
         void AddSlaProfileRecord(const std::string &name, const std::string &sla_params);
         boost::shared_ptr<HostnameRecord> GetHostnameRecord(const std::string &name);
+        boost::shared_ptr<TenantRecord> GetTenantRecord(const std::string &name);
         boost::shared_ptr<ApplicationRecord> GetApplicationRecord(const std::string &name);
         boost::shared_ptr<TenantApplicationRecord> GetTenantApplicationRecord(const std::string &name);
         boost::shared_ptr<MessageConfig> GetMessageConfig(const std::string &name);
@@ -308,6 +415,8 @@ class StructuredSyslogConfig {
     private:
         void HostnameRecordsHandler(const contrail_rapidjson::Document &jdoc,
                                     bool add_change);
+        void TenantRecordsHandler(const contrail_rapidjson::Document &jdoc,
+                                    bool add_change);
         void ApplicationRecordsHandler(const contrail_rapidjson::Document &jdoc,
                                     bool add_change);
         void MessageConfigsHandler(const contrail_rapidjson::Document &jdoc,
@@ -315,10 +424,15 @@ class StructuredSyslogConfig {
         void SlaProfileRecordsHandler(const contrail_rapidjson::Document &jdoc,
                                     bool add_change);
         Chr_t hostname_records_;
+        Ctr_t tenant_records_;
         Car_t application_records_;
         Ctar_t tenant_application_records_;
         Cmc_t message_configs_;
         Csr_t sla_profile_records_;
+
+        //networks_map_refresh_mutex should be used only to refresh networks map
+        boost::mutex networks_map_refresh_mutex;
+        IPNetworks_map networks_map_;
 };
 
 
