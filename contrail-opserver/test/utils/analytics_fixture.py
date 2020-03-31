@@ -28,6 +28,7 @@ from fcntl import fcntl, F_GETFL, F_SETFL
 from operator import itemgetter
 from .opserver_introspect_utils import VerificationOpsSrv, \
      VerificationOpsSrvIntrospect
+from opserver.opserver_util import convert_to_string
 from .collector_introspect_utils import VerificationCollector
 from .alarmgen_introspect_utils import VerificationAlarmGen
 from .generator_introspect_utils import VerificationGenerator
@@ -1064,8 +1065,9 @@ class AnalyticsFixture(fixtures.Fixture):
             assert(len(res) > 0)
             return True
 
-    @retry(delay=1, tries=30)
+    @retry(delay=1, tries=60)
     def verify_generator_list(self, collectors, exp_genlist):
+        self.logger.info('Verify generator list')
         actual_genlist = []
         for collector in collectors:
             actual_genlist.extend(self.get_generator_list(collector))
@@ -3104,7 +3106,7 @@ class AnalyticsFixture(fixtures.Fixture):
         self.logger.info('Verify generator list in redis')
         try:
             r = redis.StrictRedis(db=1, port=redis_uve.port, password=redis_uve.password)
-            gen_list = r.smembers('NGENERATORS')
+            gen_list = convert_to_string(r.smembers('NGENERATORS'))
         except Exception as e:
             self.logger.error('Failed to get generator list from redis - %s' % e)
             return False
