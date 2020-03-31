@@ -1068,7 +1068,7 @@ class AnalyticsFixture(fixtures.Fixture):
             assert(len(res) > 0)
             return True
 
-    @retry(delay=1, tries=30)
+    @retry(delay=1, tries=60)
     def verify_generator_list(self, collectors, exp_genlist):
         actual_genlist = []
         for collector in collectors:
