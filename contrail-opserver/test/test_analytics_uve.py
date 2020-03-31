@@ -229,7 +229,7 @@ class AnalyticsUveTest(testtools.TestCase, fixtures.TestWithFixtures):
         # verify that UVEs are resynced with redis-uve
         assert vizd_obj.verify_generator_uve_list(gen_list)
 
-    @unittest.skip('Skipping contrail-collector HA test')
+    #@unittest.skip('Skipping contrail-collector HA test')
     def test_05_collector_ha(self):
         logging.info('%%% test_05_collector_ha %%%')
         
@@ -2390,7 +2390,6 @@ class AnalyticsUveTest(testtools.TestCase, fixtures.TestWithFixtures):
                                                msg_count=5)
         #end test_18_analytics_ssl_params_wrong_cacert
 
-
     #@unittest.skip('Skipping analytics_ssl_params_client_ssl_not_enabled test')
     def test_19_analytics_ssl_params_client_ssl_not_enabled(self):
 
@@ -2430,7 +2429,7 @@ class AnalyticsUveTest(testtools.TestCase, fixtures.TestWithFixtures):
         #end test_19_analytics_ssl_params_client_ssl_not_enabled
 
 
-    @unittest.skip('Skipping redis HA test')
+    #@unittest.skip('Skipping redis HA test')
     def test_20_redis_ha(self):
         '''
         This test starts two redis,two vizd, opserver, qed, and a python generator
@@ -2438,7 +2437,7 @@ class AnalyticsUveTest(testtools.TestCase, fixtures.TestWithFixtures):
         Then it checks that the VM UVE (via redis) can be accessed from
         opserver after stopping any one of the two running redis.
         '''
-        logging.info('%%% test_redis_ha %%%')
+        logging.info('%%% test_20_redis_ha %%%')
 
         vizd_obj = self.useFixture(
             AnalyticsFixture(logging, builddir, 0,
@@ -2460,6 +2459,7 @@ class AnalyticsUveTest(testtools.TestCase, fixtures.TestWithFixtures):
 
         # stopping redis-uve and verifying vm_uve
         vizd_obj.redis_uves[0].stop()
+        time.sleep(1)
         assert generator_obj.verify_vm_uve(vm_id='abcd',
                                            num_vm_ifs=5,
                                            msg_count=5)
@@ -2468,6 +2468,7 @@ class AnalyticsUveTest(testtools.TestCase, fixtures.TestWithFixtures):
 
         #Stopping other redis and verifying the vm uve
         vizd_obj.redis_uves[1].stop()
+        time.sleep(1)
         assert generator_obj.verify_vm_uve(vm_id='abcd',
                                            num_vm_ifs=5,
                                            msg_count=5)
