@@ -51,6 +51,11 @@ struct SDWANMetrics_dial {
       9: optional u64                     score
 }
 
+struct SDWANKPIMetrics_diff {
+      1: optional u64                     session_close_count
+      2: optional u64                     bps
+}
+
 struct SDWANMetrics_diff_P_ {
       1: optional SDWANMetrics_diff value (tags="")
       2: optional SDWANMetrics_diff staging
@@ -61,24 +66,45 @@ struct SDWANMetrics_dial_P_ {
       2: optional SDWANMetrics_dial staging
 }
 
+struct SDWANKPIMetrics_diff_P_ {
+      1: optional SDWANKPIMetrics_diff value (tags="")
+      2: optional SDWANKPIMetrics_diff staging
+}
+
 /*  UVE key -> TENANT::SITE::DEVICE_ID
 *   Eight maps:
 *     1. app_metrics_diff_sla
-*        TRAFFIC-TYPE(NESTED-APP:APP/APP-CATEGORY)::DEPARTMENT::SLA_PROFILE
+*        TRAFFIC-TYPE(NESTED-APP@<alias_code>:APP/APP-CATEGORY)::DEPARTMENT::SLA_PROFILE
+*         OR
+*        TRAFFIC-TYPE(NESTED-APP@DSCP-<dscp_value>:APP/APP-CATEGORY)::DEPARTMENT::SLA_PROFILE
 *     2. app_metrics_dial_sla
-*        TRAFFIC-TYPE(NESTED-APP:APP/APP-CATEGORY)::DEPARTMENT::SLA_PROFILE
+*        TRAFFIC-TYPE(NESTED-APP@<alias_code>:APP/APP-CATEGORY)::DEPARTMENT::SLA_PROFILE
+*         OR
+*        TRAFFIC-TYPE(NESTED-APP@DSCP-<dscp_value>:APP/APP-CATEGORY)::DEPARTMENT::SLA_PROFILE
 *     3. app_metrics_diff_link
-*        TRAFFIC-TYPE(NESTED-APP:APP/APP-CATEGORY)::DEPARTMENT::LINK
+*        TRAFFIC-TYPE(NESTED-APP@<alias_code>:APP/APP-CATEGORY)::DEPARTMENT::LINK + "@" + underlay
+*            + "@" + link_type + "@" + traffic_destination + "@" + metadata
+*         OR
+*        TRAFFIC-TYPE(NESTED-APP@DSCP-<dscp_value>:APP/APP-CATEGORY)::DEPARTMENT::LINK + "@" + underlay
+*            + "@" + link_type + "@" + traffic_destination + "@" + metadata
 *     4. app_metrics_dial_link
-*        TRAFFIC-TYPE(NESTED-APP:APP/APP-CATEGORY)::DEPARTMENT::LINK
+*        TRAFFIC-TYPE(NESTED-APP@<alias_code>:APP/APP-CATEGORY)::DEPARTMENT::LINK + "@" + underlay
+*            + "@" + link_type + "@" + traffic_destination + "@" + metadata
+*         OR
+*        TRAFFIC-TYPE(NESTED-APP@DSCP-<dscp_value>:APP/APP-CATEGORY)::DEPARTMENT::LINK + "@" + underlay
+*            + "@" + link_type + "@" + traffic_destination + "@" + metadata
 *     5. app_metrics_diff_user
-*        TRAFFIC-TYPE(NESTED-APP:APP/APP-CATEGORY)::DEPARTMENT::USER
+*        TRAFFIC-TYPE(NESTED-APP@<alias_code>:APP/APP-CATEGORY)::DEPARTMENT::USER
+*         OR
+*        TRAFFIC-TYPE(NESTED-APP@DSCP-<dscp_value>:APP/APP-CATEGORY)::DEPARTMENT::USER
 *     6. app_metrics_dial_user
-*        TRAFFIC-TYPE(NESTED-APP:APP/APP-CATEGORY)::DEPARTMENT::USER
+*        TRAFFIC-TYPE(NESTED-APP@<alias_code>:APP/APP-CATEGORY)::DEPARTMENT::USER
+*         OR
+*        TRAFFIC-TYPE(NESTED-APP@DSCP-<dscp_value>:APP/APP-CATEGORY)::DEPARTMENT::USER
 *     7. link_metrics_diff_traffic_type
-*        LINK::SLA_PROFILE::TRAFFIC_TYPE
+*        LINK + "@" + underlay + "@" + link_type + "@" + traffic_destination + "@" + metadata::SLA_PROFILE::TRAFFIC_TYPE
 *     8. link_metrics_dial_traffic_type
-*        LINK::SLA_PROFILE::TRAFFIC_TYPE
+*        LINK + "@" + underlay + "@" + link_type + "@" + traffic_destination + "@" + metadata::SLA_PROFILE::TRAFFIC_TYPE
 */
 
 struct SDWANMetricsRecord {
@@ -150,7 +176,7 @@ uve sandesh SDWANMetrics {
 /*  UVE key -> REGION::TENANT
 *   Two maps:
 *     1. tenant_metrics_diff_sla
-*         key is => SITE::SLA_PROFILE::TRAFFIC_TYPE
+*         key is => SITE::SLA_PROFILE::TRAFFIC_TYPE + "@" + traffic_destination + "@" + link_type
 *     2. tenant_metrics_dial_sla
 *         key is => SITE::SLA_PROFILE::TRAFFIC_TYPE
 */
@@ -176,4 +202,22 @@ struct SDWANTenantMetricsRecord {
 
 uve sandesh SDWANTenantMetrics {
      1: SDWANTenantMetricsRecord          data;
+}
+
+struct SDWANKPIMetricsRecord {
+    1: string                           name (key="ObjectCPETable")
+    2: optional bool                    deleted
+
+    /* kpi_metrics_diff_create_alarm  */
+    3: optional map<string, SDWANKPIMetrics_diff>      kpi_metrics_greater_diff (hidden="yes",metric="diff")
+    4: optional map<string, SDWANKPIMetrics_diff_P_>   kpi_metrics_greater_diff_create (mstats="2-kpi_metrics_greater_diff:DSSum:",tags=".__key")
+
+    /* kpi_metrics_diff_delete_alarm  */
+    5: optional map<string, SDWANKPIMetrics_diff>      kpi_metrics_lesser_diff (hidden="yes",metric="diff")
+    6: optional map<string, SDWANKPIMetrics_diff_P_>   kpi_metrics_lesser_diff_delete (mstats="15-kpi_metrics_lesser_diff:DSSum:",tags=".__key")
+
+}(period="60")
+
+uve sandesh SDWANKPIMetrics {
+    1: SDWANKPIMetricsRecord               data;
 }

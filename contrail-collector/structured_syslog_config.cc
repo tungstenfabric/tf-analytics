@@ -5,12 +5,17 @@
 
 #include <sstream>
 #include <boost/make_shared.hpp>
+#include <boost/asio.hpp>
 #include <analytics/analytics_types.h>
 #include "base/regex.h"
+#include "analytics_types.h"
 #include "structured_syslog_config.h"
 #include "options.h"
 #include <base/logging.h>
 #include <boost/bind.hpp>
+#include "rapidjson/document.h"
+#include "rapidjson/writer.h"
+#include "rapidjson/stringbuffer.h"
 
 using boost::regex_error;
 using contrail::regex;
@@ -27,11 +32,148 @@ StructuredSyslogConfig::StructuredSyslogConfig(ConfigClientCollector *config_cli
 StructuredSyslogConfig::~StructuredSyslogConfig() {
     hostname_records_.erase(hostname_records_.begin(),
                             hostname_records_.end());
+    tenant_records_.erase(tenant_records_.begin(),
+                            tenant_records_.end());
     application_records_.erase(application_records_.begin(),
                                application_records_.end());
     tenant_application_records_.erase(tenant_application_records_.begin(),
                                       tenant_application_records_.end());
+    networks_map_.erase(networks_map_.begin(), networks_map_.end());
 }
+
+
+/*  Return int 4 when IP belongs to protocol IPv4 or
+    Return int 6 when IP belongs to protocol IPv6, otherwise
+    Return int -1 if IP is not valid */
+int
+StructuredSyslogConfig::get_ip_version (const std::string ip) {
+    int version = -1;
+    try {
+        boost::asio::ip::address addr = boost::asio::ip::address::from_string(ip);
+        if (addr.is_v4())
+            version = 4;
+        else if (addr.is_v6())
+            version = 6;
+    }
+    catch (std::exception &e){
+        LOG(ERROR, "IP : "<< ip <<" found while checking IP protocol is invalid. ERROR: " << e.what());
+    }
+    return version;
+}
+
+uint32_t
+StructuredSyslogConfig::IPToUInt(std::string ip) {
+    int a, b, c, d;
+    uint32_t addr = 0;
+
+    if (sscanf(ip.c_str(), "%d.%d.%d.%d", &a, &b, &c, &d) != 4)
+        return 0;
+
+    addr = a << 24;
+    addr |= b << 16;
+    addr |= c << 8;
+    addr |= d;
+    return addr;
+}
+
+std::vector<std::string>
+StructuredSyslogConfig::split_into_vector(std::string  str, char delimiter) {
+    std::vector<std::string> list;
+    std::stringstream ss(str);
+    std::string s;
+    while(getline(ss, s, delimiter)){
+        list.push_back(s);
+    }
+    return list;
+}
+
+
+
+bool
+StructuredSyslogConfig::AddNetwork(const std::string& key, const std::string& network, const std::string& mask, const std::string& location)
+{
+    uint32_t network_addr = IPToUInt(network);
+    uint32_t mask_addr = IPToUInt(mask);
+
+    uint32_t net_lower = (network_addr & mask_addr);
+    uint32_t net_upper = (net_lower | (~mask_addr));
+
+    std::string id = location;
+    IPNetwork net(net_lower, net_upper, id);
+
+    IPNetworks_map::iterator it = networks_map_.find(key);
+    if (it  != networks_map_.end()) {
+        LOG(DEBUG, "VPN name found in Networks MAP while adding network. Appending to existing values of VPN key... ");
+        //sorted insertion into vector
+        it->second.insert(std::upper_bound(it->second.begin(), it->second.end(), net), net);
+        LOG(DEBUG, "IPNetwork with destination address " << network_addr << " added in networks_map with VPN key " << key);
+    } else {
+        LOG(DEBUG, "VPN name NOT found in Networks MAP while adding network. Creating a new entry in Networks MAP ...");
+        IPNetworks  new_network;
+        new_network.push_back(net);
+        networks_map_.insert(std::make_pair<std::string, IPNetworks>(key, new_network) );
+        LOG(DEBUG, "IPNetwork with destination address " << network_addr << " added in networks_map with VPN key " << key);
+    }
+    return true;
+}
+
+
+bool
+StructuredSyslogConfig::RefreshNetworksMap(const std::string location){
+
+    boost::mutex::scoped_lock lock(networks_map_refresh_mutex);
+    for(IPNetworks_map::iterator it = networks_map_.begin(); it != networks_map_.end(); it++){
+        std::vector<int> indexes_to_be_deleted;
+        for(IPNetworks::iterator i = it->second.begin(); i != it->second.end(); i++) {
+            if (location == i->id){
+                LOG(DEBUG, "Location " << i->id << " to be deleted from Networks MAP with VPN " << it->first );
+                indexes_to_be_deleted.push_back(i - it->second.begin());
+            }
+        }
+        for(std::vector<int>::reverse_iterator v = indexes_to_be_deleted.rbegin(); v != indexes_to_be_deleted.rend(); ++v) {
+            IPNetworks::iterator i = it->second.begin();
+            it->second.erase(*v + i);
+        }
+    }
+    LOG(INFO, "Networks MAP Refreshed!" );
+    return true;
+}
+
+std::string
+StructuredSyslogConfig::FindNetwork(std::string ip,  std::string key)
+{
+    uint32_t network_addr = IPToUInt(ip);
+    IPNetwork ip_network(network_addr, 0, ip);
+    std::string unknown_location;
+
+    IPNetworks_map::iterator it = networks_map_.find(key);
+    if (it  != networks_map_.end()) {
+        IPNetworks::iterator upper = std::upper_bound(it->second.begin(), it->second.end(), ip_network);
+
+        uint32_t idx = upper - it->second.begin();
+        if (idx <= it->second.size() && idx != 0){
+            IPNetwork found_network_obj = it->second[idx - 1];
+            if ((network_addr >= found_network_obj.address_begin)
+                && (network_addr <= found_network_obj.address_end)){
+
+                LOG(DEBUG, "Network found for " << ip << " from Tenant::VPN " <<  key <<
+                    " in Site : " << found_network_obj.id );
+                return found_network_obj.id;
+            }
+            else {
+                LOG(DEBUG,"Network address "<< ip <<" doesnt not belong to the found range " 
+                    << found_network_obj.address_begin << " - " << found_network_obj.address_end << " in Tenant::VPN " << key);
+            }
+        }
+        else{
+            LOG(DEBUG,"Network range not found for " << ip << " in Tenant::VPN " << key );
+        }
+    }
+    else {
+        LOG(DEBUG, "Tenant::VPN "<< key << " NOT found in Network MAP!");
+    }
+    return unknown_location;
+ }
 
 void
 StructuredSyslogConfig::HostnameRecordsHandler(const contrail_rapidjson::Document &jdoc,
@@ -40,6 +182,7 @@ StructuredSyslogConfig::HostnameRecordsHandler(const contrail_rapidjson::Documen
         const contrail_rapidjson::Value& hr = jdoc["structured_syslog_hostname_record"];
         std::string name, hostaddr, tenant, location, device, tags;
         std::map< std::string, std::string > linkmap;
+        bool location_exists = false;
 
         if (hr.HasMember("fq_name")) {
             const contrail_rapidjson::Value& fq_name = hr["fq_name"];
@@ -67,11 +210,47 @@ StructuredSyslogConfig::HostnameRecordsHandler(const contrail_rapidjson::Documen
             const contrail_rapidjson::Value& links_array = linkmap_fields["links"];
             assert(links_array.IsArray());
             for (contrail_rapidjson::SizeType i = 0; i < links_array.Size(); i++) {
-                linkmap.insert(std::make_pair(links_array[i]["overlay"]
-                    .GetString(), links_array[i]["underlay"].GetString()));
+                std::string underlay = links_array[i]["underlay"].GetString();
+                std::string link_type = links_array[i]["link_type"].GetString() ;
+                std::string traffic_destination = links_array[i]["traffic_destination"].GetString() ; 
+                std::string link_metadata = links_array[i]["metadata"].GetString() ;
+                std::string overlay_link_data = underlay + "@" + link_type + "@" + traffic_destination + "@" + link_metadata ;
+                linkmap.insert(std::make_pair<std::string,
+                std::string >(links_array[i]["overlay"].GetString(),
+                overlay_link_data));
                 LOG(DEBUG, "Adding HostnameRecord: " << name << " linkmap: "
                 << links_array[i]["overlay"].GetString() << " : "
-                << links_array[i]["underlay"].GetString());
+                << overlay_link_data);
+            }
+        }
+        if (hr.HasMember("structured_syslog_lan_segment_list")) {
+            const contrail_rapidjson::Value& LANSegmentList_fields = hr["structured_syslog_lan_segment_list"];
+            const contrail_rapidjson::Value& LANSegmentList_array = LANSegmentList_fields["LANSegmentList"];
+            assert(LANSegmentList_array.IsArray());
+            for (Chr_t::iterator it = hostname_records_.begin();it != hostname_records_.end(); it++){
+                    if (location == (it->second->location())) {
+                        LOG(DEBUG,"location already exists in hostname_records !!");
+                        location_exists = true;
+                        break;
+                    }
+            }
+            if (location_exists) {
+                LOG(DEBUG, "Refresh LAN MAP for location : "<<location);
+                RefreshNetworksMap(location);
+            }
+            for (contrail_rapidjson::SizeType i = 0; i < LANSegmentList_array.Size(); i++) {
+                std::string vpn = LANSegmentList_array[i]["vpn"].GetString();
+                std::string network_ranges = LANSegmentList_array[i]["network_ranges"].GetString();
+                LOG(DEBUG, "Adding networks map with VPN: " << LANSegmentList_array[i]["vpn"].GetString()
+                 << " LANSegmentList: " << LANSegmentList_array[i]["network_ranges"].GetString());
+
+                std::vector<std::string> network_range_list = split_into_vector(network_ranges,',');
+                for (std::vector<std::string>::iterator iter = network_range_list.begin();
+                    iter != network_range_list.end(); iter++){
+                    std::vector<std::string> ip_and_subnet = split_into_vector(*iter,'/');
+                    std::string network_key = tenant + "::" + vpn;
+                    AddNetwork (network_key, ip_and_subnet[0], ip_and_subnet[1], location);
+                }
             }
         }
         if (add_update) {
@@ -81,6 +260,10 @@ StructuredSyslogConfig::HostnameRecordsHandler(const contrail_rapidjson::Documen
         } else {
             Chr_t::iterator cit = hostname_records_.find(name);
             if (cit != hostname_records_.end()) {
+                LOG(DEBUG, "Erasing LAN MAP for location : "<< cit->second->location());
+                if (!cit->second->location().empty()){
+                   RefreshNetworksMap(location);
+                }
                 LOG(DEBUG, "Erasing HostnameRecord: " << cit->second->name());
                 hostname_records_.erase(cit);
             }
@@ -88,6 +271,69 @@ StructuredSyslogConfig::HostnameRecordsHandler(const contrail_rapidjson::Documen
         return;
     }
 }
+
+void
+StructuredSyslogConfig::TenantRecordsHandler(const contrail_rapidjson::Document &jdoc,
+                                               bool add_update) {
+    if (jdoc.IsObject() && jdoc.HasMember("structured_syslog_tenant_record")) {
+        const contrail_rapidjson::Value& hr = jdoc["structured_syslog_tenant_record"];
+        std::string name, tenantaddr, tenant, tags;
+        std::map< std::string, std::string > dscpmap_ipv4;
+        std::map< std::string, std::string > dscpmap_ipv6;
+
+        if (hr.HasMember("fq_name")) {
+            const contrail_rapidjson::Value& fq_name = hr["fq_name"];
+            contrail_rapidjson::SizeType sz = fq_name.Size();
+            name = fq_name[sz-1].GetString();
+            LOG(DEBUG, "NAME got from fq_name: " << name);
+        }
+        if (hr.HasMember("structured_syslog_tenantaddr")) {
+            tenantaddr = hr["structured_syslog_tenantaddr"].GetString();
+        }
+        if (hr.HasMember("structured_syslog_tenant")) {
+            tenant = hr["structured_syslog_tenant"].GetString();
+        }
+        if (hr.HasMember("structured_syslog_tenant_tags")) {
+            tags = hr["structured_syslog_tenant_tags"].GetString();
+        }
+        if (hr.HasMember("structured_syslog_dscpmap")) {
+            const contrail_rapidjson::Value& dscpmap_fields = hr["structured_syslog_dscpmap"];
+            const contrail_rapidjson::Value& dscpmapipv4_array = dscpmap_fields["dscpListIPv4"];
+            const contrail_rapidjson::Value& dscpmapipv6_array = dscpmap_fields["dscpListIPv6"];
+            assert(dscpmapipv6_array.IsArray());
+            assert(dscpmapipv4_array.IsArray());
+            for (contrail_rapidjson::SizeType i = 0; i < dscpmapipv4_array.Size(); i++) {
+                dscpmap_ipv4.insert(std::make_pair<std::string,
+                std::string >(dscpmapipv4_array[i]["dscp_value"].GetString(),
+                dscpmapipv4_array[i]["alias_code"].GetString()));
+                LOG(DEBUG, "Adding TenantRecord: " << name << " dscpmap ipv4: "
+                << dscpmapipv4_array[i]["dscp_value"].GetString() << " : "
+                << dscpmapipv4_array[i]["alias_code"].GetString());
+            }
+            for (contrail_rapidjson::SizeType i = 0; i < dscpmapipv6_array.Size(); i++) {
+                dscpmap_ipv6.insert(std::make_pair<std::string,
+                std::string >(dscpmapipv6_array[i]["dscp_value"].GetString(),
+                dscpmapipv6_array[i]["alias_code"].GetString()));
+                LOG(DEBUG, "Adding TenantRecord: " << name << " dscpmap ipv6: "
+                << dscpmapipv6_array[i]["dscp_value"].GetString() << " : "
+                << dscpmapipv6_array[i]["alias_code"].GetString());
+            }
+        }
+        if (add_update) {
+            LOG(DEBUG, "Adding TenantRecord: " << name);
+            AddTenantRecord(name, tenantaddr, tenant,
+                                tags, dscpmap_ipv4, dscpmap_ipv6);
+        } else {
+            Ctr_t::iterator cit = tenant_records_.find(name);
+            if (cit != tenant_records_.end()) {
+                LOG(DEBUG, "Erasing TenantRecord: " << cit->second->name());
+                tenant_records_.erase(cit);
+            }
+        }
+        return;
+    }
+}
+
 
 void
 StructuredSyslogConfig::ApplicationRecordsHandler(const contrail_rapidjson::Document &jdoc,
@@ -250,6 +496,7 @@ StructuredSyslogConfig::SlaProfileRecordsHandler(const contrail_rapidjson::Docum
 void
 StructuredSyslogConfig::ReceiveConfig(const contrail_rapidjson::Document &jdoc, bool add_change) {
     HostnameRecordsHandler(jdoc, add_change);
+    TenantRecordsHandler(jdoc, add_change);
     ApplicationRecordsHandler(jdoc, add_change);
     MessageConfigsHandler(jdoc, add_change);
     SlaProfileRecordsHandler(jdoc, add_change);
@@ -276,7 +523,33 @@ StructuredSyslogConfig::AddHostnameRecord(const std::string &name,
     } else {
         boost::shared_ptr<HostnameRecord> c(new HostnameRecord(
                     name, hostaddr, tenant, location, device, tags, linkmap));
-        hostname_records_.insert(std::make_pair(name, c));
+        hostname_records_.insert(std::make_pair<std::string,
+                boost::shared_ptr<HostnameRecord> >(name, c));
+    }
+}
+
+boost::shared_ptr<TenantRecord>
+StructuredSyslogConfig::GetTenantRecord(const std::string &name) {
+    Ctr_t::iterator it = tenant_records_.find(name);
+    if (it  != tenant_records_.end()) {
+        return it->second;
+    }
+    return boost::shared_ptr<TenantRecord>();
+}
+
+void
+StructuredSyslogConfig::AddTenantRecord(const std::string &name,
+        const std::string &tenantaddr, const std::string &tenant,
+        const std::string &tags, const std::map< std::string, std::string > &dscpmap_ipv4,
+        const std::map< std::string, std::string > &dscpmap_ipv6) {
+    Ctr_t::iterator it = tenant_records_.find(name);
+    if (it  != tenant_records_.end()) {
+        it->second->Refresh(name, tenantaddr, tenant, tags, dscpmap_ipv4, dscpmap_ipv6);
+    } else {
+        boost::shared_ptr<TenantRecord> c(new TenantRecord(
+                    name, tenantaddr, tenant, tags, dscpmap_ipv4, dscpmap_ipv6));
+        tenant_records_.insert(std::make_pair<std::string,
+                boost::shared_ptr<TenantRecord> >(name, c));
     }
 }
 
@@ -302,7 +575,8 @@ StructuredSyslogConfig::AddApplicationRecord(const std::string &name,
         boost::shared_ptr<ApplicationRecord> c(new ApplicationRecord(
                     name, app_category, app_subcategory, app_groups,
                     app_risk, app_service_tags));
-        application_records_.insert(std::make_pair(name, c));
+        application_records_.insert(std::make_pair<std::string,
+                boost::shared_ptr<ApplicationRecord> >(name, c));
     }
 }
 
@@ -328,7 +602,8 @@ StructuredSyslogConfig::AddTenantApplicationRecord(const std::string &name,
         boost::shared_ptr<TenantApplicationRecord> c(new TenantApplicationRecord(
                     name, tenant_app_category, tenant_app_subcategory,
                     tenant_app_groups, tenant_app_risk, tenant_app_service_tags));
-        tenant_application_records_.insert(std::make_pair(name, c));
+        tenant_application_records_.insert(std::make_pair<std::string,
+                boost::shared_ptr<TenantApplicationRecord> >(name, c));
     }
 }
 
@@ -350,7 +625,8 @@ StructuredSyslogConfig::AddSlaProfileRecord(const std::string &name,
     } else {
         boost::shared_ptr<SlaProfileRecord> c(new SlaProfileRecord(
                     name, sla_params));
-        sla_profile_records_.insert(std::make_pair(name, c));
+        sla_profile_records_.insert(std::make_pair<std::string,
+                boost::shared_ptr<SlaProfileRecord> >(name, c));
     }
 }
 
@@ -412,6 +688,7 @@ StructuredSyslogConfig::AddMessageConfig(const std::string &name,
         boost::shared_ptr<MessageConfig> c(new MessageConfig(
                     name, tags, ints, process_and_store, forward, process_before_forward, 
 		    process_and_summarize, process_and_summarize_user));
-        message_configs_.insert(std::make_pair(name, c));
+        message_configs_.insert(std::make_pair<std::string,
+                boost::shared_ptr<MessageConfig> >(name, c));
     }
 }
