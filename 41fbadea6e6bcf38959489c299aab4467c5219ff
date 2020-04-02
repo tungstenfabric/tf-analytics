@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "2ada6528_d245eac4",
+        "filename": "contrail-opserver/consistent_schdlr.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 9,
+      "author": {
+        "id": 750
+      },
+      "writtenOn": "2020-04-02T10:35:17Z",
+      "side": 1,
+      "message": "We don\u0027t need this try block. Anyway we have removed consistent_hash from setup.py",
+      "revId": "41fbadea6e6bcf38959489c299aab4467c5219ff",
+      "serverId": "c72cd27d-1743-4a55-84a4-cd13b8400c52",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "9fad1d62_56624761",
+        "filename": "contrail-opserver/consistent_schdlr.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 11,
+      "author": {
+        "id": 750
+      },
+      "writtenOn": "2020-04-02T10:35:17Z",
+      "side": 1,
+      "message": "Only this is sufficient. Isn\u0027t it?",
+      "revId": "41fbadea6e6bcf38959489c299aab4467c5219ff",
+      "serverId": "c72cd27d-1743-4a55-84a4-cd13b8400c52",
+      "unresolved": true
+    }
+  ]
+}
