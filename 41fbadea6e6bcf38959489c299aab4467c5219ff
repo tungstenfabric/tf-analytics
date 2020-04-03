@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "d62e9dbf_679390fe",
+        "filename": "contrail-opserver/consistent_schdlr.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 9,
+      "author": {
+        "id": 752
+      },
+      "writtenOn": "2020-04-03T06:22:31Z",
+      "side": 1,
+      "message": "This is done to avoid the cyclic dependency on https://review.opencontrail.org/c/Juniper/contrail-common/+/57815. It is mentioned in review description. It can be removed once https://review.opencontrail.org/c/Juniper/contrail-common/+/57815 gets merged.",
+      "parentUuid": "2ada6528_d245eac4",
+      "revId": "41fbadea6e6bcf38959489c299aab4467c5219ff",
+      "serverId": "c72cd27d-1743-4a55-84a4-cd13b8400c52",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "9fad1d62_56624761",
         "filename": "contrail-opserver/consistent_schdlr.py",
         "patchSetId": 1
@@ -33,6 +51,24 @@
       "revId": "41fbadea6e6bcf38959489c299aab4467c5219ff",
       "serverId": "c72cd27d-1743-4a55-84a4-cd13b8400c52",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "ad83ca05_739774fa",
+        "filename": "contrail-opserver/consistent_schdlr.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 11,
+      "author": {
+        "id": 752
+      },
+      "writtenOn": "2020-04-03T06:22:31Z",
+      "side": 1,
+      "message": "Same as above",
+      "parentUuid": "9fad1d62_56624761",
+      "revId": "41fbadea6e6bcf38959489c299aab4467c5219ff",
+      "serverId": "c72cd27d-1743-4a55-84a4-cd13b8400c52",
+      "unresolved": false
     }
   ]
 }
