@@ -1,0 +1,119 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "ff0bf07c_5f6be7e5",
+        "filename": "contrail-collector/test/utils/mockcassandra/mockcassandra/mockcassandra.py",
+        "patchSetId": 15
+      },
+      "lineNbr": 167,
+      "author": {
+        "id": 213
+      },
+      "writtenOn": "2020-04-13T08:33:31Z",
+      "side": 1,
+      "message": "we are making sure to copy cqlsh in /tmp?",
+      "range": {
+        "startLine": 166,
+        "startChar": 19,
+        "endLine": 167,
+        "endChar": 34
+      },
+      "revId": "1dccbf6e83e34c69476b378322433af8d998df94",
+      "serverId": "c72cd27d-1743-4a55-84a4-cd13b8400c52",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "3b5159a9_803c68d2",
+        "filename": "contrail-opserver/test-requirements.txt",
+        "patchSetId": 15
+      },
+      "lineNbr": 6,
+      "author": {
+        "id": 213
+      },
+      "writtenOn": "2020-04-13T08:33:31Z",
+      "side": 1,
+      "message": "can it be \u003e\u003d, in case python version changes to 3.7 or something?",
+      "range": {
+        "startLine": 6,
+        "startChar": 29,
+        "endLine": 6,
+        "endChar": 36
+      },
+      "revId": "1dccbf6e83e34c69476b378322433af8d998df94",
+      "serverId": "c72cd27d-1743-4a55-84a4-cd13b8400c52",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "f8830b0f_8ec1570d",
+        "filename": "contrail-opserver/test/test_alarm.py",
+        "patchSetId": 15
+      },
+      "lineNbr": 530,
+      "author": {
+        "id": 213
+      },
+      "writtenOn": "2020-04-13T08:33:31Z",
+      "side": 1,
+      "message": "are we commenting it for now?",
+      "range": {
+        "startLine": 530,
+        "startChar": 14,
+        "endLine": 530,
+        "endChar": 24
+      },
+      "revId": "1dccbf6e83e34c69476b378322433af8d998df94",
+      "serverId": "c72cd27d-1743-4a55-84a4-cd13b8400c52",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "2a7568a0_f2a773b4",
+        "filename": "contrail-opserver/test/test_alarm.py",
+        "patchSetId": 15
+      },
+      "lineNbr": 822,
+      "author": {
+        "id": 213
+      },
+      "writtenOn": "2020-04-13T08:33:31Z",
+      "side": 1,
+      "message": "please file a bug to re-enable them later",
+      "range": {
+        "startLine": 822,
+        "startChar": 11,
+        "endLine": 822,
+        "endChar": 20
+      },
+      "revId": "1dccbf6e83e34c69476b378322433af8d998df94",
+      "serverId": "c72cd27d-1743-4a55-84a4-cd13b8400c52",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "409995f0_3dd85860",
+        "filename": "contrail-opserver/test/test_alarmgen_config_handler.py",
+        "patchSetId": 15
+      },
+      "lineNbr": 723,
+      "author": {
+        "id": 213
+      },
+      "writtenOn": "2020-04-13T08:33:31Z",
+      "side": 1,
+      "message": "why is it commented?",
+      "range": {
+        "startLine": 721,
+        "startChar": 14,
+        "endLine": 723,
+        "endChar": 15
+      },
+      "revId": "1dccbf6e83e34c69476b378322433af8d998df94",
+      "serverId": "c72cd27d-1743-4a55-84a4-cd13b8400c52",
+      "unresolved": true
+    }
+  ]
+}
