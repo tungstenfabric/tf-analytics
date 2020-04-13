@@ -96,6 +96,30 @@
     },
     {
       "key": {
+        "uuid": "89d894d4_a54d322c",
+        "filename": "contrail-opserver/test-requirements.txt",
+        "patchSetId": 15
+      },
+      "lineNbr": 6,
+      "author": {
+        "id": 752
+      },
+      "writtenOn": "2020-04-13T18:35:53Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "453a7f04_248e174a",
+      "range": {
+        "startLine": 6,
+        "startChar": 29,
+        "endLine": 6,
+        "endChar": 36
+      },
+      "revId": "1dccbf6e83e34c69476b378322433af8d998df94",
+      "serverId": "c72cd27d-1743-4a55-84a4-cd13b8400c52",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "f8830b0f_8ec1570d",
         "filename": "contrail-opserver/test/test_alarm.py",
         "patchSetId": 15
@@ -234,6 +258,30 @@
       "revId": "1dccbf6e83e34c69476b378322433af8d998df94",
       "serverId": "c72cd27d-1743-4a55-84a4-cd13b8400c52",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "985b358f_630d9605",
+        "filename": "contrail-opserver/test/test_alarmgen_config_handler.py",
+        "patchSetId": 15
+      },
+      "lineNbr": 723,
+      "author": {
+        "id": 752
+      },
+      "writtenOn": "2020-04-13T18:35:53Z",
+      "side": 1,
+      "message": "This assert was happening specific to mock package used in python3. I\u0027ll get this corrected as part of https://contrail-jws.atlassian.net/browse/CEM-14350",
+      "parentUuid": "8de18a6b_d4bf2a0c",
+      "range": {
+        "startLine": 721,
+        "startChar": 14,
+        "endLine": 723,
+        "endChar": 15
+      },
+      "revId": "1dccbf6e83e34c69476b378322433af8d998df94",
+      "serverId": "c72cd27d-1743-4a55-84a4-cd13b8400c52",
+      "unresolved": false
     }
   ]
 }
