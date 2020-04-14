@@ -2651,6 +2651,8 @@ def setup_controller(argv):
     return Controller(config)
 
 def main(args=None):
+    a = b
+
     controller = setup_controller(args or ' '.join(sys.argv[1:]))
     gevent.hub.signal(signal.SIGTERM, controller.sigterm_handler)
     """ @sighup
