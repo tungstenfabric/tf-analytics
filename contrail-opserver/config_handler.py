@@ -10,7 +10,11 @@ import json
 import traceback
 
 from cfgm_common.vnc_amqp import VncAmqpHandle
-from cfgm_common.vnc_object_db import VncObjectDBClient
+try:
+    # due to different behaviour in 'UT'
+    from cfgm_common.vnc_object_db import VncObjectDBClient
+except ImportError:
+    pass
 from .analytics_logger import AnalyticsLogger
 
 
