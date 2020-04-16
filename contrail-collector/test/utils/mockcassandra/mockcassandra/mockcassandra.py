@@ -35,7 +35,7 @@ def start_cassandra(cport, sport_arg=None, cassandra_user=None, cassandra_passwo
     Arguments:
         cport : An unused TCP port for Cassandra to use as the client port
     '''
-    jdk_8_download = 'wget -P ' + cassandra_bdir + ' https://github.com/Juniper/contrail-third-party-cache/raw/master/openjdk-1.8.0/java-1.8.0-openjdk-amd64.tar.gz'
+    jdk_8_download = 'wget -P ' + cassandra_bdir + ' https://github.com/tungstenfabric/tf-third-party-cache/raw/master/openjdk-1.8.0/java-1.8.0-openjdk-amd64.tar.gz'
 
     jdk_url = cassandra_bdir + '/java-1.8.0-openjdk-amd64.tar.gz'
 
