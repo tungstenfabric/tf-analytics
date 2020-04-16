@@ -9,12 +9,24 @@ from flexmock import flexmock
 
 from opserver.flow import FlowQuerier
 from opserver.opserver_util import OpServerUtils
+from datetime import datetime
 
 test_num = 0
 query_dict = {}
 got_expected_log_str = False
+
+now_epoch = (datetime.now() - datetime(1970, 1, 1)).total_seconds()
 result_1 = [
-{u'vmi': u'default-domain:admin:caa07fcb-ae79-441b-bc90-fa735846f137', u'sg_rule_uuid': u'18be4115-48dd-4623-8b0e-113a1a65d527', u'agg-packets': 2024, u'dport': 0, u'UuidKey': u'60487e4e-ae33-4dbd-8105-052d831f36dd', u'vrouter': u'a6s10', u'direction_ing': 1, u'sport': 17409, u'destip': u'1.1.1.4', u'nw_ace_uuid': u'00000000-0000-0000-0000-000000000001', u'agg-bytes': 198352, u'other_vrouter_ip': u'10.84.13.10', u'teardown_time': None, u'action': u'pass', u'drop_reason': u'no_route', u'protocol': 1, u'setup_time': 1442595479379251, u'sourceip': u'1.1.1.3', u'vrouter_ip': u'10.84.13.10', u'destvn': u'default-domain:admin:vn1', u'sourcevn': u'default-domain:admin:vn1'}
+{u'vmi': u'default-domain:admin:caa07fcb-ae79-441b-bc90-fa735846f137',
+u'sg_rule_uuid': u'18be4115-48dd-4623-8b0e-113a1a65d527', u'agg-packets': 2024,
+u'dport': 0, u'UuidKey': u'60487e4e-ae33-4dbd-8105-052d831f36dd', u'vrouter':
+u'a6s10', u'direction_ing': 1, u'sport': 17409, u'destip': u'1.1.1.4',
+u'nw_ace_uuid': u'00000000-0000-0000-0000-000000000001', u'agg-bytes': 198352,
+u'other_vrouter_ip': u'10.84.13.10', u'teardown_time': None, u'action': u'pass',
+u'drop_reason': u'no_route', u'protocol': 1, u'setup_time': now_epoch,
+u'sourceip': u'1.1.1.3', u'vrouter_ip': u'10.84.13.10',
+u'destvn': u'default-domain:admin:vn1', u'sourcevn': u'default-domain:admin:vn1'
+}
 ]
 
 class FlowQuerierTest(unittest.TestCase):
