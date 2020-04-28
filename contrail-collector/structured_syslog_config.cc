@@ -111,7 +111,7 @@ StructuredSyslogConfig::AddNetwork(const std::string& key, const std::string& ne
         LOG(DEBUG, "VPN name NOT found in Networks MAP while adding network. Creating a new entry in Networks MAP ...");
         IPNetworks  new_network;
         new_network.push_back(net);
-        networks_map_.insert(std::make_pair<std::string, IPNetworks>(key, new_network) );
+        networks_map_.insert(std::make_pair(key, new_network) );
         LOG(DEBUG, "IPNetwork with destination address " << network_addr << " added in networks_map with VPN key " << key);
     }
     return true;
@@ -215,8 +215,7 @@ StructuredSyslogConfig::HostnameRecordsHandler(const contrail_rapidjson::Documen
                 std::string traffic_destination = links_array[i]["traffic_destination"].GetString() ; 
                 std::string link_metadata = links_array[i]["metadata"].GetString() ;
                 std::string overlay_link_data = underlay + "@" + link_type + "@" + traffic_destination + "@" + link_metadata ;
-                linkmap.insert(std::make_pair<std::string,
-                std::string >(links_array[i]["overlay"].GetString(),
+                linkmap.insert(std::make_pair(links_array[i]["overlay"].GetString(),
                 overlay_link_data));
                 LOG(DEBUG, "Adding HostnameRecord: " << name << " linkmap: "
                 << links_array[i]["overlay"].GetString() << " : "
@@ -523,8 +522,7 @@ StructuredSyslogConfig::AddHostnameRecord(const std::string &name,
     } else {
         boost::shared_ptr<HostnameRecord> c(new HostnameRecord(
                     name, hostaddr, tenant, location, device, tags, linkmap));
-        hostname_records_.insert(std::make_pair<std::string,
-                boost::shared_ptr<HostnameRecord> >(name, c));
+        hostname_records_.insert(std::make_pair(name, c));
     }
 }
 
@@ -548,8 +546,7 @@ StructuredSyslogConfig::AddTenantRecord(const std::string &name,
     } else {
         boost::shared_ptr<TenantRecord> c(new TenantRecord(
                     name, tenantaddr, tenant, tags, dscpmap_ipv4, dscpmap_ipv6));
-        tenant_records_.insert(std::make_pair<std::string,
-                boost::shared_ptr<TenantRecord> >(name, c));
+        tenant_records_.insert(std::make_pair(name, c));
     }
 }
 
@@ -575,8 +572,7 @@ StructuredSyslogConfig::AddApplicationRecord(const std::string &name,
         boost::shared_ptr<ApplicationRecord> c(new ApplicationRecord(
                     name, app_category, app_subcategory, app_groups,
                     app_risk, app_service_tags));
-        application_records_.insert(std::make_pair<std::string,
-                boost::shared_ptr<ApplicationRecord> >(name, c));
+        application_records_.insert(std::make_pair(name, c));
     }
 }
 
@@ -602,8 +598,7 @@ StructuredSyslogConfig::AddTenantApplicationRecord(const std::string &name,
         boost::shared_ptr<TenantApplicationRecord> c(new TenantApplicationRecord(
                     name, tenant_app_category, tenant_app_subcategory,
                     tenant_app_groups, tenant_app_risk, tenant_app_service_tags));
-        tenant_application_records_.insert(std::make_pair<std::string,
-                boost::shared_ptr<TenantApplicationRecord> >(name, c));
+        tenant_application_records_.insert(std::make_pair(name, c));
     }
 }
 
@@ -625,8 +620,7 @@ StructuredSyslogConfig::AddSlaProfileRecord(const std::string &name,
     } else {
         boost::shared_ptr<SlaProfileRecord> c(new SlaProfileRecord(
                     name, sla_params));
-        sla_profile_records_.insert(std::make_pair<std::string,
-                boost::shared_ptr<SlaProfileRecord> >(name, c));
+        sla_profile_records_.insert(std::make_pair(name, c));
     }
 }
 
@@ -688,7 +682,6 @@ StructuredSyslogConfig::AddMessageConfig(const std::string &name,
         boost::shared_ptr<MessageConfig> c(new MessageConfig(
                     name, tags, ints, process_and_store, forward, process_before_forward, 
 		    process_and_summarize, process_and_summarize_user));
-        message_configs_.insert(std::make_pair<std::string,
-                boost::shared_ptr<MessageConfig> >(name, c));
+        message_configs_.insert(std::make_pair(name, c));
     }
 }
