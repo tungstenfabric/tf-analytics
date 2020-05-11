@@ -1,0 +1,89 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "fbac5a61_a2cf5474",
+        "filename": "specs/analytics_alarm_wiki.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 21,
+      "author": {
+        "id": 752
+      },
+      "writtenOn": "2020-05-11T06:35:54Z",
+      "side": 1,
+      "message": "Remove whitespace at the end",
+      "revId": "55411a2beb22e69c56639b2ddf9d6b1585e8fec5",
+      "serverId": "c72cd27d-1743-4a55-84a4-cd13b8400c52",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "79e50740_c3503821",
+        "filename": "specs/analytics_alarm_wiki.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 23,
+      "author": {
+        "id": 752
+      },
+      "writtenOn": "2020-05-11T06:35:54Z",
+      "side": 1,
+      "message": "Remove whitespace at the end",
+      "revId": "55411a2beb22e69c56639b2ddf9d6b1585e8fec5",
+      "serverId": "c72cd27d-1743-4a55-84a4-cd13b8400c52",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "6e1c5a21_51aee55d",
+        "filename": "specs/analytics_alarm_wiki.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 39,
+      "author": {
+        "id": 752
+      },
+      "writtenOn": "2020-05-11T06:35:54Z",
+      "side": 1,
+      "message": "Section number is not correct. It should be 3.3 onwards.",
+      "revId": "55411a2beb22e69c56639b2ddf9d6b1585e8fec5",
+      "serverId": "c72cd27d-1743-4a55-84a4-cd13b8400c52",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "2269d580_3fff550f",
+        "filename": "specs/analytics_alarm_wiki.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 58,
+      "author": {
+        "id": 752
+      },
+      "writtenOn": "2020-05-11T06:35:54Z",
+      "side": 1,
+      "message": "Can you add an example, say - \"vrouter interface down alarm\" and collect all relevant good outputs at each point in the alarm generation flow. These outputs can be referenced later while debugging some other alarm related issue.",
+      "revId": "55411a2beb22e69c56639b2ddf9d6b1585e8fec5",
+      "serverId": "c72cd27d-1743-4a55-84a4-cd13b8400c52",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "c2553fb8_331f45ee",
+        "filename": "specs/analytics_alarm_wiki.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 62,
+      "author": {
+        "id": 752
+      },
+      "writtenOn": "2020-05-11T06:35:54Z",
+      "side": 1,
+      "message": "Remove whitespace at the end",
+      "revId": "55411a2beb22e69c56639b2ddf9d6b1585e8fec5",
+      "serverId": "c72cd27d-1743-4a55-84a4-cd13b8400c52",
+      "unresolved": true
+    }
+  ]
+}
