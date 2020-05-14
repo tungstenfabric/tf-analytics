@@ -93,17 +93,18 @@ class AnalyticsDiscovery(gevent.Greenlet):
         if (self._conn_state and self._conn_state != new_conn_state and
                 new_conn_state == ConnectionStatus.UP):
             msg = 'Connection to Zookeeper ESTABLISHED'
-            self._logger.error(msg)
+            self._logger.info(msg)
 
         self._conn_state = new_conn_state
     # end _sandesh_connection_info_update
 
     def _zk_listen(self, state):
-        self._logger.error("Analytics Discovery listen %s" % str(state))
+        self._logger.info("Analytics Discovery listen %s" % str(state))
         if state == KazooState.CONNECTED:
             self._sandesh_connection_info_update(status='UP',
                     message='Connection to Zookeeper re-established')
-            self._logger.error("Analytics Discovery to publish %s" % str(self._pubinfo))
+            self._logger.info("Analytics Discovery to publish %s" % 
+                    str(self._pubinfo))
             self._reconnect = True
         elif state == KazooState.LOST:
             self._logger.error("Analytics Discovery connection LOST")
@@ -120,7 +121,7 @@ class AnalyticsDiscovery(gevent.Greenlet):
                 message = 'Connection to zookeeper lost. Retrying')
 
     def _zk_datawatch(self, watcher, child, data, stat, event="unknown"):
-        self._logger.error(\
+        self._logger.info(\
                 "Analytics Discovery %s ChildData : child %s, data %s, event %s" % \
                 (watcher, child, data, event))
         if data:
@@ -133,7 +134,8 @@ class AnalyticsDiscovery(gevent.Greenlet):
             self._pendingcb.add(watcher)
 
     def _zk_watcher(self, watcher, children):
-        self._logger.error("Analytics Discovery Watcher %s Children %s" % (watcher, children))
+        self._logger.info("Analytics Discovery Watcher %s Children %s"
+                % (watcher, children))
         self._reconnect = True
 
     def __init__(self, logger, zkservers, svc_name, inst,
@@ -175,10 +177,12 @@ class AnalyticsDiscovery(gevent.Greenlet):
         self._pubinfo = pubinfo
         if self._conn_state == ConnectionStatus.UP:
             try:
-                self._logger.error("ensure %s" % (self._basepath + "/" + self._svc_name))
-                self._logger.error("zk state %s (%s)" % (self._zk.state, self._zk.client_state))
+                self._logger.info("ensure %s" % (self._basepath +
+                    "/" + self._svc_name))
+                self._logger.info("zk state %s (%s)"
+                        % (self._zk.state, self._zk.client_state))
                 self._zk.ensure_path(self._basepath + "/" + self._svc_name)
-                self._logger.error("check for %s/%s/%s" % \
+                self._logger.info("check for %s/%s/%s" % \
                                 (self._basepath, self._svc_name, self._inst))
                 if pubinfo is not None:
                     if isinstance(pubinfo, str):
@@ -195,7 +199,7 @@ class AnalyticsDiscovery(gevent.Greenlet):
                 else:
                     if self._zk.exists("%s/%s/%s" % \
                             (self._basepath, self._svc_name, self._inst)):
-                        self._logger.error("withdrawing published info!")
+                        self._logger.info("withdrawing published info!")
                         self._zk.delete("%s/%s/%s" % \
                                 (self._basepath, self._svc_name, self._inst))
 
@@ -208,12 +212,12 @@ class AnalyticsDiscovery(gevent.Greenlet):
                         message='Reconnect to Zookeeper to handle exception')
                 self._reconnect = True
         else:
-            self._logger.error("Analytics Discovery cannot publish while down")
+            self._logger.info("Analytics Discovery cannot publish while down")
         self._publock.release()
 
     def _run(self):
         while True:
-            self._logger.error("Analytics Discovery zk start")
+            self._logger.info("Analytics Discovery zk start")
             self._zk = KazooClient(hosts=self._zkservers, timeout=60.0)
             self._zk.add_listener(self._zk_listen)
             try:
@@ -269,7 +273,7 @@ class AnalyticsDiscovery(gevent.Greenlet):
 
                     # If a reconnect happens during processing, don't lose it
                     while self._reconnect:
-                        self._logger.error("Analytics Discovery %s reconnect" \
+                        self._logger.info("Analytics Discovery %s reconnect" \
                                 % self._svc_name)
                         self._reconnect = False
                         self._pendingcb = set()
@@ -301,7 +305,7 @@ class AnalyticsDiscovery(gevent.Greenlet):
                                 self._wchildren[wk][elem] = \
                                         OrderedDict(sorted(data_dict.items()))
 
-                                self._logger.error(\
+                                self._logger.info(\
                                     "Analytics Discovery %s ChildData : child %s, data %s, event %s" % \
                                     (wk, elem, self._wchildren[wk][elem], "GET"))
                             if self._data_watchers[wk]:
@@ -309,7 +313,7 @@ class AnalyticsDiscovery(gevent.Greenlet):
 
                     gevent.sleep(self._freq)
                 except gevent.GreenletExit:
-                    self._logger.error("Exiting AnalyticsDiscovery for %s" % \
+                    self._logger.info("Exiting AnalyticsDiscovery for %s" % \
                             self._svc_name)
                     self._zk.remove_listener(self._zk_listen)
                     gevent.sleep(1)
@@ -318,13 +322,13 @@ class AnalyticsDiscovery(gevent.Greenlet):
                     except:
                         self._logger.error("Stopping kazooclient failed")
                     else:
-                        self._logger.error("Stopping kazooclient successful")
+                        self._logger.info("Stopping kazooclient successful")
                     try:
                         self._zk.close()
                     except:
                         self._logger.error("Closing kazooclient failed")
                     else:
-                        self._logger.error("Closing kazooclient successful")
+                        self._logger.info("Closing kazooclient successful")
                     break
 
                 except Exception as ex:

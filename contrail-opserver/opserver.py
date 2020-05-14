@@ -2481,7 +2481,7 @@ class OpServer(object):
             objtab = None
             for t in self._VIRTUAL_TABLES:
               if t.schema.type == 'STAT':
-                self._logger.error("found stat table %s" % t)
+                self._logger.info("found stat table %s" % t)
                 stat_table = STAT_VT_PREFIX + "." + \
                     t.stat_type + "." + t.stat_attr
                 if (table == stat_table):
