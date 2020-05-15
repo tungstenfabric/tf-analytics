@@ -315,6 +315,248 @@ TEST_F(StructuredSyslogStatWalkerTest, BadStruct) {
 
 }
 
+TEST_F(StructuredSyslogStatWalkerTest, MessageLengthSplit_1) {
+    StatCbTester ct(PopulateTestMessageStatsInfo(true), true);
+    std::string test_structured_syslog;
+    std::string test_structured_syslog_rest_of_buffer;
+    std::ifstream test_structured_syslog_File;
+    test_structured_syslog_File.open(
+        "./src/contrail-analytics/contrail-collector/test/"
+        "test_StructSys_MsgLenSplit_1.txt");
+    std::getline (test_structured_syslog_File, test_structured_syslog);
+ 
+    std::ifstream test_structured_syslog_rest_of_buffer_File;
+    test_structured_syslog_rest_of_buffer_File.open(
+        "./src/contrail-analytics/contrail-collector/test/"
+        "test_StructSys_Buff_MsgLenSplit_1.txt");
+    std::getline (test_structured_syslog_rest_of_buffer_File, 
+        test_structured_syslog_rest_of_buffer);
+
+    test_structured_syslog_rest_of_buffer_File.close();
+    test_structured_syslog_File.close();
+
+    boost::system::error_code ec;
+    boost::shared_ptr<std::string> sess_buf;
+    sess_buf.reset(new std::string(""));
+    boost::asio::ip::address raddr(
+        boost::asio::ip::address::from_string("127.0.0.1", ec));
+    boost::asio::ip::udp::endpoint rep(raddr, 0);
+    const uint8_t* p =
+        reinterpret_cast<const uint8_t*>(test_structured_syslog.c_str());
+    const uint8_t* p_rest_of_buffer =
+        reinterpret_cast<const uint8_t*>
+        (test_structured_syslog_rest_of_buffer.c_str());
+    //boost::scoped_ptr<EventManager> evm_(new EventManager());
+    StructuredSyslogConfig *config_obj = new StructuredSyslogConfig(NULL);
+    bool r1 =
+        structured_syslog::impl::ProcessStructuredSyslog(p,
+        test_structured_syslog.length(),rep.address(),
+        boost::bind(&StatCbTester::Cb, &ct, _1, _2, _3, _4, _5), config_obj,
+        boost::shared_ptr<structured_syslog::StructuredSyslogForwarder>(),
+        sess_buf);
+    if (*sess_buf != "1") {
+        r1 = false;
+        LOG(ERROR, "Expected: 1, Error: \"incorrect value in session buffer\" ");
+    }
+    bool r2 = structured_syslog::impl::ProcessStructuredSyslog(p_rest_of_buffer,
+        test_structured_syslog_rest_of_buffer.length(), rep.address(),
+        boost::bind(&StatCbTester::Cb, &ct, _1, _2, _3, _4, _5), config_obj,
+        boost::shared_ptr<structured_syslog::StructuredSyslogForwarder>(),
+        sess_buf);
+    sess_buf->clear();
+    delete config_obj;
+    bool r = r1*r2;
+    ASSERT_TRUE(r);
+}
+
+
+
+
+
+TEST_F(StructuredSyslogStatWalkerTest, MessageLengthSplit_2) {
+    StatCbTester ct(PopulateTestMessageStatsInfo(true), true);
+    std::string test_structured_syslog;
+    std::string test_structured_syslog_rest_of_buffer;
+    std::ifstream test_structured_syslog_File;
+    test_structured_syslog_File.open(
+        "./src/contrail-analytics/contrail-collector/test/"
+        "test_StructSys_MsgLenSplit_2.txt");
+    std::getline (test_structured_syslog_File, test_structured_syslog);
+ 
+    std::ifstream test_structured_syslog_rest_of_buffer_File;
+    test_structured_syslog_rest_of_buffer_File.open(
+        "./src/contrail-analytics/contrail-collector/test/"
+        "test_StructSys_Buff_MsgLenSplit_2.txt");
+    std::getline (test_structured_syslog_rest_of_buffer_File, 
+        test_structured_syslog_rest_of_buffer);
+
+    test_structured_syslog_rest_of_buffer_File.close();
+    test_structured_syslog_File.close();
+    boost::system::error_code ec;
+    boost::shared_ptr<std::string> sess_buf;
+    sess_buf.reset(new std::string(""));
+    boost::asio::ip::address raddr(
+        boost::asio::ip::address::from_string("127.0.0.1", ec));
+    boost::asio::ip::udp::endpoint rep(raddr, 0);
+    const uint8_t* p = 
+        reinterpret_cast<const uint8_t*>(test_structured_syslog.c_str());
+    const uint8_t* p_rest_of_buffer = 
+        reinterpret_cast<const uint8_t*>(test_structured_syslog_rest_of_buffer.c_str());
+    //boost::scoped_ptr<EventManager> evm_(new EventManager());
+    StructuredSyslogConfig *config_obj = new StructuredSyslogConfig(NULL);
+    bool r1 = structured_syslog::impl::ProcessStructuredSyslog(p, 
+        test_structured_syslog.length(), rep.address(),
+        boost::bind(&StatCbTester::Cb, &ct, _1, _2, _3, _4, _5), config_obj,
+        boost::shared_ptr<structured_syslog::StructuredSyslogForwarder>(),
+        sess_buf);
+    if (*sess_buf != "10") {
+        r1 = false;
+        LOG(ERROR, "Expected: 10, Error: \"incorrect value in session buffer\" ");
+    }
+    bool r2 = structured_syslog::impl::ProcessStructuredSyslog(p_rest_of_buffer, 
+        test_structured_syslog_rest_of_buffer.length(), rep.address(),
+        boost::bind(&StatCbTester::Cb, &ct, _1, _2, _3, _4, _5), config_obj,
+        boost::shared_ptr<structured_syslog::StructuredSyslogForwarder>(),
+        sess_buf);
+    sess_buf->clear();
+    delete config_obj;
+    bool r = r1*r2;
+    ASSERT_TRUE(r);
+}
+
+
+
+TEST_F(StructuredSyslogStatWalkerTest, MessageLengthSplit_3) {
+    StatCbTester ct(PopulateTestMessageStatsInfo(true), true);
+    std::string test_structured_syslog;
+    std::string test_structured_syslog_rest_of_buffer;
+    std::ifstream test_structured_syslog_File;
+    test_structured_syslog_File.open(
+        "./src/contrail-analytics/contrail-collector/test/"
+        "test_StructSys_MsgLenSplit_3.txt");
+    std::getline (test_structured_syslog_File, test_structured_syslog);
+ 
+    std::ifstream test_structured_syslog_rest_of_buffer_File;
+    test_structured_syslog_rest_of_buffer_File.open(
+        "./src/contrail-analytics/contrail-collector/test/"
+        "test_StructSys_Buff_MsgLenSplit_3.txt");
+    std::getline (test_structured_syslog_rest_of_buffer_File, 
+        test_structured_syslog_rest_of_buffer);
+
+    test_structured_syslog_rest_of_buffer_File.close();
+    test_structured_syslog_File.close();
+    boost::system::error_code ec;
+    boost::shared_ptr<std::string> sess_buf;
+    sess_buf.reset(new std::string(""));
+    boost::asio::ip::address raddr(
+        boost::asio::ip::address::from_string("127.0.0.1", ec));
+    boost::asio::ip::udp::endpoint rep(raddr, 0);
+    const uint8_t* p =
+        reinterpret_cast<const uint8_t*>(test_structured_syslog.c_str());
+    const uint8_t* p_rest_of_buffer =
+        reinterpret_cast<const uint8_t*>(test_structured_syslog_rest_of_buffer.c_str());
+    //boost::scoped_ptr<EventManager> evm_(new EventManager());
+    StructuredSyslogConfig *config_obj = new StructuredSyslogConfig(NULL);
+    bool r1 = structured_syslog::impl::ProcessStructuredSyslog(p,
+        test_structured_syslog.length(), rep.address(),
+        boost::bind(&StatCbTester::Cb, &ct, _1, _2, _3, _4, _5), config_obj,
+        boost::shared_ptr<structured_syslog::StructuredSyslogForwarder>(),
+        sess_buf);
+    if (*sess_buf != "1011") {
+        r1 = false;
+        LOG(ERROR, "Expected: 1011, Error: \"incorrect value in session buffer\" ");
+    }
+    bool r2 = structured_syslog::impl::ProcessStructuredSyslog(p_rest_of_buffer,
+        test_structured_syslog_rest_of_buffer.length(), rep.address(),
+        boost::bind(&StatCbTester::Cb, &ct, _1, _2, _3, _4, _5), config_obj,
+        boost::shared_ptr<structured_syslog::StructuredSyslogForwarder>(),
+        sess_buf);
+    sess_buf->clear();
+    delete config_obj;
+    bool r = r1*r2;
+    ASSERT_TRUE(r);
+}
+
+
+TEST_F(StructuredSyslogStatWalkerTest, MessageLengthBad) {
+    StatCbTester ct(PopulateTestMessageStatsInfo(true), true);
+    std::string test_structured_syslog ;
+    std::string test_structured_syslog_rest_of_buffer ;
+    std::ifstream test_structured_syslog_File;
+    test_structured_syslog_File.open(
+        "./src/contrail-analytics/contrail-collector/test/"
+        "test_StructSys_MsgLenBad.txt");
+    std::getline (test_structured_syslog_File, test_structured_syslog);
+    std::ifstream test_structured_syslog_rest_of_buffer_File;
+    test_structured_syslog_rest_of_buffer_File.open(
+        "./src/contrail-analytics/contrail-collector/test/"
+        "test_StructSys_Buff_MsgLenBad.txt");
+    std::getline (test_structured_syslog_rest_of_buffer_File,
+        test_structured_syslog_rest_of_buffer);
+    test_structured_syslog_rest_of_buffer_File.close();
+    test_structured_syslog_File.close();
+
+    boost::system::error_code ec;
+    boost::shared_ptr<std::string> sess_buf;
+    sess_buf.reset(new std::string(""));
+    boost::asio::ip::address raddr(
+        boost::asio::ip::address::from_string("127.0.0.1", ec));
+    boost::asio::ip::udp::endpoint rep(raddr, 0);
+    const uint8_t* p =
+        reinterpret_cast<const uint8_t*>(test_structured_syslog.c_str());
+    const uint8_t* p_rest_of_buffer =
+        reinterpret_cast<const uint8_t*>(
+            test_structured_syslog_rest_of_buffer.c_str());
+    //boost::scoped_ptr<EventManager> evm_(new EventManager());
+    StructuredSyslogConfig *config_obj = new StructuredSyslogConfig(NULL);
+    bool r1 = structured_syslog::impl::ProcessStructuredSyslog(p, 
+        test_structured_syslog.length(), rep.address(),
+        boost::bind(&StatCbTester::Cb, &ct, _1, _2, _3, _4, _5), config_obj,
+        boost::shared_ptr<structured_syslog::StructuredSyslogForwarder>(),
+        sess_buf);
+    bool r2 = structured_syslog::impl::ProcessStructuredSyslog(p_rest_of_buffer,
+        test_structured_syslog_rest_of_buffer.length(), rep.address(),
+        boost::bind(&StatCbTester::Cb, &ct, _1, _2, _3, _4, _5), config_obj,
+        boost::shared_ptr<structured_syslog::StructuredSyslogForwarder>(),
+        sess_buf);
+    sess_buf->clear();
+    delete config_obj;
+    bool r = !(r1)*r2;
+    ASSERT_TRUE(r);
+}
+
+TEST_F(StructuredSyslogStatWalkerTest, SNMP_TRAPSyslog) {
+    StatCbTester ct(PopulateTestMessageStatsInfo(true), true);
+
+    std::string test_structured_syslog ;
+    std::string test_structured_syslog_rest_of_buffer ;
+    std::ifstream test_structured_syslog_File;
+    test_structured_syslog_File.open(
+        "./src/contrail-analytics/contrail-collector/test/test_StructSys_SNMP.txt");
+    std::getline (test_structured_syslog_File, test_structured_syslog); 
+    test_structured_syslog_File.close();
+
+    boost::system::error_code ec;
+    boost::shared_ptr<std::string> sess_buf;
+    sess_buf.reset(new std::string(""));
+    boost::asio::ip::address raddr(
+        boost::asio::ip::address::from_string("127.0.0.1", ec));
+    boost::asio::ip::udp::endpoint rep(raddr, 0);
+    const uint8_t* p =
+        reinterpret_cast<const uint8_t*>(test_structured_syslog.c_str());
+    //boost::scoped_ptr<EventManager> evm_(new EventManager());
+    StructuredSyslogConfig *config_obj = new StructuredSyslogConfig(NULL);
+    bool r = structured_syslog::impl::ProcessStructuredSyslog(p,
+        test_structured_syslog.length(), rep.address(),
+        boost::bind(&StatCbTester::Cb, &ct, _1, _2, _3, _4, _5), config_obj,
+        boost::shared_ptr<structured_syslog::StructuredSyslogForwarder>(),
+        sess_buf);
+    sess_buf->clear();
+    delete config_obj;
+    ASSERT_TRUE(r);
+
+}
+
 }
 
 int main(int argc, char **argv) {
