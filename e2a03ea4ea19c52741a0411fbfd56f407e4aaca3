@@ -36,6 +36,24 @@
     },
     {
       "key": {
+        "uuid": "0e3321f9_f95b557e",
+        "filename": "specs/Cassandra_debugging.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 752
+      },
+      "writtenOn": "2020-05-15T08:03:14Z",
+      "side": 1,
+      "message": "Edit - This wiki is only for OOM issue, is that correct ? These commands may not help to resolve  all cassandra issues",
+      "parentUuid": "bd277195_fa0d4e00",
+      "revId": "e2a03ea4ea19c52741a0411fbfd56f407e4aaca3",
+      "serverId": "c72cd27d-1743-4a55-84a4-cd13b8400c52",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "f04bdd82_24d1c2a4",
         "filename": "specs/Cassandra_debugging.md",
         "patchSetId": 1
