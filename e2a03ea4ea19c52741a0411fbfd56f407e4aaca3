@@ -1,0 +1,140 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "aceda6ce_e6701dcf",
+        "filename": "specs/Cassandra_debugging.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 752
+      },
+      "writtenOn": "2020-05-15T07:02:57Z",
+      "side": 1,
+      "message": "Change this title and filename to Cassandra OOM debugging",
+      "revId": "e2a03ea4ea19c52741a0411fbfd56f407e4aaca3",
+      "serverId": "c72cd27d-1743-4a55-84a4-cd13b8400c52",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "bd277195_fa0d4e00",
+        "filename": "specs/Cassandra_debugging.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 752
+      },
+      "writtenOn": "2020-05-15T07:02:57Z",
+      "side": 1,
+      "message": "This wiki is only for OOM issue, is that correct ? These commands may not help to resolve any cassandra isue.",
+      "revId": "e2a03ea4ea19c52741a0411fbfd56f407e4aaca3",
+      "serverId": "c72cd27d-1743-4a55-84a4-cd13b8400c52",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "f04bdd82_24d1c2a4",
+        "filename": "specs/Cassandra_debugging.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 15,
+      "author": {
+        "id": 752
+      },
+      "writtenOn": "2020-05-15T07:02:57Z",
+      "side": 1,
+      "message": "Can add a section for possible causes before proposing solutions.",
+      "revId": "e2a03ea4ea19c52741a0411fbfd56f407e4aaca3",
+      "serverId": "c72cd27d-1743-4a55-84a4-cd13b8400c52",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "303160d3_79f37f24",
+        "filename": "specs/Cassandra_debugging.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 23,
+      "author": {
+        "id": 752
+      },
+      "writtenOn": "2020-05-15T07:02:57Z",
+      "side": 1,
+      "message": "Can you move this to a different section, say \"Commands and Logs\" ? These are just of list of commands and not solution per se.\nAlso, please include some good outputs of these commands, so that they can be compared against a non-working setup.",
+      "revId": "e2a03ea4ea19c52741a0411fbfd56f407e4aaca3",
+      "serverId": "c72cd27d-1743-4a55-84a4-cd13b8400c52",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "e6cf263b_fc57093f",
+        "filename": "specs/Cassandra_debugging.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 68,
+      "author": {
+        "id": 752
+      },
+      "writtenOn": "2020-05-15T07:02:57Z",
+      "side": 1,
+      "message": "Same of this section",
+      "revId": "e2a03ea4ea19c52741a0411fbfd56f407e4aaca3",
+      "serverId": "c72cd27d-1743-4a55-84a4-cd13b8400c52",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "a4299351_ef1cdfa1",
+        "filename": "specs/Cassandra_debugging.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 70,
+      "author": {
+        "id": 752
+      },
+      "writtenOn": "2020-05-15T07:02:57Z",
+      "side": 1,
+      "message": "typo.  it should be cassandra and not alarmgen.",
+      "revId": "e2a03ea4ea19c52741a0411fbfd56f407e4aaca3",
+      "serverId": "c72cd27d-1743-4a55-84a4-cd13b8400c52",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "ac00ffe2_46b7193c",
+        "filename": "specs/Cassandra_debugging.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 76,
+      "author": {
+        "id": 752
+      },
+      "writtenOn": "2020-05-15T07:02:57Z",
+      "side": 1,
+      "message": "Please mention that gc.log.current file need to checked",
+      "revId": "e2a03ea4ea19c52741a0411fbfd56f407e4aaca3",
+      "serverId": "c72cd27d-1743-4a55-84a4-cd13b8400c52",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "2c6e055c_d9fcb4f1",
+        "filename": "specs/Cassandra_debugging.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 78,
+      "author": {
+        "id": 752
+      },
+      "writtenOn": "2020-05-15T07:02:57Z",
+      "side": 1,
+      "message": "Add example for both CMS and G1 GC logs",
+      "revId": "e2a03ea4ea19c52741a0411fbfd56f407e4aaca3",
+      "serverId": "c72cd27d-1743-4a55-84a4-cd13b8400c52",
+      "unresolved": true
+    }
+  ]
+}
