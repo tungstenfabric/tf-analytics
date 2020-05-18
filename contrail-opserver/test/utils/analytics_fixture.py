@@ -1068,7 +1068,7 @@ class AnalyticsFixture(fixtures.Fixture):
             assert(len(res) > 0)
             return True
 
-    @retry(delay=1, tries=30)
+    @retry(delay=1, tries=60)
     def verify_generator_list(self, collectors, exp_genlist):
         actual_genlist = []
         for collector in collectors:
@@ -3115,7 +3115,9 @@ class AnalyticsFixture(fixtures.Fixture):
         else:
             self.logger.info('Expected generator list: %s' % str(exp_gen_list))
             self.logger.info('Actual generator list: %s' % str(gen_list))
-            return gen_list == set(exp_gen_list)
+            gen_list_new=[x.decode('utf-8') for x in gen_list]
+            self.logger.info('Changed Actual generator list: %s' % str(gen_list_new))
+            return set(gen_list_new) == set(exp_gen_list)
     # end verify_generator_list_in_redis
 
     def delete_generator_from_ngenerator(self, redis_uve, generator):
