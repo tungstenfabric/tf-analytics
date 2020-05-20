@@ -24,7 +24,7 @@ import nodemgr.common.event_manager
 import nodemgr.control_nodemgr.event_manager
 from pysandesh.connection_info import ConnectionState
 import nodemgr.common.utils
-from nodemgr.common.docker_process_manager import DockerProcessInfoManager
+from nodemgr.common.container_process_manager import ContainerProcessInfoManager
 
 logging.basicConfig(level=logging.INFO,
                     format='%(asctime)s %(levelname)s %(message)s')
@@ -64,8 +64,8 @@ class NodemgrTest(unittest.TestCase):
     @mock.patch('nodemgr.control_nodemgr.event_manager.ControlEventManager.send_process_state_db')
     @mock.patch('pysandesh.connection_info.ConnectionState.get_conn_state_cb')
     @mock.patch('nodemgr.common.utils.is_running_in_kubepod')
-    @mock.patch('nodemgr.common.docker_process_manager.DockerProcessInfoManager')
-    @mock.patch('nodemgr.common.docker_process_manager.DockerProcessInfoManager.get_all_processes')
+    @mock.patch('nodemgr.common.container_process_manager.ContainerProcessInfoManager')
+    @mock.patch('nodemgr.common.container_process_manager.ContainerProcessInfoManager.get_all_processes')
     @mock.patch('nodemgr.common.linux_sys_data.LinuxSysData.get_corefiles')
     def test_nodemgr(self, mock_get_core_files, mock_get_all_process, mock_docker_process_info_mgr, mock_is_running_in_kubepod, mock_get_conn_state_cb,
         mock_send_process_state_db, mock_open, mock_remove, mock_glob, mock_tm_time):
@@ -74,7 +74,7 @@ class NodemgrTest(unittest.TestCase):
         headers['pid']='123'
         config_obj = config()
         mock_is_running_in_kubepod.return_value = True
-        mock_docker_process_info_mgr.return_value = DockerProcessInfoManager('','','','')
+        mock_docker_process_info_mgr.return_value = ContainerProcessInfoManager('','','','', None)
         list_of_process = []
         process_info = {}
         process_info['pid'] = '123'
