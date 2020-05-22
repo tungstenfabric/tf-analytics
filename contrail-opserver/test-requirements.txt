@@ -20,11 +20,11 @@ amqp==2.5.2; python_version >= '3.6'
 kombu==3.0.9; python_version == '2.7'
 kombu==4.6.8; python_version >= '3.6'
 docker==4.2.0
-../../../src/contrail-analytics/contrail-collector/test/utils/mockredis
-../../../src/contrail-analytics/contrail-collector/test/utils/mockstunnel
-../../../src/contrail-analytics/contrail-collector/test/utils/mockcassandra
-../../../src/contrail-analytics/contrail-collector/test/utils/mockkafka
-../../../controller/src/config/test/utils/mockzoo
+utils/mockredis
+utils/mockstunnel
+utils/mockcassandra
+utils/mockkafka
+utils/mockzoo
 ../opserver
 ../sandesh/common/dist/sandesh-common-0.1dev.tar.gz
 ../tools/sandesh/library/python/dist/sandesh-0.1dev.tar.gz

@@ -176,6 +176,19 @@ for file in test_sources:
     test_sources_rules.append(
        OpEnv.Install(Dir('.'), "#src/contrail-analytics/contrail-opserver/" + file))
 
+util_sources = [
+    '../contrail-collector/test/utils/mockkafka',
+    '../contrail-collector/test/utils/mockredis',
+    '../contrail-collector/test/utils/mockstunnel',
+    '../contrail-collector/test/utils/mockcassandra',
+    '../../../controller/src/config/test/utils/mockzoo',
+]
+utils_mkdir = OpEnv.Command("util_sources", [], Mkdir('utils'))
+for util in util_sources:
+    rule = OpEnv.Install(Dir('utils'), "#src/contrail-analytics/contrail-opserver/" + util)
+    OpEnv.Depends(rule, utils_mkdir)
+    test_sources_rules.append(rule)
+
 sdist_depends.extend(test_sources_rules)
 OpEnv.Depends(sdist_gen, sdist_depends)
 
