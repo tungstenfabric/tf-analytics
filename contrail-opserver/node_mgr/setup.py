@@ -16,7 +16,6 @@ setup(
     long_description="Analytics Node Manager Implementation",
     install_requires=[
         'gevent',
-        'geventhttpclient',
         'psutil>=0.6.0,!=5.5.0,!=5.5.1'
     ]
 )
