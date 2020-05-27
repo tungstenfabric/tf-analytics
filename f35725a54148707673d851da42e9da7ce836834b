@@ -1,0 +1,142 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "9e65e00f_703fb3ef",
+        "filename": "contrail-collector/structured_syslog_server.cc",
+        "patchSetId": 2
+      },
+      "lineNbr": 1490,
+      "author": {
+        "id": 213
+      },
+      "writtenOn": "2020-05-27T06:22:08Z",
+      "side": 1,
+      "message": "there is no wrapping after 80 chars?",
+      "range": {
+        "startLine": 1489,
+        "startChar": 5,
+        "endLine": 1490,
+        "endChar": 6
+      },
+      "revId": "f35725a54148707673d851da42e9da7ce836834b",
+      "serverId": "c72cd27d-1743-4a55-84a4-cd13b8400c52",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "b6506ba6_e094af1b",
+        "filename": "contrail-collector/structured_syslog_server.cc",
+        "patchSetId": 2
+      },
+      "lineNbr": 1550,
+      "author": {
+        "id": 213
+      },
+      "writtenOn": "2020-05-27T06:22:08Z",
+      "side": 1,
+      "message": "Nit: indentation is off, it should be 4 spaces",
+      "range": {
+        "startLine": 1550,
+        "startChar": 5,
+        "endLine": 1550,
+        "endChar": 9
+      },
+      "revId": "f35725a54148707673d851da42e9da7ce836834b",
+      "serverId": "c72cd27d-1743-4a55-84a4-cd13b8400c52",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "3deaefd4_266caf86",
+        "filename": "contrail-collector/structured_syslog_server.cc",
+        "patchSetId": 2
+      },
+      "lineNbr": 1588,
+      "author": {
+        "id": 213
+      },
+      "writtenOn": "2020-05-27T06:22:08Z",
+      "side": 1,
+      "message": "please wrap after 80 chars",
+      "range": {
+        "startLine": 1587,
+        "startChar": 27,
+        "endLine": 1588,
+        "endChar": 27
+      },
+      "revId": "f35725a54148707673d851da42e9da7ce836834b",
+      "serverId": "c72cd27d-1743-4a55-84a4-cd13b8400c52",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "de8acb5d_1fb0b781",
+        "filename": "contrail-collector/test/structured_syslog_test.cc",
+        "patchSetId": 2
+      },
+      "lineNbr": 320,
+      "author": {
+        "id": 213
+      },
+      "writtenOn": "2020-05-27T06:22:08Z",
+      "side": 1,
+      "message": "can we not read it from a file instead? this is not readable at all.",
+      "range": {
+        "startLine": 320,
+        "startChar": 419,
+        "endLine": 320,
+        "endChar": 720
+      },
+      "revId": "f35725a54148707673d851da42e9da7ce836834b",
+      "serverId": "c72cd27d-1743-4a55-84a4-cd13b8400c52",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "2e32517d_82d22230",
+        "filename": "contrail-collector/test/structured_syslog_test.cc",
+        "patchSetId": 2
+      },
+      "lineNbr": 330,
+      "author": {
+        "id": 213
+      },
+      "writtenOn": "2020-05-27T06:22:08Z",
+      "side": 1,
+      "message": "where is this being used?",
+      "range": {
+        "startLine": 330,
+        "startChar": 26,
+        "endLine": 330,
+        "endChar": 46
+      },
+      "revId": "f35725a54148707673d851da42e9da7ce836834b",
+      "serverId": "c72cd27d-1743-4a55-84a4-cd13b8400c52",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "28a44bbc_87c30277",
+        "filename": "contrail-collector/test/structured_syslog_test.cc",
+        "patchSetId": 2
+      },
+      "lineNbr": 334,
+      "author": {
+        "id": 213
+      },
+      "writtenOn": "2020-05-27T06:22:08Z",
+      "side": 1,
+      "message": "Nit: please wrap after 80 chars",
+      "range": {
+        "startLine": 329,
+        "startChar": 27,
+        "endLine": 334,
+        "endChar": 28
+      },
+      "revId": "f35725a54148707673d851da42e9da7ce836834b",
+      "serverId": "c72cd27d-1743-4a55-84a4-cd13b8400c52",
+      "unresolved": true
+    }
+  ]
+}
