@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "3babe545_b3850fb9",
+        "filename": "contrail-collector/structured_syslog_server.cc",
+        "patchSetId": 2
+      },
+      "lineNbr": 1490,
+      "author": {
+        "id": 494
+      },
+      "writtenOn": "2020-05-27T11:26:36Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "9e65e00f_703fb3ef",
+      "range": {
+        "startLine": 1489,
+        "startChar": 5,
+        "endLine": 1490,
+        "endChar": 6
+      },
+      "revId": "f35725a54148707673d851da42e9da7ce836834b",
+      "serverId": "c72cd27d-1743-4a55-84a4-cd13b8400c52",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "b6506ba6_e094af1b",
         "filename": "contrail-collector/structured_syslog_server.cc",
         "patchSetId": 2
@@ -45,6 +69,30 @@
       "revId": "f35725a54148707673d851da42e9da7ce836834b",
       "serverId": "c72cd27d-1743-4a55-84a4-cd13b8400c52",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "b451c73d_f6cd1668",
+        "filename": "contrail-collector/structured_syslog_server.cc",
+        "patchSetId": 2
+      },
+      "lineNbr": 1550,
+      "author": {
+        "id": 494
+      },
+      "writtenOn": "2020-05-27T11:26:36Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "b6506ba6_e094af1b",
+      "range": {
+        "startLine": 1550,
+        "startChar": 5,
+        "endLine": 1550,
+        "endChar": 9
+      },
+      "revId": "f35725a54148707673d851da42e9da7ce836834b",
+      "serverId": "c72cd27d-1743-4a55-84a4-cd13b8400c52",
+      "unresolved": false
     },
     {
       "key": {
@@ -71,6 +119,30 @@
     },
     {
       "key": {
+        "uuid": "7b9a91d4_b6550e17",
+        "filename": "contrail-collector/structured_syslog_server.cc",
+        "patchSetId": 2
+      },
+      "lineNbr": 1588,
+      "author": {
+        "id": 494
+      },
+      "writtenOn": "2020-05-27T11:26:36Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "3deaefd4_266caf86",
+      "range": {
+        "startLine": 1587,
+        "startChar": 27,
+        "endLine": 1588,
+        "endChar": 27
+      },
+      "revId": "f35725a54148707673d851da42e9da7ce836834b",
+      "serverId": "c72cd27d-1743-4a55-84a4-cd13b8400c52",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "de8acb5d_1fb0b781",
         "filename": "contrail-collector/test/structured_syslog_test.cc",
         "patchSetId": 2
@@ -91,6 +163,30 @@
       "revId": "f35725a54148707673d851da42e9da7ce836834b",
       "serverId": "c72cd27d-1743-4a55-84a4-cd13b8400c52",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "6d473e79_ec8503bf",
+        "filename": "contrail-collector/test/structured_syslog_test.cc",
+        "patchSetId": 2
+      },
+      "lineNbr": 320,
+      "author": {
+        "id": 494
+      },
+      "writtenOn": "2020-05-27T11:26:36Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "de8acb5d_1fb0b781",
+      "range": {
+        "startLine": 320,
+        "startChar": 419,
+        "endLine": 320,
+        "endChar": 720
+      },
+      "revId": "f35725a54148707673d851da42e9da7ce836834b",
+      "serverId": "c72cd27d-1743-4a55-84a4-cd13b8400c52",
+      "unresolved": false
     },
     {
       "key": {
@@ -117,6 +213,30 @@
     },
     {
       "key": {
+        "uuid": "a46f38d0_fa47919b",
+        "filename": "contrail-collector/test/structured_syslog_test.cc",
+        "patchSetId": 2
+      },
+      "lineNbr": 330,
+      "author": {
+        "id": 494
+      },
+      "writtenOn": "2020-05-27T11:26:36Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "2e32517d_82d22230",
+      "range": {
+        "startLine": 330,
+        "startChar": 26,
+        "endLine": 330,
+        "endChar": 46
+      },
+      "revId": "f35725a54148707673d851da42e9da7ce836834b",
+      "serverId": "c72cd27d-1743-4a55-84a4-cd13b8400c52",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "28a44bbc_87c30277",
         "filename": "contrail-collector/test/structured_syslog_test.cc",
         "patchSetId": 2
@@ -137,6 +257,30 @@
       "revId": "f35725a54148707673d851da42e9da7ce836834b",
       "serverId": "c72cd27d-1743-4a55-84a4-cd13b8400c52",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "838b7a46_eb9fcc61",
+        "filename": "contrail-collector/test/structured_syslog_test.cc",
+        "patchSetId": 2
+      },
+      "lineNbr": 334,
+      "author": {
+        "id": 494
+      },
+      "writtenOn": "2020-05-27T11:26:36Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "28a44bbc_87c30277",
+      "range": {
+        "startLine": 329,
+        "startChar": 27,
+        "endLine": 334,
+        "endChar": 28
+      },
+      "revId": "f35725a54148707673d851da42e9da7ce836834b",
+      "serverId": "c72cd27d-1743-4a55-84a4-cd13b8400c52",
+      "unresolved": false
     }
   ]
 }
