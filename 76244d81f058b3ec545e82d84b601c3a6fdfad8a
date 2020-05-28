@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "704596a2_8422287e",
+        "filename": "contrail-collector/structured_syslog_server.cc",
+        "patchSetId": 6
+      },
+      "lineNbr": 1607,
+      "author": {
+        "id": 213
+      },
+      "writtenOn": "2020-05-28T05:20:00Z",
+      "side": 1,
+      "message": "Nit: indentation is still off!",
+      "range": {
+        "startLine": 1602,
+        "startChar": 8,
+        "endLine": 1607,
+        "endChar": 17
+      },
+      "revId": "76244d81f058b3ec545e82d84b601c3a6fdfad8a",
+      "serverId": "c72cd27d-1743-4a55-84a4-cd13b8400c52",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "df67fdb9_226edc4a",
+        "filename": "contrail-collector/test/structured_syslog_test.cc",
+        "patchSetId": 6
+      },
+      "lineNbr": 481,
+      "author": {
+        "id": 213
+      },
+      "writtenOn": "2020-05-28T05:20:00Z",
+      "side": 1,
+      "message": "Nit: these are your files so you can give smaller names?",
+      "range": {
+        "startLine": 481,
+        "startChar": 60,
+        "endLine": 481,
+        "endChar": 72
+      },
+      "revId": "76244d81f058b3ec545e82d84b601c3a6fdfad8a",
+      "serverId": "c72cd27d-1743-4a55-84a4-cd13b8400c52",
+      "unresolved": true
+    }
+  ]
+}
