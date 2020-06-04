@@ -156,7 +156,7 @@ class ContrailGeventServer(bottle.GeventServer):
                                 ca_certs=self._args.analytics_api_ssl_ca_cert,
                                 keyfile=self._args.analytics_api_ssl_keyfile,
                                 certfile=self._args.analytics_api_ssl_certfile,
-                                ssl_version=ssl.PROTOCOL_SSLv23)
+                                ssl_version=ssl.PROTOCOL_TLSv1_2)
             else:
                 self.srv = wsgi.WSGIServer(self._socket, handler, backlog=None,
                                 log = self._std_log,
@@ -164,7 +164,7 @@ class ContrailGeventServer(bottle.GeventServer):
                                 keyfile=self._args.analytics_api_ssl_keyfile,
                                 certfile=self._args.analytics_api_ssl_certfile,
                                 cert_reqs=ssl.CERT_REQUIRED,
-                                ssl_version=ssl.PROTOCOL_SSLv23)
+                                ssl_version=ssl.PROTOCOL_TLSv1_2)
         else:
             self.srv = wsgi.WSGIServer(self._socket, handler, backlog=None,
                             log = self._std_log)
