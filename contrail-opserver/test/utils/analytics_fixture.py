@@ -3618,3 +3618,17 @@ class AnalyticsFixture(fixtures.Fixture):
             return True
     # end verify_analytics_api_info_uve
 
+    def verify_analytics_tls_version_negotiation(self, method, server_ssl_params):
+        result = ""
+        url = "https://127.0.0.1:{}/analytics/uves".format(self.opserver.rest_api_port)
+        try:
+            result = subprocess.check_output(["curl", method, "-vk", "--cert-type", "pem",
+                "--key", server_ssl_params['keyfile'], "--cert", server_ssl_params['certfile'],
+                "--cacert", server_ssl_params['ca_cert'], url])
+        except Exception as err:
+            return False
+        if not result:
+            return False
+        else:
+            return True
+    # end verify_analytics_api_tls_negotiation

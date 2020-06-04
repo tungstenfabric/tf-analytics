@@ -2484,6 +2484,42 @@ class AnalyticsUveTest(testtools.TestCase, fixtures.TestWithFixtures):
 
         #end test_20_redis_ha
 
+    def test_21_analytics_tls_version_negotiation(self):
+        '''
+        Since we have disabled tls version negotaition, we will verify below two
+        scenarios after starting opserver.
+        1. Send a curl request with supported version(tlsv1.2) and check
+        that analytics introspect page is accesible using HTTPS.
+        2. Send a curl request with unsupported versions(<tlsv1.2) and check
+        that analytics introspect page should not be accesible using HTTPS.
+        '''
+        logging.info("%%% test_21_analytics_tls_version_negotiation %%%")
+
+        server_ssl_params = {
+            'ssl_enable': True,
+            'insecure_enable' : False,
+            'keyfile': builddir + '/opserver/test/data/ssl/server-privkey.pem',
+            'certfile': builddir + '/opserver/test/data/ssl/server.pem',
+            'ca_cert': builddir + '/opserver/test/data/ssl/ca-cert.pem',
+        }
+        analytics_obj = AnalyticsFixture(logging, builddir, 0,
+		analytics_server_ssl_params=server_ssl_params)
+        vizd_obj = self.useFixture(analytics_obj)
+        assert vizd_obj.verify_on_setup()
+        # supported version(tlsv1.2)
+        assert analytics_obj.verify_analytics_tls_version_negotiation('--tlsv1.2',
+                server_ssl_params)
+        # unsupported version(<tlsv1.2)
+        assert not analytics_obj.verify_analytics_tls_version_negotiation('--tlsv1.1',
+                server_ssl_params)
+        assert not analytics_obj.verify_analytics_tls_version_negotiation('--tlsv1.0',
+                server_ssl_params)
+        assert not analytics_obj.verify_analytics_tls_version_negotiation('--sslv3',
+                server_ssl_params)
+        assert not analytics_obj.verify_analytics_tls_version_negotiation('--sslv2',
+                server_ssl_params)
+    #end test_21_analytics_tls_version_negotiation
+
     @staticmethod
     def get_free_port():
         cs = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
