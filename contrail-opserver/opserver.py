@@ -816,15 +816,30 @@ class OpServer(object):
         self._state_server.update_redis_list(self.redis_uve_list) 
 
         if self._args.zk_list:
-            self._ad = AnalyticsDiscovery(self._logger,
-                ','.join(self._args.zk_list),
-                ANALYTICS_API_SERVER_DISCOVERY_SERVICE_NAME,
-                self._hostname + "-" + self._instance_id,
-                {ALARM_GENERATOR_SERVICE_NAME:self.disc_agp},
-                {COLLECTOR_DISCOVERY_SERVICE_NAME:\
-                    self._uve_server.collectors_change_cb},
-                self._args.zk_prefix,
-                ad_freq)
+            if self._args.zookeeper_ssl_enable:
+                self._ad = AnalyticsDiscovery(self._logger,
+                     ','.join(self._args.zk_list),
+                     ANALYTICS_API_SERVER_DISCOVERY_SERVICE_NAME,
+                     self._hostname + "-" + self._instance_id,
+                     {ALARM_GENERATOR_SERVICE_NAME:self.disc_agp},
+                     {COLLECTOR_DISCOVERY_SERVICE_NAME:\
+                          self._uve_server.collectors_change_cb},
+                     self._args.zk_prefix,
+                     ad_freq,
+                     self._conf.zookeeper_ssl_enable,
+                     self._conf.zookeeper_ssl_certfile,
+                     self._conf.zookeeper_ssl_keyfile,
+                     self._conf.zookeeper_ssl_ca_cert)
+            else:
+                self._ad = AnalyticsDiscovery(self._logger,
+                     ','.join(self._args.zk_list),
+                     ANALYTICS_API_SERVER_DISCOVERY_SERVICE_NAME,
+                     self._hostname + "-" + self._instance_id,
+                     {ALARM_GENERATOR_SERVICE_NAME:self.disc_agp},
+                     {COLLECTOR_DISCOVERY_SERVICE_NAME:\
+                         self._uve_server.collectors_change_cb},
+                     self._args.zk_prefix,
+                     ad_freq)
         else:
             self._ad = None
             if self._args.partitions != 0:
@@ -1131,6 +1146,12 @@ class OpServer(object):
             'admin_password': 'contrail123',
             'admin_tenant_name': 'default-domain'
         }
+        zookeeper_opts = {
+            'zookeeper_ssl_enable'          : False,
+            'zookeeper_ssl_certfile'        : None,
+            'zookeeper_ssl_keyfile'         : None,
+            'zookeeper_ssl_ca_cert'         : None
+        }
         sandesh_opts = SandeshConfig.get_default_options()
 
         # read contrail-analytics-api own conf file
@@ -1144,6 +1165,8 @@ class OpServer(object):
                 redis_opts.update(dict(config.items('REDIS')))
             if 'KEYSTONE' in config.sections():
                 keystone_opts.update(dict(config.items('KEYSTONE')))
+            if 'ZOOKEEPER' in config.sections():
+                zookeeeper_opts.update(dict(config.items('ZOOKEEPER')))
             SandeshConfig.update_options(sandesh_opts, config)
 
         # Override with CLI options
@@ -1158,6 +1181,7 @@ class OpServer(object):
         defaults.update(redis_opts)
         defaults.update(keystone_opts)
         defaults.update(sandesh_opts)
+        defaults.update(zookeeeper_opts)
         parser.set_defaults(**defaults)
 
         parser.add_argument("--host_ip",
@@ -1258,6 +1282,16 @@ class OpServer(object):
             help="Location of analytics api ssl private key")
         parser.add_argument("--analytics_api_ssl_ca_cert", type=str,
             help="Location of analytics api ssl CA certificate")
+        parser.add_argument("--zookeeper_ssl_enable",
+            help="Enable SSL in rest api server")
+        parser.add_argument("--zookeeper_insecure_enable",
+            help="Enable insecure mode")
+        parser.add_argument("--zookeeper_ssl_certfile",
+            help="Location of zookeeper ssl host certificate")
+        parser.add_argument("--zookeeper_ssl_keyfile",
+            help="Location of zookeeper ssl private key")
+        parser.add_argument("--zookeeper_ssl_ca_cert", type=str,
+            help="Location of zookeeper ssl CA certificate")
         SandeshConfig.add_parser_arguments(parser)
         self._args = parser.parse_args(remaining_argv)
         if isinstance(self._args.collectors, (basestring, str)):
@@ -1275,6 +1309,10 @@ class OpServer(object):
 
         self._args.analytics_api_insecure_enable = \
                 (str(self._args.analytics_api_insecure_enable).lower() == 'true')
+
+        self._args.zookeeper_ssl_enable = \
+                (str(self._args.zookeeper_ssl_enable).lower() == 'true')
+ 
         auth_conf_info = {}
         auth_conf_info['admin_user'] = self._args.admin_user
         auth_conf_info['admin_password'] = self._args.admin_password

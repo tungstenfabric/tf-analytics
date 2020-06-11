@@ -138,7 +138,9 @@ class AnalyticsDiscovery(gevent.Greenlet):
 
     def __init__(self, logger, zkservers, svc_name, inst,
                 data_watchers={}, child_watchers={},
-                zpostfix="", freq=10):
+                zpostfix="", freq=10, zookeeper_ssl_enable=False, 
+                zookeeper_ssl_certfile=None, zookeeper_ssl_keyfile=None,
+                zookeeper_ssl_ca_cert=None):
         gevent.Greenlet.__init__(self)
         self._svc_name = svc_name
         self._inst = inst
@@ -164,6 +166,10 @@ class AnalyticsDiscovery(gevent.Greenlet):
         self._basepath = "/analytics-discovery-" + self._zpostfix
         self._reconnect = None
         self._freq = freq
+        self._zookeeper_ssl_enable = zookeeper_ssl_enable
+        self._zookeeper_ssl_certfile = zookeeper_ssl_certfile
+        self._zookeeper_ssl_keyfile = zookeeper_ssl_keyfile
+        self._zookeeper_ssl_ca_cert = zookeeper_ssl_ca_cert
 
     def publish(self, pubinfo):
 
@@ -214,7 +220,14 @@ class AnalyticsDiscovery(gevent.Greenlet):
     def _run(self):
         while True:
             self._logger.error("Analytics Discovery zk start")
-            self._zk = KazooClient(hosts=self._zkservers, timeout=60.0)
+            if self._zookeeper_ssl_enable:
+                self._zk = KazooClient(hosts=self._zkservers, timeout=60.0,
+                use_ssl=True, keyfile=self._zookeeper_ssl_keyfile,
+                certfile=self._zookeeper_ssl_certfile, 
+                ca=self._zookeeper_ssl_ca_cert)
+            else:
+                self._zk = KazooClient(hosts=self._zkservers, timeout=60.0)
+
             self._zk.add_listener(self._zk_listen)
             try:
                 self._zk.start()
