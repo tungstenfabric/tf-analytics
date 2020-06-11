@@ -363,6 +363,26 @@ void Options::Initialize(EventManager &evm,
         ;
 
     // Command line and config file options.
+    opt::options_description zookeeper_config("Zookeeper Configuration options");
+    zookeeper_config.add_options()
+        ("ZOOKEEPER.zookeeper_ssl_enable",
+             opt::value<bool>()->default_value(false),
+             "Enable SSL Encryptions for Zookeeper connection")
+        ("ZOOKEEPER.zookeeper_keyfile", opt::value<std::string>()->default_value(
+         "/etc/contrail/ssl/private/server-privkey.pem"),
+         "zookeeper SSL private key")
+        ("ZOOKEEPER.zookeeper_certfile", opt::value<std::string>()->default_value(
+         "/etc/contrail/ssl/certs/server.pem"),
+         "zookeeper SSL certificate")
+        ("ZOOKEEPER.zookeeper_ca_cert", opt::value<std::string>()->default_value(
+         "/etc/contrail/ssl/certs/ca-cert.pem"),
+         "Zookeeper CA SSL certificate")
+        ("ZOOKEEPER.zookeeper_ssl_password", 
+         opt::value<std::string>()->default_value("c0ntrail123"),
+         Zookeeper SSL Password)
+        ;
+    
+    // Command line and config file options.
     opt::options_description redis_config("Redis Configuration options");
     redis_config.add_options()
         ("REDIS.port",
@@ -478,10 +498,12 @@ void Options::Initialize(EventManager &evm,
 
     config_file_options_.add(config).add(cassandra_config)
         .add(database_config).add(sandesh_config).add(keystone_config).add(kafka_config)
-        .add(collector_config).add(redis_config).add(api_server_config).add(configdb_config);
+        .add(collector_config).add(redis_config).add(api_server_config).add(configdb_config)
+        .add(zookeeper_config);
     cmdline_options.add(generic).add(config).add(cassandra_config)
         .add(database_config).add(sandesh_config).add(keystone_config).add(kafka_config)
-        .add(collector_config).add(redis_config).add(api_server_config).add(configdb_config);
+        .add(collector_config).add(redis_config).add(api_server_config).add(configdb_config)
+        .add(zookeeper_config);
 }
 
 static bool ValidateCompactionStrategyOption(
@@ -731,6 +753,30 @@ void Options::Process(int argc, char *argv[],
 
     GetOptValue<bool>(var_map, api_server_use_ssl_,
                       "API_SERVER.api_server_use_ssl");
+    
+    GetOptValue<bool>(var_map, zookeeper_options_.ssl_enable,
+            "ZOOKEEPER.zookeeper_ssl_enable");
+    GetOptValue<string>(var_map, zookeeper_options_.keyfile,
+            "ZOOKEEPER.zookeeper_ssl_keyfile");
+    GetOptValue<string>(var_map, zookeeper_options_.certfile,
+            "ZOOKEEPER.zookeeper_ssl_certfile");
+    GetOptValue<string>(var_map, zookeeper_options_.ca_cert,
+            "ZOOKEEPER.zookeeper_ssl_ca_cert");
+    GetOptValue<string>(var_map, zookeeper_options_.ssl_password,
+            "ZOOKEEPER.zookeeper_ssl_password");
+    
+    if(zookeeper_options_.ssl_enable) {
+        std::string all_zoo_cert_files = " ";
+        all_zoo_cert_files += zookeeper_options_.keyfile;
+        all_zoo_cert_files += ',';
+        all_zoo_cert_files += zookeeper_options_.certfile;
+        all_zoo_cert_files += ',';
+        all_zoo_cert_files += zookeeper_options_.ca_cert;
+        all_zoo_cert_files += ',';
+        all_zoo_cert_files += zookeeper_options_.ssl_password;
+
+        zookeeper_options_.zookeeper_ssl_file_ccat = all_zoo_cert_files;
+    }
     ParseConfigOptions(var_map);
 }
 

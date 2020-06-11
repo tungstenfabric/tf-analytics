@@ -1029,14 +1029,28 @@ class Controller(object):
 
         # Start AnalyticsDiscovery to monitor AlarmGen instances
         if self._conf.zk_list():
-            self._ad = AnalyticsDiscovery(self._logger,
-                ','.join(self._conf.zk_list()),
-                ALARM_GENERATOR_SERVICE_NAME,
-                self._hostname + "-" + self._instance_id,
-                {ALARM_GENERATOR_SERVICE_NAME:self.disc_cb_ag},
-                {COLLECTOR_DISCOVERY_SERVICE_NAME:self._us.collectors_change_cb},
-                self._conf.kafka_prefix(),
-                ad_freq)
+            if self._conf.zookeeper_ssl_enable:
+                self._ad = AnalyticsDiscovery(self._logger,
+                    ','.join(self._conf.zk_list()),
+                    ALARM_GENERATOR_SERVICE_NAME,
+                    self._hostname + "-" + self._instance_id,
+                    {ALARM_GENERATOR_SERVICE_NAME:self.disc_cb_ag},
+                    {COLLECTOR_DISCOVERY_SERVICE_NAME:self._us.collectors_change_cb},
+                    self._conf.kafka_prefix(),
+                    ad_freq,
+                    self._conf.zookeeper_ssl_enable,
+                    self._conf.zookeeper_ssl_certfile,
+                    self._conf.zookeeper_ssl_keyfile,
+                    self._conf.zookeeper_ssl_ca_cert)
+            else:    
+                self._ad = AnalyticsDiscovery(self._logger,
+                    ','.join(self._conf.zk_list()),
+                    ALARM_GENERATOR_SERVICE_NAME,
+                    self._hostname + "-" + self._instance_id,
+                    {ALARM_GENERATOR_SERVICE_NAME:self.disc_cb_ag},
+                    {COLLECTOR_DISCOVERY_SERVICE_NAME:self._us.collectors_change_cb},
+                    self._conf.kafka_prefix(),
+                    ad_freq)
             self._max_out_rows = 20
         else:
             self._max_out_rows = 2
