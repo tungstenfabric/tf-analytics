@@ -114,6 +114,13 @@ Mibs = LldpTable, ArpTable
             'config_db_ca_certs': None
         }
 
+        zookeeper_opts = {
+            'zookeeper_ssl_enable': False,
+            'zookeeeper_keyfile'  : None,
+            'zookeeper_certfile'  : None,
+            'zookeeper_ca_cert'   : None
+        }
+
         sandesh_opts = SandeshConfig.get_default_options()
 
         config = None
@@ -125,6 +132,8 @@ Mibs = LldpTable, ArpTable
                 defaults.update(dict(config.items("DEFAULTS")))
             if 'CONFIGDB' in config.sections():
                 configdb_opts.update(dict(config.items('CONFIGDB')))
+            if 'ZOOKEEPER' in config.sections():
+                zookeeper_opts.update(dict(config.items('ZOOKEEPER')))
             SandeshConfig.update_options(sandesh_opts, config)
         # Override with CLI options
         # Don't surpress add_help here so it will handle -h
@@ -138,6 +147,7 @@ Mibs = LldpTable, ArpTable
         )
         defaults.update(configdb_opts)
         defaults.update(sandesh_opts)
+        defaults.update(zookeeper_opts)
         parser.set_defaults(**defaults)
         parser.add_argument("--collectors",
             help="List of Collector IP addresses in ip:port format",
@@ -199,6 +209,14 @@ Mibs = LldpTable, ArpTable
             help="ip:port of zookeeper server")
         parser.add_argument("--cluster_id",
             help="Used for database keyspace separation")
+        parser.add_argument("--zookeeper_ssl_enable", action='store_true',
+            help="Enable SSL encryption for zookeeper connection")
+        parser.add_argument("--zookeeper_keyfile", type=str,
+            help="Location of zookeeper ssl private key")
+        parser.add_argument("--zookeeper_certfile", type=str,
+            help="Location of zookeeper ssl host certificate")
+        parser.add_argument("--zookeeper_ca_cert", type=str,
+            help="Location of zookeeper ssl CA certificate")
         SandeshConfig.add_parser_arguments(parser)
         group = parser.add_mutually_exclusive_group(required=False)
         group.add_argument("--device-config-file",
@@ -212,6 +230,7 @@ Mibs = LldpTable, ArpTable
         self._args.config_sections = config
         self._args.conf_file = args.conf_file
         self._args.config_db_use_ssl = (str(self._args.config_db_use_ssl).lower() == 'true')
+        self._args.zookeeper_ssl_enable = (str(self._args.zookeeper_ssl_enable).lower() == 'true')
 
     def collectors(self):
         return self._args.collectors
