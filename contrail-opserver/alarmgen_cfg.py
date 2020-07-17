@@ -112,7 +112,12 @@ class CfgParser(object):
             'kafka_certfile'  : '/etc/contrail/ssl/certs/server.pem',
             'kafka_ca_cert'   : '/etc/contrail/ssl/certs/ca-cert.pem'
         }
-
+        zookeeper_opts = {
+            'zookeeper_ssl_enable': False,
+            'zookeeper_ssl_keyfile'  : None,
+            'zookeeper_ssl_certfile'  : None,
+            'zookeeper_ssl_ca_cert'   : None
+        }
         sandesh_opts = SandeshConfig.get_default_options()
 
         config = None
@@ -128,6 +133,8 @@ class CfgParser(object):
                 configdb_opts.update(dict(config.items('CONFIGDB')))
             if 'KAFKA' in config.sections():
                 kafka_opts.update(dict(config.items('KAFKA')))
+            if 'ZOOKEEPER' in config.sections():
+                zookeeper_opts.update(dict(config.items('ZOOKEEPER')))
             SandeshConfig.update_options(sandesh_opts, config)
         # Override with CLI options
         # Don't surpress add_help here so it will handle -h
@@ -144,6 +151,7 @@ class CfgParser(object):
         defaults.update(configdb_opts)
         defaults.update(sandesh_opts)
         defaults.update(kafka_opts)
+        defaults.update(zookeeper_opts)
         parser.set_defaults(**defaults)
         parser.add_argument("--host_ip",
             help="Host IP address")
@@ -231,6 +239,14 @@ class CfgParser(object):
             help="Location of kafka ssl host certificate")
         parser.add_argument("--kafka_ca_cert", type=str,
             help="Location of kafka ssl CA certificate")
+        parser.add_argument("--zookeeper_ssl_enable", action='store_true',
+            help="Enable SSL encryption for zookeeper connection")
+        parser.add_argument("--zookeeper_ssl_keyfile", type=str,
+            help="Location of zookeeper ssl private key")
+        parser.add_argument("--zookeeper_ssl_certfile", type=str,
+            help="Location of zookeeper ssl host certificate")
+        parser.add_argument("--zookeeper_ssl_ca_cert", type=str,
+            help="Location of zookeeper ssl CA certificate")
         SandeshConfig.add_parser_arguments(parser)
         self._args = parser.parse_args(remaining_argv)
         if isinstance(self._args.collectors, (basestring, str)):
@@ -253,6 +269,7 @@ class CfgParser(object):
         self._args.kafka_ssl_enable = (str(self._args.kafka_ssl_enable).lower() == 'true')
         self._args.config_db_use_ssl = (str(self._args.config_db_use_ssl).lower() == 'true')
         self._args.redis_use_ssl = (str(self._args.redis_use_ssl).lower() == 'true')
+        self._args.zookeeper_ssl_enable = (str(self._args.zookeeper_ssl_enable).lower() == 'true')
 
     def _pat(self):
         if self.__pat is None:
@@ -360,3 +377,12 @@ class CfgParser(object):
 
     def get_redis_agg_db(self):
         return self._args._redis_agg_db
+  
+    def zookeeper_ssl_enable(self):
+	return self._args.zookeeper_ssl_enable
+
+    def zookeeper_ssl_params(self):
+	return {'ssl_enable': self._args.zookeeper_ssl_enable,
+                'ssl_keyfile': self._args.zookeeper_ssl_keyfile,
+                'ssl_certfile': self._args.zookeeper_ssl_certfile,
+                'ssl_ca_cert': self._args.zookeeper_ssl_ca_cert}
