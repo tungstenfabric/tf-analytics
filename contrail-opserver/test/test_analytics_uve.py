@@ -2483,6 +2483,7 @@ class AnalyticsUveTest(testtools.TestCase, fixtures.TestWithFixtures):
                                            msg_count=5)
 
         #end test_20_redis_ha
+    
 
     def test_21_analytics_tls_version_negotiation(self):
         '''
@@ -2519,6 +2520,58 @@ class AnalyticsUveTest(testtools.TestCase, fixtures.TestWithFixtures):
         assert not analytics_obj.verify_analytics_tls_version_negotiation('--sslv2',
                 server_ssl_params)
     #end test_21_analytics_tls_version_negotiation
+
+    #@unittest.skip('Skipping test_22_zookeeper_no_ssl_basic')
+    def test_22_zookeeper_no_ssl_basic(self):
+        '''
+        This test starts zookeeper,kafka,vizd,opserver and qed in
+        SSL disabled environment.
+        Then it checks that the alarmgen is able to 
+        connect to zookeeper if SSL is disabled
+        '''
+        logging.info("%%% test_22_zookeeper_no_ssl_basic %%%")
+        zookeeper_ssl_params = {
+            'ssl_enable': False,
+            'ssl_keyfile': builddir+'/opserver/test/data/ssl/server-privkey.pem',
+            'ssl_certfile': builddir+'/opserver/test/data/ssl/server.pem',
+            'ssl_ca_cert': builddir+'/opserver/test/data/ssl/server.pem',
+            'ssl_keystore': builddir+'/opserver/test/data/ssl/zookeeper.server.keystore.jks',
+            'ssl_truststore': builddir+'/opserver/test/data/ssl/zookeeper.server.truststore.jks'
+        }
+
+        vizd_obj = self.useFixture(
+            AnalyticsFixture(logging, builddir, 0,
+                zookeeper_ssl_params=zookeeper_ssl_params))
+        assert vizd_obj.verify_on_setup()
+        assert vizd_obj.verify_zookeeper_connection()
+
+    # end test_22_zookeeper_no_ssl_basic
+
+    #@unittest.skip('Skipping test_23_zookeeper_ssl_basic_correct_params test')
+    def test_23_zookeeper_ssl_basic_correct_params(self):
+        '''
+        This test starts zookeeper,kafka,vizd,opserver and qed in
+        SSL enabled environment.
+        Then it checks that the alarmgen is able to 
+        connect to zookeeper  if correct SSL cacerts are passed
+        '''
+        logging.info("%%% test_23_zookeeper_ssl_basic_correct_params  %%%")
+        zookeeper_ssl_params = {
+            'ssl_enable': True,
+            'ssl_keyfile': builddir+'/opserver/test/data/ssl/server-privkey.pem',
+            'ssl_certfile': builddir+'/opserver/test/data/ssl/server.pem',
+            'ssl_ca_cert': builddir+'/opserver/test/data/ssl/ca-cert.pem',
+            'ssl_keystore': builddir+'/opserver/test/data/ssl/zookeeper.server.keystore.jks',
+            'ssl_truststore': builddir+'/opserver/test/data/ssl/zookeeper.server.truststore.jks'
+        }
+
+        vizd_obj = self.useFixture(
+            AnalyticsFixture(logging, builddir, 0, start_kafka=True,
+                zookeeper_ssl_params=zookeeper_ssl_params))
+    
+        assert vizd_obj.verify_on_setup()
+        assert vizd_obj.verify_zookeeper_connection()
+    # end test_23_zookeeper_ssl_basic_correct_params
 
     @staticmethod
     def get_free_port():

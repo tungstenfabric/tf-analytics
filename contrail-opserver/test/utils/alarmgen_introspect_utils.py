@@ -52,4 +52,30 @@ class VerificationAlarmGen(IntrospectUtilBase):
         xpath = '/UVETableAlarmResp'
         p = self.dict_get(path, query)
         return EtreeToDict(xpath).get_all_entry(p)
+
+    def get_uve(self, tname):
+        path = 'Snh_SandeshUVECacheReq?x=%s' % (tname)
+        return self.get_data(path, tname)
+    #end get_uve
+
+
+    def get_data(self, path, tname):
+        xpath = './/' + tname
+        p = self.dict_get(path)
+        if p is not None:
+            return EtreeToDict(xpath).get_all_entry(p)
+        return None
+    #end get_data
+                                                                                    
+    def get_NodeStatusUVE(self, tname):
+        node_status = self.get_uve(tname)
+        process_status = node_status['process_status']
+        for connection_info in process_status[0].get('connection_infos', []):
+            if connection_info.get('type') == 'Zookeeper':
+                status = connection_info.get('status')
+
+        if status == 'Up':
+            return True
+        else:
+            return False
 #end class VerificationAlarmGen

@@ -54,7 +54,8 @@ VizCollector::VizCollector(EventManager *evm, unsigned short listen_port,
             const SandeshConfig &sandesh_config,
             ConfigClientCollector *config_client,
             std::string host_ip,
-            const Options::Kafka &kafka_options) :
+            const Options::Kafka &kafka_options,
+            const Options::Zookeeper &zookeeper_options) :
     osp_(new OpServerProxy(evm, this, redis_uve_ip, redis_uve_port,
          redis_password, aggconf, brokers, partitions, kafka_prefix,
          kafka_options)),
@@ -66,7 +67,7 @@ VizCollector::VizCollector(EventManager *evm, unsigned short listen_port,
             boost::bind(&VizCollector::DbInitializeCb, this),
             cassandra_options,
             zookeeper_server_list, use_zookeeper,
-            db_write_options, config_client));
+            db_write_options, config_client, zookeeper_options));
     } else {
         db_initializer_.reset();
     }
@@ -100,7 +101,9 @@ VizCollector::VizCollector(EventManager *evm, unsigned short listen_port,
     if (use_zookeeper) {
         std::string hostname = ResolveCanonicalName(host_ip);
         zoo_client_.reset(new ZookeeperClient(hostname.c_str(),
-            zookeeper_server_list.c_str()));
+            zookeeper_server_list.c_str(),
+            zookeeper_options.ssl_enable,
+            (zookeeper_options.zookeeper_ssl_file_ccat).c_str()));
         AddNodeToZooKeeper(host_ip_);
     }
 }

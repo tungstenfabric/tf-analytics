@@ -912,6 +912,7 @@ class Controller(object):
         self._libpart = None
         self._partset = set()
         self._lredis = None
+        self._zookeeper_ssl_params = self._conf.zookeeper_ssl_params()
 
         is_collector = True
         if test_logger is not None:
@@ -1029,6 +1030,7 @@ class Controller(object):
 
         # Start AnalyticsDiscovery to monitor AlarmGen instances
         if self._conf.zk_list():
+            #if self.zookeeper_ssl_enable:
             self._ad = AnalyticsDiscovery(self._logger,
                 ','.join(self._conf.zk_list()),
                 ALARM_GENERATOR_SERVICE_NAME,
@@ -1036,7 +1038,17 @@ class Controller(object):
                 {ALARM_GENERATOR_SERVICE_NAME:self.disc_cb_ag},
                 {COLLECTOR_DISCOVERY_SERVICE_NAME:self._us.collectors_change_cb},
                 self._conf.kafka_prefix(),
-                ad_freq)
+                ad_freq,
+                zookeeper_ssl_params = self._zookeeper_ssl_params)
+            #else:
+             #   self._ad = AnalyticsDiscovery(self._logger,
+              #      ','.join(self._conf.zk_list()),
+               #     ALARM_GENERATOR_SERVICE_NAME,
+                #    self._hostname + "-" + self._instance_id,
+                 #   {ALARM_GENERATOR_SERVICE_NAME:self.disc_cb_ag},
+                  #  {COLLECTOR_DISCOVERY_SERVICE_NAME:self._us.collectors_change_cb},
+                   # self._conf.kafka_prefix(),
+                   # ad_freq)
             self._max_out_rows = 20
         else:
             self._max_out_rows = 2
@@ -1138,7 +1150,8 @@ class Controller(object):
             pc = PartitionClient(app_name,
                     self._libpart_name, ag_list,
                     self._conf.partitions(), self.libpart_cb,
-                    ','.join(self._conf.zk_list()), self._logger)
+                    ','.join(self._conf.zk_list()), self._logger, zookeeper_ssl_params = \
+				self._zookeeper_ssl_params)
             self.partition_log('Started Partition Client %s' % (app_name))
             return pc
         except Exception as e:

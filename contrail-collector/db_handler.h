@@ -360,7 +360,8 @@ class DbHandlerInitializer {
         const std::string &zookeeper_server_list,
         bool use_zookeeper,
         const DbWriteOptions &db_write_options,
-        ConfigClientCollector *config_client);
+        ConfigClientCollector *config_client,
+        const Options::Zookeeper &zookeeper_options);
     DbHandlerInitializer(EventManager *evm,
         const std::string &db_name,
         const std::string &timer_task_name, InitializeDoneCb callback,
@@ -385,6 +386,9 @@ class DbHandlerInitializer {
     std::string zookeeper_server_list_;
     bool use_zookeeper_;
     bool zoo_locked_;
+    bool zookeeper_ssl_enable_;
+    std::string zookeeper_ssl_file_ccat_;
+
     boost::scoped_ptr<zookeeper::client::ZookeeperClient> zoo_client_;
     boost::scoped_ptr<zookeeper::client::ZookeeperLock> zoo_mutex_;
 };

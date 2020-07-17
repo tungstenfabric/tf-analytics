@@ -405,7 +405,8 @@ int main(int argc, char *argv[])
             options.sandesh_config(),
             config_client,
             options.host_ip(),
-            options.get_kafka_options());
+            options.get_kafka_options(),
+            options.get_zookeeper_options());
 
     config_client->Init();
     analytics->Init();
