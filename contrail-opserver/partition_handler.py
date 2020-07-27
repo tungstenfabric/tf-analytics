@@ -770,7 +770,8 @@ class PartitionHandler(gevent.Greenlet):
 
                 while True:
                     try:
-                        mdict = consumer.poll()
+                        mdict = consumer.poll(max_records = 50)
+                        gevent.sleep(0.1)
                         self.resource_check()
                         if len(mdict):
                             counts = {}
