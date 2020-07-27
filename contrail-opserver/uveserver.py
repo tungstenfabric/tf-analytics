@@ -339,6 +339,13 @@ class UVEServer(object):
 
                         if value[0] == '<':
                             try:
+                                #Adding this below If condition as part of CEM-11076
+                                if len(value) >= 100000:
+                                    self._logger.error("A large UVE, from source %s and type %s dropped" \
+                                        % (str(dsource), str(typ)))
+                                    self._logger.error("Count of UVE being dropped is %s" %str(more_100k))
+                                    self._logger.error("A snippet of the UVE: \n %s" %(str(value[0:200])))
+                                    continue
                                 snhdict = xmltodict.parse(value)
                             except:
                                 self._logger.error("xml parsing failed key %s, struct %s: %s" \
