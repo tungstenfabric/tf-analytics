@@ -339,6 +339,8 @@ class UVEServer(object):
 
                         if value[0] == '<':
                             try:
+                                if len(value) >= 100000:
+                                    continue
                                 snhdict = xmltodict.parse(value)
                             except:
                                 self._logger.error("xml parsing failed key %s, struct %s: %s" \
