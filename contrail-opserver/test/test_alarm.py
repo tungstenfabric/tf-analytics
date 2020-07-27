@@ -138,10 +138,10 @@ class Mock_get_uve(Mock_base):
         return False, self.store[key]
 
 class Mock_poll(Mock_base):
-    def __init__(self, *args, **kwargs):
+    def __init__(self, max_records=None, *args, **kwargs):
         Mock_base.__init__(self)
 
-    def __call__(self):
+    def __call__(self, max_records=None):
         vals = []
         for key in list(self.store.keys()):
             vals.append(self.store[key])
