@@ -37,6 +37,8 @@ from kazoo.client import KazooClient
 from kazoo.client import KazooState
 from .opserver_util import convert_to_string
 
+more_than_100k = 0 
+
 RedisInfo = namedtuple("RedisInfo",["ip","port","pid"])
 
 RedisInstKey = namedtuple("RedisInstKey",["ip","port"])
@@ -259,6 +261,7 @@ class UVEServer(object):
 
     def get_uve(self, key, flat, filters=None, base_url=None):
 
+        global more_than_100k
         filters = filters or {}
         sfilter = filters.get('sfilt')
         mfilter = filters.get('mfilt')
@@ -339,6 +342,14 @@ class UVEServer(object):
 
                         if value[0] == '<':
                             try:
+                                #Adding this below If condition as part of CEM-11076
+                                if len(value) >= 100000:
+                                    more_than_100k += 1
+                                    self._logger.error("A large UVE, from source %s and type %s dropped" \
+                                        % (str(dsource), str(typ)))
+                                    self._logger.error("Count of UVE being dropped is %s" %str(more_than_100k))
+                                    self._logger.error("A snippet of the UVE: \n %s" %(str(value[0:200])))
+                                    continue
                                 snhdict = xmltodict.parse(value)
                             except:
                                 self._logger.error("xml parsing failed key %s, struct %s: %s" \
