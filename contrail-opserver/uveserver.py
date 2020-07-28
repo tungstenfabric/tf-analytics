@@ -592,7 +592,7 @@ class ParallelAggregator(object):
         result = []
         for source in list(oattr.keys()):
             elem = oattr[source]
-            hdelem = json.dumps(elem)
+            hdelem = json.dumps(elem, sort_keys=True)
             if hdelem not in itemset:
                 itemset.add(hdelem)
                 result.append([elem, source])
