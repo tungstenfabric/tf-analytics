@@ -61,7 +61,10 @@ def start_kafka(zk_client_port, broker_listen_port, broker_id=0):
         return False
     zk.stop()
     logging.info('Installing kafka in ' + kafkabase)
-    os.system("cat " + kafka_bdir + kafka_dl + " | tar -xpzf - -C " + kafkabase)
+    x = os.system("cat " + kafka_bdir + kafka_dl + " | tar -xpzf - -C " + kafkabase)
+    if 0 != x:
+        logging.error("Cannot install kafka")
+        return False
 
     logging.info('kafka Port %d' % broker_listen_port)
  
