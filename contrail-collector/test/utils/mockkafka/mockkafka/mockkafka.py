@@ -33,7 +33,7 @@ kafka_bdir  = '/tmp/cache-' + os.environ['USER'] + '-systemless_test'
 def start_kafka(zk_client_port, broker_listen_port, broker_id=0):
     if not os.path.exists(kafka_bdir):
         output,_ = call_command_("mkdir " + kafka_bdir)
-    kafka_download = 'wget -O ' + kafka_bdir + kafka_dl + \
+    kafka_download = 'wget -nv --tries=3 -c -O ' + kafka_bdir + kafka_dl + \
         ' https://github.com/Juniper/contrail-third-party-cache/blob/master/kafka' + \
         kafka_dl + '?raw=true'
     if not os.path.exists(kafka_bdir + kafka_dl):
@@ -61,7 +61,10 @@ def start_kafka(zk_client_port, broker_listen_port, broker_id=0):
         return False
     zk.stop()
     logging.info('Installing kafka in ' + kafkabase)
-    os.system("cat " + kafka_bdir + kafka_dl + " | tar -xpzf - -C " + kafkabase)
+    x = os.system("cat " + kafka_bdir + kafka_dl + " | tar -xpzf - -C " + kafkabase)
+    if 0 != x:
+        logging.error("Cannot install kafka")
+        return False
 
     logging.info('kafka Port %d' % broker_listen_port)
  
