@@ -1745,7 +1745,8 @@ DbHandlerInitializer::DbHandlerInitializer(EventManager *evm,
     const std::string &zookeeper_server_list,
     bool use_zookeeper,
     const DbWriteOptions &db_write_options,
-    ConfigClientCollector *config_client) :
+    ConfigClientCollector *config_client,
+    const Options::Zookeeper &zookeeper_options) :
     db_name_(db_name),
     db_handler_(new DbHandler(evm,
         boost::bind(&DbHandlerInitializer::ScheduleInit, this),
@@ -1757,10 +1758,13 @@ DbHandlerInitializer::DbHandlerInitializer(EventManager *evm,
         TaskScheduler::GetInstance()->GetTaskId(timer_task_name))),
     zookeeper_server_list_(zookeeper_server_list),
     use_zookeeper_(use_zookeeper),
-    zoo_locked_(false) {
+    zoo_locked_(false),
+    zookeeper_ssl_enable_(zookeeper_options.ssl_enable),
+    zookeeper_ssl_file_ccat_(zookeeper_options.zookeeper_ssl_file_ccat) {
     if (use_zookeeper_) {
         zoo_client_.reset(new ZookeeperClient(db_name_.c_str(),
-            zookeeper_server_list_.c_str()));
+            zookeeper_server_list_.c_str(), zookeeper_ssl_enable_,
+            zookeeper_ssl_file_ccat_.c_str()));
         zoo_mutex_.reset(new ZookeeperLock(zoo_client_.get(), "/collector"));
     }
 }

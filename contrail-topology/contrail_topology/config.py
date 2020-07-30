@@ -112,6 +112,13 @@ optional arguments:
             'config_db_use_ssl': False,
             'config_db_ca_certs': None
         }
+
+        zookeeper_opts = {
+            'zookeeper_ssl_enable': False,
+            'zookeeeper_keyfile'  : None,
+            'zookeeper_certfile'  : None,
+            'zookeeper_ca_cert'   : None
+        }
         sandesh_opts = SandeshConfig.get_default_options()
 
         config = None
@@ -125,6 +132,8 @@ optional arguments:
                 ksopts.update(dict(config.items("KEYSTONE")))
             if 'CONFIGDB' in config.sections():
                 configdb_opts.update(dict(config.items('CONFIGDB')))
+            if 'ZOOKEEPER' in config.sections():
+                zookeeper_opts.update(dict(config.items('ZOOKEEPER')))
             SandeshConfig.update_options(sandesh_opts, config)
         # Override with CLI options
         # Don't surpress add_help here so it will handle -h
@@ -139,6 +148,7 @@ optional arguments:
         defaults.update(ksopts)
         defaults.update(configdb_opts)
         defaults.update(sandesh_opts)
+        defaults.update(zookeeper_opts)
         parser.set_defaults(**defaults)
         parser.add_argument("--analytics_api",
             help="List of analytics-api IP addresses in ip:port format",
@@ -213,6 +223,14 @@ optional arguments:
             help="Cassandra SSL enable flag")
         parser.add_argument("--config_db_ca_certs",
             help="Cassandra CA certs file path")
+        parser.add_argument("--zookeeper_ssl_enable", action='store_true',
+            help="Enable SSL encryption for zookeeper connection")
+        parser.add_argument("--zookeeper_keyfile", type=str,
+            help="Location of zookeeper ssl private key")
+        parser.add_argument("--zookeeper_certfile", type=str,
+            help="Location of zookeeper ssl host certificate")
+        parser.add_argument("--zookeeper_ca_cert", type=str,
+            help="Location of zookeeper ssl CA certificate")
         SandeshConfig.add_parser_arguments(parser)
 
         self._args = parser.parse_args(remaining_argv)
@@ -226,6 +244,7 @@ optional arguments:
         self._args.config_sections = config
         self._args.conf_file = args.conf_file
         self._args.config_db_use_ssl = (str(self._args.config_db_use_ssl).lower() == 'true')
+        self._args.zookeeper_ssl_enable = (str(self._args.zookeeper_ssl_enable).lower() == 'true')
 
     def _pat(self):
         if self.__pat is None:

@@ -37,7 +37,8 @@ class ConsistentScheduler(object):
     def __init__(self, service_name=None, zookeeper='127.0.0.1:2181',
                  delete_hndlr=None, add_hndlr=None, bucketsize=47,
                  item2part_func=None, partitioner=None, logger=None,
-                 cluster_id=''):
+                 cluster_id='', zookeeper_ssl_enable=None, zookeeper_ssl_keyfile=None,
+                 zookeeper_ssl_certfile=None, zookeeper_ssl_ca_cert=None):
         if logger:
             self._logger = logger
         else:
@@ -57,6 +58,10 @@ class ConsistentScheduler(object):
         self._partition_set = list(map(str, list(range(self._bucketsize))))
 
         self._cluster_id = cluster_id
+        self._zookeeper_ssl_enable = zookeeper_ssl_enable
+        self._zookeeper_ssl_keyfile = zookeeper_ssl_keyfile
+        self._zookeeper_ssl_certfile  = zookeeper_ssl_certfile
+        self._zookeeper_ssl_ca_cert = zookeeper_ssl_ca_cert
         if self._cluster_id:
             self._zk_path = '/'+self._cluster_id + '/contrail_cs' + '/'+self._service_name
         else:
@@ -67,8 +72,15 @@ class ConsistentScheduler(object):
 
         while True:
             self._logger.error("Consistent scheduler zk start")
-            self._zk = KazooClient(self._zookeeper_srvr,
-                handler=SequentialGeventHandler(), timeout=60.0)
+            if self._zookeeper_ssl_enable:
+                self._zk = KazooClient(self._zookeeper_srvr,
+                     handler=SequentialGeventHandler(), timeout=60.0,
+                     use_ssl=True, keyfile=self._zookeeper_ssl_keyfile,
+                     certfile=self._zookeeper_ssl_certfile,
+                     ca=self._zookeeper_ssl_ca_cert)
+            else:
+                self._zk = KazooClient(self._zookeeper_srvr,
+                     handler=SequentialGeventHandler(), timeout=60.0)
             self._zk.add_listener(self._zk_lstnr)
             try:
                 self._zk.start()

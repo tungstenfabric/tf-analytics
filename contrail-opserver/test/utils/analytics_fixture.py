@@ -77,7 +77,10 @@ class Collector(object):
                  logger,
                  kafka = None, is_dup = False,
                  cassandra_user = None, cassandra_password = None,
-                 zookeeper = None, cluster_id='', sandesh_config=None):
+                 zookeeper = None, cluster_id='', sandesh_config=None,
+                 zookeeper_ssl_params={'ssl_enable':False, 'ssl_keyfile':None, \
+                         'ssl_certfile':None, 'ssl_ca_cert':None, 'ssl_keystore':None, \
+                         'ssl_truststore':None}):
         self.analytics_fixture = analytics_fixture
         if kafka is None:
             self.kafka_port = None
@@ -103,6 +106,7 @@ class Collector(object):
         self._generator_id = None
         self.cluster_id = cluster_id
         self.sandesh_config = sandesh_config
+        self.zookeeper_ssl_params = zookeeper_ssl_params
     # end __init__
 
     def set_sandesh_config(self, sandesh_config):
@@ -184,6 +188,17 @@ class Collector(object):
             if 'disable_object_logs' in self.sandesh_config and \
                 self.sandesh_config['disable_object_logs']:
                 args.append('--SANDESH.disable_object_logs')
+
+        if self.zookeeper_ssl_params['ssl_enable']:
+            args.append('--ZOOKEEPER.zookeeper_ssl_enable')
+            args.append(str(self.zookeeper_ssl_params['ssl_enable']))
+            args.append('--ZOOKEEPER.zookeeper_ssl_keyfile')
+            args.append(self.zookeeper_ssl_params['ssl_keyfile'])
+            args.append('--ZOOKEEPER.zookeeper_ssl_certfile')
+            args.append(self.zookeeper_ssl_params['ssl_certfile'])
+            args.append('--ZOOKEEPER.zookeeper_ssl_ca_cert')
+            args.append(self.zookeeper_ssl_params['ssl_ca_cert'])
+
         self._logger.info('Setting up Vizd: %s' % (' '.join(args)))
         ports, self._instance = \
                          self.analytics_fixture.start_with_ephemeral_ports(
@@ -218,7 +233,10 @@ class AlarmGen(object):
     def __init__(self, collectors, kafka_port,
                  analytics_fixture, logger, zoo, is_dup=False,
                  sandesh_config=None, redis_ssl_params={'ssl_enable':False, \
-                 'keyfile':None, 'certfile':None, 'ca_cert':None}):
+                 'keyfile':None, 'certfile':None, 'ca_cert':None},
+                 zookeeper_ssl_params={'ssl_enable':False, 'ssl_keyfile':None, \
+                         'ssl_certfile':None, 'ssl_ca_cert':None, 'ssl_keystore':None, \
+                         'ssl_truststore':None}):
         self.collectors = collectors
         self.analytics_fixture = analytics_fixture
         self.http_port = 0
@@ -237,6 +255,7 @@ class AlarmGen(object):
         self.redis_query_port = str(self.analytics_fixture.redis_uves[0].port)
         if self.redis_ssl_params['ssl_enable']:
             self.redis_query_port = str(self.analytics_fixture.stunnel_obj[0].stunnel_port)
+        self.zookeeper_ssl_params = zookeeper_ssl_params
     # end __init__
 
     def set_sandesh_config(self, sandesh_config):
@@ -318,6 +337,15 @@ class AlarmGen(object):
             args.append('--redis_ca_cert')
             args.append(self.redis_ssl_params['ca_cert'])
 
+        if self.zookeeper_ssl_params['ssl_enable']:
+            args.append('--zookeeper_ssl_enable')
+            args.append('--zookeeper_ssl_keyfile')
+            args.append(self.zookeeper_ssl_params['ssl_keyfile'])
+            args.append('--zookeeper_ssl_certfile')
+            args.append(self.zookeeper_ssl_params['ssl_certfile'])
+            args.append('--zookeeper_ssl_ca_cert')
+            args.append(self.zookeeper_ssl_params['ssl_ca_cert'])
+
         self._logger.info('Setting up AlarmGen: %s' % ' '.join(args))
         ports, self._instance = \
                          self.analytics_fixture.start_with_ephemeral_ports(
@@ -357,7 +385,10 @@ class OpServer(object):
                  opserver_redis_ssl=True,
                  analytics_server_ssl_params={'ssl_enable':False, \
                  'insecure_enable':False, 'keyfile':None,
-                 'certfile':None, 'ca_cert':None}):
+                 'certfile':None, 'ca_cert':None},
+                 zookeeper_ssl_params={'ssl_enable':False, \
+                         'ssl_keyfile':None,'ssl_certfile':None, 'ssl_ca_cert':None,
+                         'ssl_keystore':None, 'ssl_truststore':None}):
         self.collectors = collectors
         self.analytics_fixture = analytics_fixture
         self.http_port = 0
@@ -385,6 +416,7 @@ class OpServer(object):
         if self.redis_ssl_params['ssl_enable']:
             self.redis_query_port = str(self.analytics_fixture.stunnel_obj[0].stunnel_port)
         self.analytics_server_ssl_params = analytics_server_ssl_params
+        self.zookeeper_ssl_params = zookeeper_ssl_params
     # end __init__
 
     def set_sandesh_config(self, sandesh_config):
@@ -475,6 +507,16 @@ class OpServer(object):
             args.append(self.analytics_server_ssl_params['certfile'])
             args.append('--analytics_api_ssl_ca_cert')
             args.append(self.analytics_server_ssl_params['ca_cert'])
+
+        if self.zookeeper_ssl_params['ssl_enable']:
+            args.append('--zookeeper_ssl_enable')
+            args.append(str(self.zookeeper_ssl_params['ssl_enable']))
+            args.append('--zookeeper_ssl_keyfile')
+            args.append(self.zookeeper_ssl_params['ssl_keyfile'])
+            args.append('--zookeeper_ssl_certfile')
+            args.append(self.zookeeper_ssl_params['ssl_certfile'])
+            args.append('--zookeeper_ssl_ca_cert')
+            args.append(self.zookeeper_ssl_params['ssl_ca_cert'])
 
         self._logger.info('Setting up OpServer: %s' % ' '.join(args))
         ports, self._instance = \
@@ -680,10 +722,11 @@ class Stunnel(object):
 # end class Stunnel
 
 class Kafka(object):
-    def __init__(self, zk_port):
+    def __init__(self, zk_port, zookeeper_ssl_params):
         self.port = None
         self.running = False
         self.zk_port = zk_port
+        self.zookeeper_ssl_params = zookeeper_ssl_params
     # end __init__
 
     def start(self):
@@ -691,7 +734,8 @@ class Kafka(object):
         self.running = True
         if not self.port:
             self.port = AnalyticsFixture.get_free_port()
-        mockkafka.start_kafka(self.zk_port, self.port)
+        mockkafka.start_kafka(self.zk_port, self.port,
+                 zookeeper_ssl_params=self.zookeeper_ssl_params)
 
     # end start
 
@@ -703,16 +747,17 @@ class Kafka(object):
 # end class Kafka
 
 class Zookeeper(object):
-    def __init__(self, zk_port=None):
+    def __init__(self, zk_port=None, zookeeper_ssl_params=None):
         self.running = False;
         self.port = zk_port
+        self.zookeeper_ssl_params = zookeeper_ssl_params
     # end __init__
 
     def start(self):
         assert(self.running == False)
         if not self.port:
             self.port = AnalyticsFixture.get_free_port()
-        mockzoo.start_zoo(self.port)
+        mockzoo.start_zoo(self.port, zookeeper_ssl_params=self.zookeeper_ssl_params)
         self.running = True
     # end start
 
@@ -754,7 +799,10 @@ class AnalyticsFixture(fixtures.Fixture):
                  opserver_redis_ssl=True,
                  analytics_server_ssl_params={'ssl_enable':False, \
                  'insecure_enable':False, 'keyfile':None,
-                 'certfile':None, 'ca_cert':None}):
+                 'certfile':None, 'ca_cert':None},
+                 zookeeper_ssl_params={'ssl_enable':False, 'zoo_disable_client_enable':False,
+                         'ssl_keyfile':None, 'ssl_certfile':None, 'ssl_ca_cert':None,
+                         'ssl_keystore':None, 'ssl_truststore':None}):
 
         self.builddir = builddir
         self.cassandra_port = cassandra_port
@@ -777,6 +825,8 @@ class AnalyticsFixture(fixtures.Fixture):
         self.opserver_redis_ssl = opserver_redis_ssl
         self.set_sandesh_config(sandesh_config)
         self.analytics_server_ssl_params = analytics_server_ssl_params
+        self.zookeeper_ssl_params = zookeeper_ssl_params
+        self.collector_not_started = False;
 
     def setUp(self):
         super(AnalyticsFixture, self).setUp()
@@ -790,7 +840,7 @@ class AnalyticsFixture(fixtures.Fixture):
         if self.redis_ssl_params['ssl_enable']:
             self.stunnel_obj[0].start()
 
-        self.zookeeper = Zookeeper()
+        self.zookeeper = Zookeeper(zookeeper_ssl_params=self.zookeeper_ssl_params)
         self.zookeeper.start()
 
         os.environ['ANALYTICSDB_ENABLE'] = 'True'
@@ -799,16 +849,18 @@ class AnalyticsFixture(fixtures.Fixture):
         zkport = None
         if self.start_kafka:
             zkport = self.zookeeper.port
-            self.kafka = Kafka(zkport)
+            self.kafka = Kafka(zkport, self.zookeeper_ssl_params)
             self.kafka.start()
 
         self.collectors = [Collector(self, self.redis_uves[0], self.logger,
                            kafka = self.kafka,
                            zookeeper = self.zookeeper,
                            cluster_id=self.cluster_id,
-                           sandesh_config=self.sandesh_config)]
+                           sandesh_config=self.sandesh_config,
+                           zookeeper_ssl_params = self.zookeeper_ssl_params)]
         if not self.collectors[0].start():
             self.logger.error("Collector did NOT start")
+            self.collector_not_started = True
             return 
 
         if not self.verify_collector_gen(self.collectors[0]):
@@ -825,7 +877,9 @@ class AnalyticsFixture(fixtures.Fixture):
                                              is_dup = True,
                                              zookeeper = self.zookeeper,
                                              cluster_id=self.cluster_id,
-                                             sandesh_config=self.sandesh_config))
+                                             sandesh_config=self.sandesh_config,
+                                             zookeeper_ssl_params = \
+                                             self.zookeeper_ssl_params))
             if not self.collectors[1].start():
                 self.logger.error("Second Collector did NOT start")
 
@@ -836,7 +890,8 @@ class AnalyticsFixture(fixtures.Fixture):
                                  redis_ssl_params=self.redis_ssl_params,
                                  opserver_redis_ssl=self.opserver_redis_ssl,
                                  analytics_server_ssl_params= \
-                                 self.analytics_server_ssl_params)
+                                 self.analytics_server_ssl_params,
+                                 zookeeper_ssl_params=self.zookeeper_ssl_params)
         if not self.opserver.start():
             self.logger.error("OpServer did NOT start")
         self.opserver_port = self.get_opserver_port()
@@ -845,7 +900,9 @@ class AnalyticsFixture(fixtures.Fixture):
             self.alarmgen = AlarmGen(self.get_collectors(), self.kafka.port,
                                      self, self.logger, zkport,
                                      sandesh_config=self.sandesh_config,
-                                     redis_ssl_params=self.redis_ssl_params)
+                                     redis_ssl_params=self.redis_ssl_params,
+                                     zookeeper_ssl_params= \
+                                             self.zookeeper_ssl_params)
             if not self.alarmgen.start():
                 self.logger.error("AlarmGen did NOT start")
 
@@ -858,6 +915,9 @@ class AnalyticsFixture(fixtures.Fixture):
             if not self.query_engine.start():
                 self.logger.error("QE did NOT start")
     # end setUp
+
+    def verify_collector_fail(self):
+        return self.collector_not_started
 
     def get_collector(self):
         return socket.getfqdn("127.0.0.1")+':'+str(self.collectors[0].listen_port)
@@ -915,6 +975,13 @@ class AnalyticsFixture(fixtures.Fixture):
             self.logger.error("AnalyticsAPI not responding")
         self.verify_is_run = True
         return result
+
+    def verify_zookeeper_connection(self):
+        vag = self.alarmgen.get_introspect()
+        res = vag.get_NodeStatusUVE('NodeStatus')
+        self.logger.info("verify_zookeeper_connection %s" % str(res))
+
+        return res
 
     @retry(delay=2, tries=20)
     def verify_collector_gen(self, collector):

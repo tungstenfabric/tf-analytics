@@ -26,15 +26,18 @@ from kazoo.client import KazooClient
 logging.basicConfig(level=logging.INFO,
                             format='%(asctime)s %(levelname)s %(message)s')
 
-kafka_version = 'kafka_2.11-2.3.1'
-kafka_dl = '/kafka_2.11-2.3.1.tgz'
+kafka_version = 'kafka_2.12-2.5.0'
+kafka_dl = '/kafka_2.12-2.5.0.tgz'
 kafka_bdir  = '/tmp/cache-' + os.environ['USER'] + '-systemless_test'
 
-def start_kafka(zk_client_port, broker_listen_port, broker_id=0):
+def start_kafka(zk_client_port, broker_listen_port, broker_id=0,
+        zookeeper_ssl_params={'ssl_enable':False, \
+                 'ssl_keyfile':None, 'ssl_certfile':None, 'ssl_ca_cert':None,
+                 'ssl_keystore':None, 'ssl_truststore':None}):
     if not os.path.exists(kafka_bdir):
         output,_ = call_command_("mkdir " + kafka_bdir)
     kafka_download = 'wget -O ' + kafka_bdir + kafka_dl + \
-        ' https://github.com/Juniper/contrail-third-party-cache/blob/master/kafka' + \
+        ' https://github.com/tungstenfabric/tf-third-party-cache/blob/master/kafka' + \
         kafka_dl + '?raw=true'
     if not os.path.exists(kafka_bdir + kafka_dl):
         process = subprocess.Popen(kafka_download.split(' '))
@@ -48,8 +51,35 @@ def start_kafka(zk_client_port, broker_listen_port, broker_id=0):
     output,_ = call_command_("rm -rf " + kafkabase)
     output,_ = call_command_("mkdir " + kafkabase)
 
-    logging.info('Check zookeeper in %d' % zk_client_port)
-    zk = KazooClient(hosts='127.0.0.1:'+str(zk_client_port), timeout=60.0)
+    logging.info('Installing kafka in ' + kafkabase)
+    os.system("cat " + kafka_bdir + kafka_dl + " | tar -xpzf - -C " + kafkabase)
+
+    if zookeeper_ssl_params['ssl_enable']:
+        with open(kafkabase + basefile + "/bin/kafka-run-class.sh", 'r') as file:
+             lines = file.readlines()
+             zoo_ssl_jvm_flags = "KAFKA_OPTS=\"\n\
+                -Dzookeeper.clientCnxnSocket=org.apache.zookeeper.ClientCnxnSocketNetty\n\
+                -Dzookeeper.client.secure=true\n\
+                -Dzookeeper.ssl.keyStore.location="+zookeeper_ssl_params['ssl_keystore']+'\n'+"\
+                -Dzookeeper.ssl.keyStore.password=c0ntrail123\n\
+                -Dzookeeper.ssl.trustStore.location="+zookeeper_ssl_params['ssl_truststore']+'\n'+"\
+                -Dzookeeper.ssl.trustStore.password=c0ntrail123\n\
+                \""+'\n'
+
+        lines.insert(311, zoo_ssl_jvm_flags)
+        with open(kafkabase + basefile + "/bin/kafka-run-class.sh", 'w') as file:
+            file.writelines(lines)
+
+        logging.info('Check zookeeper in %d' % zk_client_port)
+        zk = KazooClient(hosts='127.0.0.1:'+str(zk_client_port),
+                 timeout=60.0, use_ssl=True,
+                 keyfile=zookeeper_ssl_params['ssl_keyfile'],
+                 certfile=zookeeper_ssl_params['ssl_certfile'],
+                 ca=zookeeper_ssl_params['ssl_ca_cert'])
+    else:
+        logging.info('Check zookeeper in %d' % zk_client_port)
+        zk = KazooClient(hosts='127.0.0.1:'+str(zk_client_port), timeout=60.0)
+
     try:
         zk.start()
         zk.delete("/brokers", recursive=True) 
@@ -60,8 +90,6 @@ def start_kafka(zk_client_port, broker_listen_port, broker_id=0):
         zk.stop()
         return False
     zk.stop()
-    logging.info('Installing kafka in ' + kafkabase)
-    os.system("cat " + kafka_bdir + kafka_dl + " | tar -xpzf - -C " + kafkabase)
 
     logging.info('kafka Port %d' % broker_listen_port)
  
@@ -82,6 +110,7 @@ def start_kafka(zk_client_port, broker_listen_port, broker_id=0):
         [("#!/bin/sh", "#!/bin/sh -x")])
     output,_ = call_command_("chmod +x " + kafkabase + basefile + "/bin/kafka-server-stop.sh") 
 
+    logging.info('Starting Kafka Daemon')
     # Extra options for JMX : -Djava.net.preferIPv4Stack=true -Djava.rmi.server.hostname=xx.xx.xx.xx
     output,_ = call_command_(kafkabase + basefile + "/bin/kafka-server-start.sh -daemon " + kafkabase + basefile + "/config/server.properties")
 

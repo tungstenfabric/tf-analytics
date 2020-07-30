@@ -86,10 +86,20 @@ class Controller(object):
         self._config_handler = SnmpConfigHandler(self._sandesh,
             self._config.rabbitmq_params(), self._config.cassandra_params(),
             host_ip)
-        self._consistent_scheduler = ConsistentScheduler(self._config._name,
-            zookeeper=self._config.zookeeper_server(),
-            delete_hndlr=self._del_uves, logger=self._logger,
-            cluster_id=self._config.cluster_id())
+        if self._config.zookeeper_ssl_enable:
+            self._consistent_scheduler = ConsistentScheduler(self._config._name,
+                zookeeper=self._config.zookeeper_server(),
+                delete_hndlr=self._del_uves, logger=self._logger,
+                cluster_id=self._config.cluster_id(),
+                zookeeper_ssl_enable=self._config.zookeeper_ssl_enable,
+                zookeeper_ssl_keyfile=self._config.zookeeper_ssl_keyfile,
+                zookeeper_ssl_certfile=self._config.zookeeper_ssl_certfile,
+                zookeeper_ssl_ca_cert=self._config.zookeeper_ssl_ca_cert)
+        else:
+            self._consistent_scheduler = ConsistentScheduler(self._config._name,
+                zookeeper=self._config.zookeeper_server(),
+                delete_hndlr=self._del_uves, logger=self._logger,
+                cluster_id=self._config.cluster_id())
 
     def _make_if_cdata(self, data):
         if_cdata = {}

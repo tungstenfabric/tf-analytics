@@ -126,6 +126,22 @@ public:
         std::string ca_cert;
     };
 
+    struct Zookeeper {
+        Zookeeper() :
+            ssl_enable(false),
+            keyfile(),
+            certfile(),
+            ca_cert(),
+            zookeeper_ssl_file_ccat() {}
+        bool ssl_enable;
+        std::string keyfile;
+        std::string certfile;
+        std::string ca_cert;
+        std::string ssl_password;
+        std::string zookeeper_ssl_file_ccat;
+        //This string will combine keyfile,ca_cert and certfile
+    };
+
     Options();
     bool Parse(EventManager &evm, int argc, char **argv);
     void ParseReConfig();
@@ -243,6 +259,10 @@ public:
         return configdb_options_;
     }
 
+    const Zookeeper get_zookeeper_options() const {
+        return zookeeper_options_;
+    }
+
 private:
     void Process(int argc, char *argv[],
             boost::program_options::options_description &cmdline_options);
@@ -310,6 +330,7 @@ private:
     uint32_t api_server_checksum_;
     std::vector<std::string> api_server_list_;
     bool api_server_use_ssl_;
+    Zookeeper zookeeper_options_;
 
     boost::program_options::options_description config_file_options_;
     DbWriteOptions db_write_options_;
