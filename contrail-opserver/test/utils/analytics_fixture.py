@@ -3543,7 +3543,7 @@ class AnalyticsFixture(fixtures.Fixture):
             instance = self.run_py_daemon(args)
         else:
             instance = subprocess.Popen(args, stdout=subprocess.PIPE,
-                             stderr=subprocess.PIPE,
+                             stderr=subprocess.PIPE, bufsize=0,
                              preexec_fn = preexec)
       
         pmap = {} 
