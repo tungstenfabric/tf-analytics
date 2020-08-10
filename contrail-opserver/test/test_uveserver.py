@@ -252,6 +252,7 @@ class UVEServerTest(unittest.TestCase):
         pa = ParallelAggregator(uvevn2)
         res = pa.aggregate("abc-corp:vn-00", False)
 
+        logging.info(json.dumps(res, indent=4))
         attached_policies = \
             uvevn["abc-corp:vn-00"]['UVEVirtualNetwork'][
                 'attached_policies']["10.10.10.10"]
@@ -273,7 +274,6 @@ class UVEServerTest(unittest.TestCase):
             sorted(["10.10.10.10", "10.10.10.11"]),
             sorted([res['UVEVirtualNetwork']['total_acl_rules'][0][1],
                     res['UVEVirtualNetwork']['total_acl_rules'][1][1]]))
-        logging.info(json.dumps(res, indent=4, sort_keys=True))
 
     def test_list_union_agg(self):
         logging.info("%%% Running test_list_union_agg %%%")
