@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "fd02e55b_a2147a64",
+        "filename": "contrail-opserver/uveserver.py",
+        "patchSetId": 6
+      },
+      "lineNbr": 342,
+      "author": {
+        "id": 752
+      },
+      "writtenOn": "2020-08-11T05:34:23Z",
+      "side": 1,
+      "message": "Please add a NOTICE message here, mentioning that a big size UVE is dropped and also log its name, source, module etc.",
+      "revId": "12baa1629b9c1269a7f772306f42462dfa06306d",
+      "serverId": "c72cd27d-1743-4a55-84a4-cd13b8400c52",
+      "unresolved": true
+    }
+  ]
+}
