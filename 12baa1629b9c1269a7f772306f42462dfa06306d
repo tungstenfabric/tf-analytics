@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "10f75b49_2d0f94a5",
+        "filename": "contrail-opserver/partition_handler.py",
+        "patchSetId": 6
+      },
+      "lineNbr": 774,
+      "author": {
+        "id": 717
+      },
+      "writtenOn": "2020-08-11T18:24:10Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "40228ffc_b94c3497",
+      "range": {
+        "startLine": 773,
+        "startChar": 37,
+        "endLine": 774,
+        "endChar": 39
+      },
+      "revId": "12baa1629b9c1269a7f772306f42462dfa06306d",
+      "serverId": "c72cd27d-1743-4a55-84a4-cd13b8400c52",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "fd02e55b_a2147a64",
         "filename": "contrail-opserver/uveserver.py",
         "patchSetId": 6
@@ -57,6 +81,24 @@
       "revId": "12baa1629b9c1269a7f772306f42462dfa06306d",
       "serverId": "c72cd27d-1743-4a55-84a4-cd13b8400c52",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "f2668487_5f828129",
+        "filename": "contrail-opserver/uveserver.py",
+        "patchSetId": 6
+      },
+      "lineNbr": 342,
+      "author": {
+        "id": 717
+      },
+      "writtenOn": "2020-08-11T18:24:10Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "fac2d5a7_e9d3dec5",
+      "revId": "12baa1629b9c1269a7f772306f42462dfa06306d",
+      "serverId": "c72cd27d-1743-4a55-84a4-cd13b8400c52",
+      "unresolved": false
     }
   ]
 }
