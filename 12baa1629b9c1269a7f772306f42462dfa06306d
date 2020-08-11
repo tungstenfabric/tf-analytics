@@ -2,6 +2,29 @@
   "comments": [
     {
       "key": {
+        "uuid": "40228ffc_b94c3497",
+        "filename": "contrail-opserver/partition_handler.py",
+        "patchSetId": 6
+      },
+      "lineNbr": 774,
+      "author": {
+        "id": 213
+      },
+      "writtenOn": "2020-08-11T05:53:53Z",
+      "side": 1,
+      "message": "Lets add a comment here also on reasoning for this",
+      "range": {
+        "startLine": 773,
+        "startChar": 37,
+        "endLine": 774,
+        "endChar": 39
+      },
+      "revId": "12baa1629b9c1269a7f772306f42462dfa06306d",
+      "serverId": "c72cd27d-1743-4a55-84a4-cd13b8400c52",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "fd02e55b_a2147a64",
         "filename": "contrail-opserver/uveserver.py",
         "patchSetId": 6
@@ -13,6 +36,24 @@
       "writtenOn": "2020-08-11T05:34:23Z",
       "side": 1,
       "message": "Please add a NOTICE message here, mentioning that a big size UVE is dropped and also log its name, source, module etc.",
+      "revId": "12baa1629b9c1269a7f772306f42462dfa06306d",
+      "serverId": "c72cd27d-1743-4a55-84a4-cd13b8400c52",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "fac2d5a7_e9d3dec5",
+        "filename": "contrail-opserver/uveserver.py",
+        "patchSetId": 6
+      },
+      "lineNbr": 342,
+      "author": {
+        "id": 213
+      },
+      "writtenOn": "2020-08-11T05:53:53Z",
+      "side": 1,
+      "message": "Also add bug ID in the comments so that someone can refer it to know the reasoning for the same. But adding a log is must since we can\u0027t silently drop these UVEs. Better thing would be to add a counter or some other stats.",
+      "parentUuid": "fd02e55b_a2147a64",
       "revId": "12baa1629b9c1269a7f772306f42462dfa06306d",
       "serverId": "c72cd27d-1743-4a55-84a4-cd13b8400c52",
       "unresolved": true
