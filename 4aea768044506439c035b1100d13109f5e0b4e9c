@@ -22,6 +22,30 @@
       "revId": "4aea768044506439c035b1100d13109f5e0b4e9c",
       "serverId": "c72cd27d-1743-4a55-84a4-cd13b8400c52",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "a5a0b7e3_607ce0e7",
+        "filename": "contrail-opserver/uveserver.py",
+        "patchSetId": 8
+      },
+      "lineNbr": 350,
+      "author": {
+        "id": 717
+      },
+      "writtenOn": "2020-08-12T13:48:55Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "c0cb0448_10f3a2bd",
+      "range": {
+        "startLine": 350,
+        "startChar": 47,
+        "endLine": 350,
+        "endChar": 54
+      },
+      "revId": "4aea768044506439c035b1100d13109f5e0b4e9c",
+      "serverId": "c72cd27d-1743-4a55-84a4-cd13b8400c52",
+      "unresolved": false
     }
   ]
 }
