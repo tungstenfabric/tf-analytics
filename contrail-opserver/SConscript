@@ -180,7 +180,7 @@ util_sources = [
     '../contrail-collector/test/utils/mockredis',
     '../contrail-collector/test/utils/mockstunnel',
     '../contrail-collector/test/utils/mockcassandra',
-    '../../../controller/src/config/test/utils/mockzoo',
+    '../contrail-collector/test/utils/mockzoo',
 ]
 utils_mkdir = OpEnv.Command("util_sources", [], Mkdir('utils'))
 for util in util_sources:
