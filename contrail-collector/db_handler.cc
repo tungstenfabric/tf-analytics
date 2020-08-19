@@ -1760,9 +1760,13 @@ DbHandlerInitializer::DbHandlerInitializer(EventManager *evm,
     zoo_locked_(false) {
     if (use_zookeeper_) {
         zoo_client_.reset(new ZookeeperClient(db_name_.c_str(),
-            zookeeper_server_list_.c_str()));
+            zookeeper_server_list_.c_str()/*, NULL, false*/));
         zoo_mutex_.reset(new ZookeeperLock(zoo_client_.get(), "/collector"));
     }
+}
+
+void zk_watch(zhandle_t *zh, int type,
+        int state, const char *path,void *watcherCtx) {
 }
 
 DbHandlerInitializer::DbHandlerInitializer(EventManager *evm,
