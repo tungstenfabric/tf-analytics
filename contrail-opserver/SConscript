@@ -264,12 +264,21 @@ if OpEnv['OPT'] == 'coverage':
     OpEnv.AlwaysBuild(run_coverage_cmd)
     test_cmd = run_coverage_cmd
 elif OpEnv['PYTESTARG']:
-    test_cmd = OpEnv.Command(OpEnv['PYTESTARG'] + '.log',
-            sdist_gen + sandesh_pkgs,
-            testr_str % ('--testrun="%s"' % (OpEnv['PYTESTARG']),
-            OpEnv['PYTESTARG']))
-    OpEnv.Depends(test_cmd, [OpEnv['TOP']+x for x in test_depends])
-    OpEnv.Depends(test_cmd, sdist_depends)
+    skip_list = []
+    if skip_path = GetOption('skip_tests'):
+        try:
+            with open(skip_path) as skip_file:
+                    skip_list = skip_file.readlines()
+                    skip_list = [test.strip() for test in skip_list]
+        except:
+            pass
+    if not OpEnv['PYTESTARG'] in skip_list:
+        test_cmd = OpEnv.Command(OpEnv['PYTESTARG'] + '.log',
+                sdist_gen + sandesh_pkgs,
+                testr_str % ('--testrun="%s"' % (OpEnv['PYTESTARG']),
+                OpEnv['PYTESTARG']))
+        OpEnv.Depends(test_cmd, [OpEnv['TOP']+x for x in test_depends])
+        OpEnv.Depends(test_cmd, sdist_depends)
 else:
     test_cmd = OpEnv.SetupPyTestSuiteWithDeps(sdist_gen + sandesh_pkgs,
                              sdist_depends=test_depends, use_tox=True)
