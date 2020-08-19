@@ -20,6 +20,7 @@
 #include "syslog_collector.h"
 #include "db_handler.h"
 #include "options.h"
+#include "zookeeper/zookeeper.h"
 
 class Ruleeng;
 class ProtobufCollector;
