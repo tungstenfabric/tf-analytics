@@ -8,9 +8,9 @@
  */
 
 /**
- * stores topology information
+ * stores snmp collector information
  */
-struct TopologyInfo {
+struct SnmpCollectorInfo {
     1: string name (key="ObjectAnalyticsSNMPInfo")
     2: optional bool deleted
     3: list<string> members
@@ -19,9 +19,9 @@ struct TopologyInfo {
 }
 
 /**
- * @description: uve to send topology information
+ * @description: uve to send snmp collector information
  * @object: analytics-node
  */
-uve sandesh TopologyUVE {
-    1: TopologyInfo data
+uve sandesh SnmpCollectorUVE {
+    1: SnmpCollectorInfo data
 }
