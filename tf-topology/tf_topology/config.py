@@ -29,7 +29,7 @@ class CfgParser(object):
     def parse(self):
         '''
             command line example
-contrail-topology [-h] [-c FILE]
+tf-topology [-h] [-c FILE]
                          [--analytics_api ANALYTICS_API [ANALYTICS_API ...]]
                          [--collectors COLLECTORS [COLLECTORS ...]]
                          [--log_file LOG_FILE] [--log_local]

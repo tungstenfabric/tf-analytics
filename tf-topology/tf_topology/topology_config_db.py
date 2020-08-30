@@ -3,7 +3,7 @@
 #
 
 """
-This file contains config data model for contrail-topology
+This file contains config data model for tf-topology
 """
 
 from builtins import str

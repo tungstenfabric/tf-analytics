@@ -43,9 +43,9 @@ def requirements(filename):
     return list(filter(bool, map(lambda y: c.sub('', y).strip(), lines)))
 
 setuptools.setup(
-        name='contrail_topology',
+        name='tf_topology',
         version='0.1.0',
-        description='contrail topology package.',
+        description='tf topology package.',
         long_description=open('README.txt').read(),
         packages=setuptools.find_packages(),
 
@@ -58,7 +58,7 @@ setuptools.setup(
         install_requires=requirements('requirements.txt'),
         entry_points = {
           'console_scripts' : [
-            'contrail-topology = contrail_topology.main:main',
+            'tf-topology = tf_topology.main:main',
             ],
         },
         cmdclass={

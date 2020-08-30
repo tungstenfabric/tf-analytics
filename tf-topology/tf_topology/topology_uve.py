@@ -15,7 +15,7 @@ from sandesh_common.vns.constants import ModuleNames, CategoryNames,\
 class LinkUve(object):
     def __init__(self, conf):
         self._conf = conf
-        module = Module.CONTRAIL_TOPOLOGY
+        module = Module.TF_TOPOLOGY
         self._moduleid = ModuleNames[module]
         node_type = Module2NodeType[module]
         self._node_type_name = NodeTypeNames[node_type]
@@ -31,7 +31,7 @@ class LinkUve(object):
                                       self._conf.random_collectors,
                                       self._node_type_name,
                                       self._conf.http_port(),
-                                      ['contrail_topology.sandesh'],
+                                      ['tf_topology.sandesh'],
                                       config=self._conf.sandesh_config())
         sandesh_global.set_logging_params(
             enable_local_log=self._conf.log_local(),

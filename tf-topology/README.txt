@@ -1,17 +1,17 @@
 =====================
-Contrail Topology
+TF Topology
 =====================
 
-Contrail Topology periodically looks at snmp info and corelate
+TF Topology periodically looks at snmp info and corelate
 and update topology table, which is used by UI to draw maps
 
 daemon runs on analytics node 
 
-contrail-topology -c /etc/contrail/contrail-topology.conf 
+tf-topology -c /etc/contrail/tf-topology.conf 
 
 Command Line
 ============
-contrail-topology [-h] [-c FILE]
+tf-topology [-h] [-c FILE]
                          [--analytics_api ANALYTICS_API [ANALYTICS_API ...]]
                          [--collectors COLLECTORS [COLLECTORS ...]]
                          [--log_file LOG_FILE] [--log_local]
