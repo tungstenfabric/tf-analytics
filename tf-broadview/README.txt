@@ -1,18 +1,18 @@
-=====================
-Contrail Broadview
-=====================
+========================
+Tungstenfabric Broadview
+========================
 
-Contrail Broadview periodically polls switches with
+Tungstenfabric Broadview periodically polls switches with
 broadview supported asics (Trident and Tomahawk) and collets 
 data using the rest API and creates contrail uve
 
 daemon runs on analytics node 
 
-contrail-broadview -c /etc/contrail/contrail-broadview.conf 
+tf-broadview -c /etc/tungstenfabric/tf-broadview.conf 
 
 Command Line
 ============
-contrail-broadview [-h] [-c FILE]
+tf-broadview [-h] [-c FILE]
                         [--analytics_api ANALYTICS_API [ANALYTICS_API ...]]
                         [--collectors COLLECTORS [COLLECTORS ...]]
                         [--log_file LOG_FILE] [--log_local]

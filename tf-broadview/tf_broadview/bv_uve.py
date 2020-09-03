@@ -39,7 +39,7 @@ class BroadViewOL(object):
             )
     def __init__(self, conf):
         self._conf = conf
-        module = Module.CONTRAIL_BROADVIEW
+        module = Module.TF_BROADVIEW
         self._moduleid = ModuleNames[module]
         node_type = Module2NodeType[module]
         self._node_type_name = NodeTypeNames[node_type]
@@ -55,7 +55,7 @@ class BroadViewOL(object):
                                       self._conf.collectors(),
                                       self._node_type_name,
                                       self._conf.http_port(),
-                                      ['contrail_broadview.gen_py'],
+                                      ['tf_broadview.gen_py'],
                                       config=self._conf.sandesh_config())
         sandesh_global.set_logging_params(
             enable_local_log=self._conf.log_local(),
