@@ -13,7 +13,7 @@ from pysandesh.gen_py.sandesh.ttypes import SandeshLevel
 from . import device_config
 
 class CfgParser(object):
-    CONF_DEFAULT_PATH = '/etc/contrail/contrail-broadview.conf'
+    CONF_DEFAULT_PATH = '/etc/tungstenfabric/tf-broadview.conf'
     def __init__(self, argv):
         self._args = None
         self.__pat = None
@@ -22,7 +22,7 @@ class CfgParser(object):
     def parse(self):
         '''
             command line example
-contrail-broadview [-h] [-c FILE]
+tf-broadview [-h] [-c FILE]
                          [--analytics_api ANALYTICS_API [ANALYTICS_API ...]]
                          [--collectors COLLECTORS [COLLECTORS ...]]
                          [--log_file LOG_FILE] [--log_local]

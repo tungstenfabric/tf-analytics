@@ -14,33 +14,33 @@ sources = [
     'CHANGES.txt',
     'LICENSE.txt',
     'README.txt',
-    'contrail-broadview.conf',
+    'tf-broadview.conf',
     'requirements.txt',
     'setup.py',
-    'contrail_broadview/__init__.py',
-    'contrail_broadview/main.py',
-    'contrail_broadview/client.py',
-    'contrail_broadview/controller.py',
-    'contrail_broadview/config.py',
-    'contrail_broadview/bv_uve.py',
-    'contrail_broadview/device_config.py',
+    'tf_broadview/__init__.py',
+    'tf_broadview/main.py',
+    'tf_broadview/client.py',
+    'tf_broadview/controller.py',
+    'tf_broadview/config.py',
+    'tf_broadview/bv_uve.py',
+    'tf_broadview/device_config.py',
     ]
 
-src_sandesh = env.SandeshGenPy('broadview.sandesh', 'contrail_broadview/')
+src_sandesh = env.SandeshGenPy('broadview.sandesh', 'tf_broadview/')
 
 version = '0.0.1'
 #with open("CHANGES.txt") as f:
 #    version = f.read().split(",")[0][1:]
 
 cd_cmd = 'cd ' + Dir('.').path + ' && '
-sdist_gen = env.Command('dist/contrail-broadview-' \
+sdist_gen = env.Command('dist/tf-broadview-' \
         + version + '.tar.gz',
         sources + src_sandesh, cd_cmd + 'python setup.py sdist')
-env.Alias('controller/src/analytics/contrail-broadview/' + \
-        'contrail_broadview:sdist', sdist_gen)
+env.Alias('controller/src/analytics/tf-broadview/' + \
+        'tf_broadview:sdist', sdist_gen)
 
 src_rules = [env.Install(Dir("."),
-    '#controller/src/analytics/contrail-broadview/' + f) for f in sources]
+    '#controller/src/analytics/tf-broadview/' + f) for f in sources]
 src_rules.append(env.Install(Dir("."),
         '#controller/src/opserver/run_tests.sh'))
 
@@ -53,7 +53,7 @@ test_sources = [
 ]
 
 src_rules += [env.Install(Dir("."),
-    '#controller/src/analytics/contrail-broadview/' + f) for f in test_sources]
+    '#controller/src/analytics/tf-broadview/' + f) for f in test_sources]
 
 import os
 
@@ -68,7 +68,7 @@ else:
 
 testr_str = 'bash -c "set -o pipefail && cd ' + Dir(top_dir).path + \
             ' && tools_path=../config/common/tests/' + \
-            ' omit_list="contrail_broadview/gen_py"' \
+            ' omit_list="tf_broadview/gen_py"' \
             ' build_top=' + Dir(env['TOP']).path + \
             ' CFLAGS= LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:../../../build/lib' \
             ' python setup.py run_tests %s 2>&1 |' \
@@ -104,7 +104,7 @@ if 'BUILD_ONLY' in env['ENV']:
 env.Depends(test_cmd, [env['TOP']+x for x in test_depends])
 env.Depends(test_cmd, src_rules)
 
-env.Alias('controller/src/analytics/contrail-broadview:test', test_cmd)
+env.Alias('controller/src/analytics/tf-broadview:test', test_cmd)
 env.AlwaysBuild(test_cmd)
 
 doc_files = []
@@ -119,9 +119,9 @@ if 'install' in BUILD_TARGETS:
                               env['PYTHON_INSTALL_OPT'])
     env.Alias('install', install_cmd)
 env.Alias('install', env.Install(env['INSTALL_CONF'],
-            'contrail-broadview.conf'))
+            'tf-broadview.conf'))
 env.Alias('install', env.Install(
-    env['INSTALL_MESSAGE_DOC'] + '/contrail-broadview/', doc_files))
+    env['INSTALL_MESSAGE_DOC'] + '/tf-broadview/', doc_files))
 
 # Local Variables:
 # mode: python

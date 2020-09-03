@@ -43,9 +43,9 @@ def requirements(filename):
     return list(filter(bool, map(lambda y: c.sub('', y).strip(), lines)))
 
 setuptools.setup(
-        name='contrail_broadview',
+        name='tf_broadview',
         version='0.1.0',
-        description='contrail broadview package.',
+        description='tungstenfabric broadview package.',
         long_description=open('README.txt').read(),
         packages=setuptools.find_packages(),
 
@@ -58,7 +58,7 @@ setuptools.setup(
         install_requires=requirements('requirements.txt'),
         entry_points = {
           'console_scripts' : [
-            'contrail-broadview = contrail_broadview.main:main',
+            'tf-broadview = tf_broadview.main:main',
             ],
         },
         cmdclass={
