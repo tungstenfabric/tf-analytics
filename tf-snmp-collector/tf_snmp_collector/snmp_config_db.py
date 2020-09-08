@@ -3,7 +3,7 @@
 #
 
 """
-This file contains config data model for contrail-snmp-collector
+This file contains config data model for tf-snmp-collector
 """
 
 from builtins import str

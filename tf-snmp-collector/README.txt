@@ -10,14 +10,14 @@ consumed by analytics application and GUI
 Typically it is installed in the cron job with desired
 frequency of update::
 
-    contrail-snmp-collector -c /etc/contrail/contrail-snmp-collector.conf \
+    tf-snmp-collector -c /etc/contrail/tf-snmp-collector.conf \
         --file /etc/contrail/snmp-devices.ini
 
 Command Line
 ============
 
-contrail-snmp-collector -h
-usage: contrail-snmp-collector [-h] [-c FILE]
+tf-snmp-collector -h
+usage: tf-snmp-collector [-h] [-c FILE]
                              [--collectors COLLECTORS [COLLECTORS ...]]
                              [--log_file LOG_FILE] [--log_local]
                              [--log_category LOG_CATEGORY]

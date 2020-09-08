@@ -13,20 +13,20 @@ sources = [
     'CHANGES.txt',
     'LICENSE.txt',
     'README.txt',
-    'contrail-snmp-collector.conf',
+    'tf-snmp-collector.conf',
     'snmp.conf',
     'requirements.txt',
     'setup.py',
-    'contrail_snmp_collector/__init__.py',
-    'contrail_snmp_collector/main.py',
-    'contrail_snmp_collector/snmpcfg.py',
-    'contrail_snmp_collector/snmpctrlr.py',
-    'contrail_snmp_collector/snmp.py',
-    'contrail_snmp_collector/snmpuve.py',
-    'contrail_snmp_collector/snmp_config_db.py',
-    'contrail_snmp_collector/snmp_config_handler.py',
-    'contrail_snmp_collector/device_config.py',
-    'contrail_snmp_collector/scanner.py',
+    'tf_snmp_collector/__init__.py',
+    'tf_snmp_collector/main.py',
+    'tf_snmp_collector/snmpcfg.py',
+    'tf_snmp_collector/snmpctrlr.py',
+    'tf_snmp_collector/snmp.py',
+    'tf_snmp_collector/snmpuve.py',
+    'tf_snmp_collector/snmp_config_db.py',
+    'tf_snmp_collector/snmp_config_handler.py',
+    'tf_snmp_collector/device_config.py',
+    'tf_snmp_collector/scanner.py',
     ]
 
 common_sources = [
@@ -36,13 +36,13 @@ common_sources = [
 
 mibs = Glob('mibs/*')
 
-prouter_pkg = env.SandeshGenPy('prouter.sandesh', 'contrail_snmp_collector/sandesh/', False)
-snmp_collector_info_pkg = env.SandeshGenPy('snmp_collector_info.sandesh', 'contrail_snmp_collector/sandesh/', False)
-nodeinfo_pkg = env.SandeshGenPy('#src/contrail-common/base/sandesh/nodeinfo.sandesh', 'contrail_snmp_collector/sandesh/', False)
-cpuinfo_pkg = env.SandeshGenPy('#src/contrail-common/base/sandesh/cpuinfo.sandesh', 'contrail_snmp_collector/sandesh/nodeinfo/', False)
-process_info_pkg = env.SandeshGenPy('#src/contrail-common/base/sandesh/process_info.sandesh', 'contrail_snmp_collector/sandesh/nodeinfo/', False)
+prouter_pkg = env.SandeshGenPy('prouter.sandesh', 'tf_snmp_collector/sandesh/', False)
+snmp_collector_info_pkg = env.SandeshGenPy('snmp_collector_info.sandesh', 'tf_snmp_collector/sandesh/', False)
+nodeinfo_pkg = env.SandeshGenPy('#src/contrail-common/base/sandesh/nodeinfo.sandesh', 'tf_snmp_collector/sandesh/', False)
+cpuinfo_pkg = env.SandeshGenPy('#src/contrail-common/base/sandesh/cpuinfo.sandesh', 'tf_snmp_collector/sandesh/nodeinfo/', False)
+process_info_pkg = env.SandeshGenPy('#src/contrail-common/base/sandesh/process_info.sandesh', 'tf_snmp_collector/sandesh/nodeinfo/', False)
 
-common_sources_rules = [env.Install('contrail_snmp_collector', f) for f in common_sources]
+common_sources_rules = [env.Install('tf_snmp_collector', f) for f in common_sources]
 
 sdist_depends = [ prouter_pkg, snmp_collector_info_pkg, nodeinfo_pkg,
                   cpuinfo_pkg, process_info_pkg, common_sources_rules ]
@@ -56,14 +56,14 @@ version = '0.2.0'               # Make this match what is in setup.py
 #    version = f.read().split(",")[0][1:]
 
 cd_cmd = 'cd ' + Dir('.').path + ' && '
-sdist_gen = env.Command('dist/contrail_snmp_collector-' \
+sdist_gen = env.Command('dist/tf_snmp_collector-' \
         + version + '.tar.gz',
         sources + sdist_depends, cd_cmd + 'python setup.py sdist')
-env.Alias('src/contrail-analytics/contrail-snmp-collector/' + \
-        'contrail_snmp_collector:sdist', sdist_gen)
+env.Alias('src/contrail-analytics/tf-snmp-collector/' + \
+        'tf_snmp_collector:sdist', sdist_gen)
 
 src_rules = [env.Install(Dir("."),
-    '#src/contrail-analytics/contrail-snmp-collector/' + f) for f in sources]
+    '#src/contrail-analytics/tf-snmp-collector/' + f) for f in sources]
 src_rules += [env.Install(Dir("."), f) for f in common_sources]
 src_rules.append(env.Install(Dir("."),
         '#src/contrail-analytics/contrail-opserver/run_tests.sh'))
@@ -76,7 +76,7 @@ test_sources = [
     'test',
     ]
 src_rules += [env.Install(Dir("."),
-    '#src/contrail-analytics/contrail-snmp-collector/' + f) \
+    '#src/contrail-analytics/tf-snmp-collector/' + f) \
     for f in test_sources]
 
 import os
@@ -92,7 +92,7 @@ else:
 
 testr_str = 'bash -c "set -o pipefail && cd ' + Dir(top_dir).path + \
             ' && tools_path=../config/common/tests/' + \
-            ' omit_list="contrail_snmp_collector/gen_py"' \
+            ' omit_list="tf_snmp_collector/gen_py"' \
             ' build_top=' + Dir(env['TOP']).path + \
             ' CFLAGS= LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:../../../build/lib' \
             ' python setup.py run_tests %s 2>&1 |' \
@@ -129,7 +129,7 @@ env.Depends(test_cmd, [env['TOP']+x for x in test_depends])
 env.Depends(test_cmd, src_rules)
 # XXX mark this as flaky until "import vnc_api" issue is resolved
 env.Alias('flaky-test', test_cmd)
-env.Alias('src/contrail-analytics/contrail-snmp-collector:flaky-test', test_cmd)
+env.Alias('src/contrail-analytics/tf-snmp-collector:flaky-test', test_cmd)
 env.AlwaysBuild(test_cmd)
 
 doc_files = []
@@ -145,12 +145,12 @@ if 'install' in BUILD_TARGETS:
                               env['PYTHON_INSTALL_OPT'])
     env.Alias('install', install_cmd)
 env.Alias('install', env.Install(env['INSTALL_CONF'],
-            'contrail-snmp-collector.conf'))
+            'tf-snmp-collector.conf'))
 env.Alias('install', env.Install(env['INSTALL_CONF'], 'snmp.conf'))
 env.Alias('install', env.Install(env['INSTALL_DOC'] + '/../mibs/netsnmp',
             mibs))
 env.Alias('install', env.Install(
-    env['INSTALL_MESSAGE_DOC'] + '/contrail-snmp-collector/', doc_files))
+    env['INSTALL_MESSAGE_DOC'] + '/tf-snmp-collector/', doc_files))
 
 # Local Variables:
 # mode: python
