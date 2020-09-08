@@ -3,7 +3,7 @@
  */
 
 /**
- *  Definitions of structures added by contrail-snmp-collector that go into
+ *  Definitions of structures added by tf-snmp-collector that go into
  *  Physical Router UVE.
  */
 
@@ -206,7 +206,7 @@ struct IfIndexOperStatusTable {
 }
 
 /**
- * Physical Router UVE data provided by contrail-snmp-collector.
+ * Physical Router UVE data provided by tf-snmp-collector.
  * This includes the raw SNMP tables polled from the physical router.
  */
 struct PRouterEntry {
@@ -226,7 +226,7 @@ struct PRouterEntry {
 
 /**
  * @description: stores information collected from physical router by
- * contrail-snmp-collector which is later used by contrail-topology
+ * tf-snmp-collector which is later used by contrail-topology
  * @object: prouter
  */
 uve sandesh PRouterUVE {
@@ -241,7 +241,7 @@ struct PRouterFlowEntry {
 
 /**
  * @description: stores flow export ip info collected from physical router by
- * contrail-snmp-collector
+ * tf-snmp-collector
  * @object: prouter
  */
 uve sandesh PRouterFlowUVE {

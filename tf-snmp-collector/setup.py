@@ -44,7 +44,7 @@ def requirements(filename):
                 lambda y: c.sub('', y).strip(), lines))
 
 setuptools.setup(
-        name='contrail_snmp_collector',
+        name='tf_snmp_collector',
         version='0.2.0',
         description='contrail snmp collector package.',
         long_description=open('README.txt').read(),
@@ -60,8 +60,8 @@ setuptools.setup(
 
         entry_points = {
           'console_scripts' : [
-            'contrail-snmp-collector = contrail_snmp_collector.main:emain',
-            'contrail-snmp-scanner = contrail_snmp_collector.scanner:main',
+            'tf-snmp-collector = tf_snmp_collector.main:emain',
+            'tf-snmp-scanner = tf_snmp_collector.scanner:main',
             ],
         },
         cmdclass={

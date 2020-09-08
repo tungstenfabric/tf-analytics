@@ -903,7 +903,7 @@ class TestAlarmPlugins(unittest.TestCase):
                     uve_data={'NodeStatus': {'process_status': [
                         {
                             'instance_id': '0',
-                            'module_id': 'contrail-snmp-collector',
+                            'module_id': 'tf-snmp-collector',
                             'state': 'Functional'
                         },
                         {
@@ -922,7 +922,7 @@ class TestAlarmPlugins(unittest.TestCase):
                     uve_data={'NodeStatus': {'process_status': [
                         {
                             'instance_id': '0',
-                            'module_id': 'contrail-snmp-collector',
+                            'module_id': 'tf-snmp-collector',
                             'state': 'Functional'
                         },
                         {
@@ -972,7 +972,7 @@ class TestAlarmPlugins(unittest.TestCase):
                     uve_data={'NodeStatus': {'process_status': [
                         {
                             'instance_id': '0',
-                            'module_id': 'contrail-snmp-collector',
+                            'module_id': 'tf-snmp-collector',
                             'state': 'Non-Functional'
                         },
                         {
@@ -982,7 +982,7 @@ class TestAlarmPlugins(unittest.TestCase):
                         },
                         {
                             'instance_id': '1',
-                            'module_id': 'contrail-snmp-collector',
+                            'module_id': 'tf-snmp-collector',
                             'state': 'Non-Functional'
                         }
                     ]}}
@@ -1009,7 +1009,7 @@ class TestAlarmPlugins(unittest.TestCase):
                                         'json_variables': {
                                             'NodeStatus.process_status.'
                                                 'module_id':
-                                                    '"contrail-snmp-collector"',
+                                                    '"tf-snmp-collector"',
                                             'NodeStatus.process_status.'
                                                 'instance_id': '0'
                                         }
@@ -1019,7 +1019,7 @@ class TestAlarmPlugins(unittest.TestCase):
                                         'json_variables': {
                                             'NodeStatus.process_status.'
                                                 'module_id':
-                                                    '"contrail-snmp-collector"',
+                                                    '"tf-snmp-collector"',
                                             'NodeStatus.process_status.'
                                                 'instance_id': '1'
                                         }
@@ -1094,7 +1094,7 @@ class TestAlarmPlugins(unittest.TestCase):
                             'process_state': 'PROCESS_STATE_STOPPED'
                         },
                         {
-                            'process_name': 'contrail-snmp-collector',
+                            'process_name': 'tf-snmp-collector',
                             'process_state': 'PROCESS_STATE_RUNNING'
                         }
                     ]}}
@@ -1141,7 +1141,7 @@ class TestAlarmPlugins(unittest.TestCase):
                             'process_state': 'PROCESS_STATE_STOPPED'
                         },
                         {
-                            'process_name': 'contrail-snmp-collector',
+                            'process_name': 'tf-snmp-collector',
                             'process_state': 'PROCESS_STATE_RUNNING'
                         },
                         {

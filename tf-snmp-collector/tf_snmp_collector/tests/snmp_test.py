@@ -20,8 +20,8 @@ mock_pkg.vnc_api = mock_mod
 sys.modules['vnc_api'] = mock_pkg
 sys.modules['vnc_api.vnc_api'] = mock_mod
 
-from contrail_snmp_collector.device_config import DeviceConfig
-from contrail_snmp_collector.snmpctrlr import MaxNinTtime
+from tf_snmp_collector.device_config import DeviceConfig
+from tf_snmp_collector.snmpctrlr import MaxNinTtime
 
 
 class SnmpTest(unittest.TestCase):

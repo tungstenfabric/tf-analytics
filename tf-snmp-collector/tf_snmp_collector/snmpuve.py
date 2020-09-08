@@ -35,7 +35,7 @@ class SnmpUve(object):
 
     def __init__(self, conf, host_ip, instance='0'):
         self._conf = conf
-        module = Module.CONTRAIL_SNMP_COLLECTOR
+        module = Module.TF_SNMP_COLLECTOR
         self._moduleid = ModuleNames[module]
         node_type = Module2NodeType[module]
         self._node_type_name = NodeTypeNames[node_type]
@@ -47,7 +47,7 @@ class SnmpUve(object):
                                       self._conf.random_collectors,
                                       self._node_type_name,
                                       self._conf.http_port(),
-                                      ['contrail_snmp_collector.sandesh'],
+                                      ['tf_snmp_collector.sandesh'],
                                       config=self._conf.sandesh_config())
         sandesh_global.set_logging_params(
             enable_local_log=self._conf.log_local(),
