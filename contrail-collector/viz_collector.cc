@@ -2,6 +2,7 @@
  * Copyright (c) 2013 Juniper Networks, Inc. All rights reserved.
  */
 
+
 #include "viz_collector.h"
 #include <boost/lexical_cast.hpp>
 #include <boost/bind.hpp>
