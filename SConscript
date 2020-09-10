@@ -23,6 +23,7 @@ subdirs_no_dup = [
 subdirs_dup = [
           'contrail-snmp-collector',
           'contrail-topology',
+          'tf-topology'
            ]
 
 variant_dir_map = {}
@@ -30,6 +31,7 @@ variant_dir_map['contrail-collector'] = 'analytics'
 variant_dir_map['contrail-query-engine'] = 'query_engine'
 variant_dir_map['contrail-snmp-collector'] = 'contrail-snmp-collector'
 variant_dir_map['contrail-topology'] = 'contrail-topology'
+variant_dir_map['tf-topology'] = 'tf-topology'
 variant_dir_map['contrail-opserver'] = 'opserver'
 
 include = ['#/src/contrail-analytics', '#/build/include', '#src/contrail-common', '#controller/lib']
