@@ -908,7 +908,7 @@ class TestAlarmPlugins(unittest.TestCase):
                         },
                         {
                             'instance_id': '0',
-                            'module_id': 'contrail-topology',
+                            'module_id': 'tf-topology',
                             'state': 'Functional'
                         }
                     ]}}
@@ -927,7 +927,7 @@ class TestAlarmPlugins(unittest.TestCase):
                         },
                         {
                             'instance_id': '0',
-                            'module_id': 'contrail-topology',
+                            'module_id': 'tf-topology',
                             'state': 'Non-Functional'
                         }
                     ]}}
@@ -954,7 +954,7 @@ class TestAlarmPlugins(unittest.TestCase):
                                         'json_variables': {
                                             'NodeStatus.process_status.'
                                                 'module_id':
-                                                    '"contrail-topology"',
+                                                    '"tf-topology"',
                                             'NodeStatus.process_status.'
                                                 'instance_id': '0'
                                         }
@@ -977,7 +977,7 @@ class TestAlarmPlugins(unittest.TestCase):
                         },
                         {
                             'instance_id': '0',
-                            'module_id': 'contrail-topology',
+                            'module_id': 'tf-topology',
                             'state': 'Functional'
                         },
                         {
@@ -1073,7 +1073,7 @@ class TestAlarmPlugins(unittest.TestCase):
                 input=TestInput(uve_key='ObjectAnalyticsAlarmInfo:host1',
                     uve_data={'NodeStatus': {'process_info': [
                         {
-                            'process_name': 'contrail-topology',
+                            'process_name': 'tf-topology',
                             'process_state': 'PROCESS_STATE_RUNNING'
                         },
                         {
@@ -1090,7 +1090,7 @@ class TestAlarmPlugins(unittest.TestCase):
                 input=TestInput(uve_key='ObjectAnalyticsAlarmInfo:host1',
                     uve_data={'NodeStatus': {'process_info': [
                         {
-                            'process_name': 'contrail-topology',
+                            'process_name': 'tf-topology',
                             'process_state': 'PROCESS_STATE_STOPPED'
                         },
                         {
@@ -1122,7 +1122,7 @@ class TestAlarmPlugins(unittest.TestCase):
                                         'json_variables': {
                                             'NodeStatus.process_info.'
                                                 'process_name':
-                                                    '"contrail-topology"'
+                                                    '"tf-topology"'
                                         }
                                     }
                                 ]
@@ -1137,7 +1137,7 @@ class TestAlarmPlugins(unittest.TestCase):
                 input=TestInput(uve_key='ObjectAnalyticsAlarmInfo:host4',
                     uve_data={'NodeStatus': {'process_info': [
                         {
-                            'process_name': 'contrail-topology',
+                            'process_name': 'tf-topology',
                             'process_state': 'PROCESS_STATE_STOPPED'
                         },
                         {
@@ -1173,7 +1173,7 @@ class TestAlarmPlugins(unittest.TestCase):
                                         'json_variables': {
                                             'NodeStatus.process_info.'
                                                 'process_name':
-                                                    '"contrail-topology"'
+                                                    '"tf-topology"'
                                         }
                                     },
                                     {
@@ -2099,7 +2099,7 @@ class TestAlarmPlugins(unittest.TestCase):
                         'NodeStatus': {
                             'process_info': [
                                 {
-                                    'name': 'contrail-topology',
+                                    'name': 'tf-topology',
                                     'state': 'RUNNING'
                                 }
                             ]
