@@ -12,14 +12,14 @@ tf-topology -c /etc/contrail/tf-topology.conf
 Command Line
 ============
 tf-topology [-h] [-c FILE]
-                         [--analytics_api ANALYTICS_API [ANALYTICS_API ...]]
-                         [--collectors COLLECTORS [COLLECTORS ...]]
-                         [--log_file LOG_FILE] [--log_local]
-                         [--log_category LOG_CATEGORY] [--log_level LOG_LEVEL]
-                         [--use_syslog] [--syslog_facility SYSLOG_FACILITY]
-                         [--scan_frequency SCAN_FREQUENCY]
-                         [--http_server_port HTTP_SERVER_PORT]
-                         [--api_serever API_SEREVER]
+            [--analytics_api ANALYTICS_API [ANALYTICS_API ...]]
+            [--collectors COLLECTORS [COLLECTORS ...]]
+            [--log_file LOG_FILE] [--log_local]
+            [--log_category LOG_CATEGORY] [--log_level LOG_LEVEL]
+            [--use_syslog] [--syslog_facility SYSLOG_FACILITY]
+            [--scan_frequency SCAN_FREQUENCY]
+            [--http_server_port HTTP_SERVER_PORT]
+            [--api_serever API_SEREVER]
 
 optional arguments:
   -h, --help            show this help message and exit

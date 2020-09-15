@@ -3,7 +3,7 @@
  */
 
 /**
- *  Definitions of structures added by contrail-topology that go into
+ *  Definitions of structures added by tf-topology that go into
  *  Physical Router UVE.
  */
 
@@ -35,7 +35,7 @@ struct LinkEntry {
 }
 
 /**
- * Physical Router UVE data provided by contrail-topology. This
+ * Physical Router UVE data provided by tf-topology. This
  * includes the neighbor links calculated using the SNMP data in the UVE.
  */
 struct PRouterLinkEntry {
@@ -45,7 +45,7 @@ struct PRouterLinkEntry {
 }
 
 /**
- * @description: Physical Router UVE data provided by contrail-topology.
+ * @description: Physical Router UVE data provided by tf-topology.
  * @object: prouter
  */
 uve sandesh PRouterLinkUVE {
