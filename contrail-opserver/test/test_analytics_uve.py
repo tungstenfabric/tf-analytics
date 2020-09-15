@@ -528,7 +528,7 @@ class AnalyticsUveTest(testtools.TestCase, fixtures.TestWithFixtures):
         
         # send process state alarm for analytics-node
         alarms = alarm_gen2.create_process_state_alarm(
-                    'contrail-topology')
+                    'tf-topology')
         alarm_gen2.send_alarm(socket.getfqdn("127.0.0.1")+'_2', alarms,
                               COLLECTOR_INFO_TABLE)
 
