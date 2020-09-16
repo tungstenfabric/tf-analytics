@@ -226,7 +226,7 @@ struct PRouterEntry {
 
 /**
  * @description: stores information collected from physical router by
- * contrail-snmp-collector which is later used by contrail-topology
+ * contrail-snmp-collector which is later used by tf-topology
  * @object: prouter
  */
 uve sandesh PRouterUVE {
