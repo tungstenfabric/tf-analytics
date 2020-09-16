@@ -3539,12 +3539,15 @@ class AnalyticsFixture(fixtures.Fixture):
             fcntl(pipein, F_SETFL, flags | os.O_NONBLOCK)
             pipes[pname] = pipein , pipe_name
             
+        stdout_name = None
         if is_py:
             instance = self.run_py_daemon(args)
         else:
-            instance = subprocess.Popen(args, stdout=subprocess.PIPE,
-                             stderr=subprocess.PIPE, bufsize=0,
-                             preexec_fn = preexec)
+            stdout_name = '/tmp/%s' % str(uuid.uuid4())
+            with open(stdout_name, 'w') as o:
+                instance = subprocess.Popen(args, stdout=o,
+                                 stderr=subprocess.STDOUT, bufsize=0,
+                                 preexec_fn = preexec)
       
         pmap = {} 
         for k,v in pipes.items(): 
@@ -3565,11 +3568,21 @@ class AnalyticsFixture(fixtures.Fixture):
             os.unlink(pipe_name)
             pmap[k] = port
             if not instance.poll() is None:
-                (p_out, p_err) = instance.communicate()
                 rcode = instance.returncode
+                (p_out, p_err) = (None, None)
+                if stdout_name is None:
+                    (p_out, p_err) = instance.communicate()
+                else:
+                    with open(stdout_name, 'rb') as o:
+                        p_out = o.read()
+
                 self.logger.info('%s returned %d at startup!' % (modname,rcode))
                 self.logger.info('%s terminated stdout: %s' % (modname, p_out))
-                self.logger.info('%s terminated stderr: %s' % (modname, p_err))
+                if p_err is not None:
+                    self.logger.info('%s terminated stderr: %s' % (modname, p_err))
+
+        if stdout_name is not None:
+            os.unlink(stdout_name)
 
         return pmap, instance
 
