@@ -447,7 +447,7 @@ void StructuredSyslogUVESummarizeData(SyslogParser::syslog_m_t v, bool summarize
 
     const std::string nested_appname_with_alias_code = nested_appname + "@" + dscp_key;
     const std::string tt_app_dept_info = traffic_type + "(" + nested_appname_with_alias_code + ":" + appname
-                                         + "/" + app_category +  ")" + "::" + department + "@" + sla_profile + "::";
+                                         + "/" + app_category +  ")" + "::" + department + "::";
     //username => syslog.username or syslog.source-address
     std::string username(SyslogParser::GetMapVals(v, "username", "UNKNOWN"));
     if (boost::iequals(username, "unknown")) {
@@ -582,14 +582,14 @@ void StructuredSyslogUVESummarizeData(SyslogParser::syslog_m_t v, bool summarize
         sdwanmetric.set_session_duration(SyslogParser::GetMapVal(v, "elapsed-time", 0));
         sdwanmetric.set_session_count(1);
 
-        /*
-        // Map: app_metrics_diff_sla TBR
+        
+        // Map: app_metrics_diff_sla
         std::map<std::string, SDWANMetrics_diff> app_metrics_diff_sla;
         std::string slamap_key(tt_app_dept_info + sla_profile);
         LOG(DEBUG,"UVE: app_metrics_diff_sla key :" << slamap_key);
         app_metrics_diff_sla.insert(std::make_pair(slamap_key, sdwanmetric));
         sdwanmetricrecord.set_app_metrics_diff_sla(app_metrics_diff_sla);
-        */
+        
 
         // Map: app_metrics_diff_user
         if (summarize_user == true) {
@@ -822,7 +822,7 @@ void StructuredSyslogUVESummarizeAppQoePSMR(SyslogParser::syslog_m_t v, bool sum
     const std::string nested_appname_with_alias_code = nested_appname + "@" + dscp_key;
 
     const std::string tt_app_dept_info = traffic_type + "(" + nested_appname_with_alias_code + ":" + appname
-                                         + "/" + app_category +  ")" + "::" + department + "@" + sla_profile + "::";
+                                         + "/" + app_category +  ")" + "::" + department + "::";
 
     //username => syslog.username or syslog.source-address
     std::string username(SyslogParser::GetMapVals(v, "username", "UNKNOWN"));
@@ -861,14 +861,12 @@ void StructuredSyslogUVESummarizeAppQoePSMR(SyslogParser::syslog_m_t v, bool sum
                              SyslogParser::GetMapVal(v, "packet-loss-factor",0) ));
     }
     
-    /*
-    // Map:  app_metrics_dial_sla TBR
+    // Map:  app_metrics_dial_sla
     std::map<std::string, SDWANMetrics_dial> app_metrics_dial_sla;
     std::string slamap_key(tt_app_dept_info + sla_profile);
     LOG(DEBUG,"UVE: app_metrics_dial_sla key :" << slamap_key);
     app_metrics_dial_sla.insert(std::make_pair(slamap_key, sdwanmetric));
     sdwanmetricrecord.set_app_metrics_dial_sla(app_metrics_dial_sla);
-    */
 
     // Map:  app_metrics_dial_user
     if (summarize_user == true) {
@@ -946,7 +944,7 @@ void StructuredSyslogUVESummarizeAppQoeBPS(SyslogParser::syslog_m_t v, bool summ
     const std::string nested_appname_with_alias_code = nested_appname + "@" + dscp_key;
 
     const std::string tt_app_dept_info = traffic_type + "(" + nested_appname_with_alias_code + ":" + appname
-                                         + "/" + app_category +  ")" + "::" + department + "@" + sla_profile + "::";
+                                         + "/" + app_category +  ")" + "::" + department + "::";
     int64_t elapsed_time = SyslogParser::GetMapVal(v, "elapsed-time", 0);
     const std::string reason = SyslogParser::GetMapVals(v, "reason", "UNKNOWN");
     //username => syslog.username or syslog.source-address
@@ -962,14 +960,14 @@ void StructuredSyslogUVESummarizeAppQoeBPS(SyslogParser::syslog_m_t v, bool summ
         sdwanmetric.set_session_switch_count(1);
     }
 
-    /*
-    // Map: app_metrics_diff_sla TBR
+    
+    // Map: app_metrics_diff_sla
     std::map<std::string, SDWANMetrics_diff> app_metrics_diff_sla;
     std::string slamap_key(tt_app_dept_info + sla_profile);
     LOG(DEBUG,"UVE: app_metrics_diff_sla key :" << slamap_key);
     app_metrics_diff_sla.insert(std::make_pair(slamap_key, sdwanmetric));
     sdwanmetricrecord.set_app_metrics_diff_sla(app_metrics_diff_sla);
-    */
+    
 
     // Map: app_metrics_diff_user
     if (summarize_user == true) {
@@ -1049,7 +1047,7 @@ void StructuredSyslogUVESummarizeAppQoeSMV(SyslogParser::syslog_m_t v, bool summ
 
     const std::string nested_appname_with_alias_code = nested_appname + "@" + dscp_key;
     const std::string tt_app_dept_info = traffic_type + "(" + nested_appname_with_alias_code + ":" + appname
-                                         + "/" + app_category +  ")" + "::" + department + "@" + sla_profile + "::";
+                                         + "/" + app_category +  ")" + "::" + department + "::";
 
     //username => syslog.username or syslog.source-address
     std::string username(SyslogParser::GetMapVals(v, "username", "UNKNOWN"));
@@ -1085,8 +1083,8 @@ void StructuredSyslogUVESummarizeAppQoeSMV(SyslogParser::syslog_m_t v, bool summ
         return;
     }
 
-    /*
-    // Map: app_metrics_*_sla TBR
+
+    // Map: app_metrics_*_sla
     std::map<std::string, SDWANMetrics_diff> app_metrics_diff_sla;
     std::map<std::string, SDWANMetrics_dial> app_metrics_dial_sla;
     std::string slamap_key(tt_app_dept_info + sla_profile);
@@ -1095,7 +1093,7 @@ void StructuredSyslogUVESummarizeAppQoeSMV(SyslogParser::syslog_m_t v, bool summ
     //app_metrics_dial_sla.insert(std::make_pair(slamap_key, sdwanmetric_dial));
     sdwanmetricrecord.set_app_metrics_diff_sla(app_metrics_diff_sla);
     //sdwanmetricrecord.set_app_metrics_dial_sla(app_metrics_dial_sla);
-    */
+
 
     // Map: app_metrics_*_user
     if (summarize_user == true) {
