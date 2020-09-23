@@ -861,14 +861,12 @@ void StructuredSyslogUVESummarizeAppQoePSMR(SyslogParser::syslog_m_t v, bool sum
                              SyslogParser::GetMapVal(v, "packet-loss-factor",0) ));
     }
     
-    /*
     // Map:  app_metrics_dial_sla
     std::map<std::string, SDWANMetrics_dial> app_metrics_dial_sla;
     std::string slamap_key(tt_app_dept_info + sla_profile);
     LOG(DEBUG,"UVE: app_metrics_dial_sla key :" << slamap_key);
     app_metrics_dial_sla.insert(std::make_pair(slamap_key, sdwanmetric));
     sdwanmetricrecord.set_app_metrics_dial_sla(app_metrics_dial_sla);
-    */
 
     // Map:  app_metrics_dial_user
     if (summarize_user == true) {
@@ -1085,7 +1083,7 @@ void StructuredSyslogUVESummarizeAppQoeSMV(SyslogParser::syslog_m_t v, bool summ
         return;
     }
 
-    /*
+
     // Map: app_metrics_*_sla
     std::map<std::string, SDWANMetrics_diff> app_metrics_diff_sla;
     std::map<std::string, SDWANMetrics_dial> app_metrics_dial_sla;
@@ -1095,7 +1093,7 @@ void StructuredSyslogUVESummarizeAppQoeSMV(SyslogParser::syslog_m_t v, bool summ
     //app_metrics_dial_sla.insert(std::make_pair(slamap_key, sdwanmetric_dial));
     sdwanmetricrecord.set_app_metrics_diff_sla(app_metrics_diff_sla);
     //sdwanmetricrecord.set_app_metrics_dial_sla(app_metrics_dial_sla);
-    */
+
 
     // Map: app_metrics_*_user
     if (summarize_user == true) {
