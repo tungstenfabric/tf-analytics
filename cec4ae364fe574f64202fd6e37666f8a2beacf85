@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "2c21d4ad_376d5484",
+        "filename": "contrail-collector/structured_syslog_server.cc",
+        "patchSetId": 1
+      },
+      "lineNbr": 585,
+      "author": {
+        "id": 213
+      },
+      "writtenOn": "2020-09-24T04:23:52Z",
+      "side": 1,
+      "message": "Nit: please remove lines with just spaces from everywhere.",
+      "range": {
+        "startLine": 585,
+        "startChar": 1,
+        "endLine": 585,
+        "endChar": 8
+      },
+      "revId": "cec4ae364fe574f64202fd6e37666f8a2beacf85",
+      "serverId": "c72cd27d-1743-4a55-84a4-cd13b8400c52",
+      "unresolved": true
+    }
+  ]
+}
