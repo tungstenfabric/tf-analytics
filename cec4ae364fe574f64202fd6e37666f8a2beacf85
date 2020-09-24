@@ -22,6 +22,30 @@
       "revId": "cec4ae364fe574f64202fd6e37666f8a2beacf85",
       "serverId": "c72cd27d-1743-4a55-84a4-cd13b8400c52",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "8f97f93b_d1bb49fb",
+        "filename": "contrail-collector/structured_syslog_server.cc",
+        "patchSetId": 1
+      },
+      "lineNbr": 585,
+      "author": {
+        "id": 494
+      },
+      "writtenOn": "2020-09-24T04:50:40Z",
+      "side": 1,
+      "message": "Removed from everywhere.",
+      "parentUuid": "2c21d4ad_376d5484",
+      "range": {
+        "startLine": 585,
+        "startChar": 1,
+        "endLine": 585,
+        "endChar": 8
+      },
+      "revId": "cec4ae364fe574f64202fd6e37666f8a2beacf85",
+      "serverId": "c72cd27d-1743-4a55-84a4-cd13b8400c52",
+      "unresolved": false
     }
   ]
 }
