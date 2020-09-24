@@ -46,6 +46,29 @@
       "revId": "cec4ae364fe574f64202fd6e37666f8a2beacf85",
       "serverId": "c72cd27d-1743-4a55-84a4-cd13b8400c52",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "d1a6f786_84074c29",
+        "filename": "contrail-collector/structured_syslog_server.cc",
+        "patchSetId": 1
+      },
+      "lineNbr": 592,
+      "author": {
+        "id": 213
+      },
+      "writtenOn": "2020-09-24T07:09:38Z",
+      "side": 1,
+      "message": "Nit: still see many empty lines with spaces like this?",
+      "range": {
+        "startLine": 592,
+        "startChar": 1,
+        "endLine": 592,
+        "endChar": 8
+      },
+      "revId": "cec4ae364fe574f64202fd6e37666f8a2beacf85",
+      "serverId": "c72cd27d-1743-4a55-84a4-cd13b8400c52",
+      "unresolved": true
     }
   ]
 }
