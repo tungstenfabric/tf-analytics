@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "1fa42a59_8d5fd02f",
+        "filename": "contrail-collector/viz_collector.cc",
+        "patchSetId": 5
+      },
+      "lineNbr": 127,
+      "author": {
+        "id": 382
+      },
+      "writtenOn": "2020-09-27T08:21:51Z",
+      "side": 1,
+      "message": "it would be good to use spaces instead of tabs and don\u0027t commit commented code (or add a comment at least why it should be here and commented)",
+      "revId": "5b1f151d767ab18354ee713295891c7d852ec374",
+      "serverId": "c72cd27d-1743-4a55-84a4-cd13b8400c52",
+      "unresolved": true
+    }
+  ]
+}
