@@ -179,7 +179,7 @@ class ContrailAlarmNotifier(object):
                         self._args.analytics_api_server,
                         self._args.analytics_api_server_port)
                 alarm_stream = SSEClient(alarm_stream_url, auth=HTTPBasicAuth(
-                    self._args.admin_user, self._args.admin_password))
+                    self._args.admin_user, self._args.admin_password), chunk_size=1)
                 for alarm in alarm_stream:
                     if alarm.event != 'update':
                         continue
