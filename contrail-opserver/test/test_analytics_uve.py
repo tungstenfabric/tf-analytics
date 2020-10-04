@@ -318,7 +318,7 @@ class AnalyticsUveTest(testtools.TestCase, fixtures.TestWithFixtures):
         vr2_collectors = [vizd_obj.collectors[1].get_addr(), 
                           vizd_obj.collectors[0].get_addr()]
         vr2_agent = self.useFixture(
-            GeneratorFixture("contrail-snmp-collector", collectors,
+            GeneratorFixture("tf-snmp-collector", collectors,
                              logging, vizd_obj.get_opserver_port()))
         assert vr2_agent.verify_on_setup()
         vizd_obj.query_engine.start()
@@ -327,7 +327,7 @@ class AnalyticsUveTest(testtools.TestCase, fixtures.TestWithFixtures):
             source+':Analytics:contrail-analytics-api:0',
             source+':Test:contrail-vrouter-agent:0',
             source+':Database:contrail-query-engine:0',
-            source+':Test:contrail-snmp-collector:0'
+            source+':Test:tf-snmp-collector:0'
         ]
         assert vizd_obj.verify_generator_list([vizd_obj.collectors[0]],
                                               exp_genlist)
@@ -348,7 +348,7 @@ class AnalyticsUveTest(testtools.TestCase, fixtures.TestWithFixtures):
             source+':Analytics:contrail-analytics-api:0',
             source+':Test:contrail-vrouter-agent:0',
             source+':Database:contrail-query-engine:0',
-            source+':Test:contrail-snmp-collector:0'
+            source+':Test:tf-snmp-collector:0'
         ]
         assert vizd_obj.verify_generator_list([vizd_obj.collectors[1]],
                                               exp_genlist)
@@ -575,7 +575,7 @@ class AnalyticsUveTest(testtools.TestCase, fixtures.TestWithFixtures):
 
         # update analytics-node alarm in disconnect state
         alarms = alarm_gen1.create_process_state_alarm(
-                    'contrail-snmp-collector')
+                    'tf-snmp-collector')
         alarm_gen1.send_alarm(socket.getfqdn("127.0.0.1")+'_1', alarms,
                               COLLECTOR_INFO_TABLE)
         

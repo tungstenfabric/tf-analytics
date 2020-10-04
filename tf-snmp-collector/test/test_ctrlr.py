@@ -29,13 +29,13 @@ mock_cls = mock.MagicMock(name='MockSnmpUve',
                                   side_effect=MockSnmpUve)
 mock_pkg.SnmpUve = mock_cls
 
-sys.modules['contrail_snmp_collector.snmpuve'] = mock_pkg
-sys.modules['contrail_snmp_collector.snmpuve.SnmpUve'] = mock_cls
+sys.modules['tf_snmp_collector.snmpuve'] = mock_pkg
+sys.modules['tf_snmp_collector.snmpuve.SnmpUve'] = mock_cls
 
 sys.modules['netsnmp'] = mock.MagicMock(name='mock_netsnmp')
 
 
-from contrail_snmp_collector.snmpctrlr import MaxNinTtime
+from tf_snmp_collector.snmpctrlr import MaxNinTtime
 
 
 logging.basicConfig(level=logging.DEBUG,
