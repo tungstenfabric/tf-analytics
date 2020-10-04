@@ -32,13 +32,13 @@ class CfgParser(object):
     def parse(self):
         '''
             command line example
-contrail-snmp-scanner --log_level SYS_DEBUG
-                      --logging_level DEBUG
-                      --log_category test
-                      --log_file <stdout>
-                      --use_syslog
-                      --syslog_facility LOG_USER
-                      --conf_file /etc/contrail/contrail-snmp-scanner.conf
+tf-snmp-scanner --log_level SYS_DEBUG
+                --logging_level DEBUG
+                --log_category test
+                --log_file <stdout>
+                --use_syslog
+                --syslog_facility LOG_USER
+                --conf_file /etc/contrail/tf-snmp-scanner.conf
 
             conf file example:
 
