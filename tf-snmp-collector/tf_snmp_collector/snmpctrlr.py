@@ -226,7 +226,7 @@ class Controller(object):
             f.flush()
 
     def _run_scanner(self, input_file, output_file, i):
-        proc = subprocess.Popen('contrail-snmp-scanner --input %s' % (
+        proc = subprocess.Popen('tf-snmp-scanner --input %s' % (
                     input_file), shell=True,
                 stdout=subprocess.PIPE, stderr=subprocess.PIPE,
                 close_fds=True)
