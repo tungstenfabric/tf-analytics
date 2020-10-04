@@ -22,6 +22,7 @@ subdirs_no_dup = [
 
 subdirs_dup = [
           'contrail-snmp-collector',
+          'tf-snmp-collector',
           'tf-topology'
            ]
 
@@ -29,6 +30,7 @@ variant_dir_map = {}
 variant_dir_map['contrail-collector'] = 'analytics'
 variant_dir_map['contrail-query-engine'] = 'query_engine'
 variant_dir_map['contrail-snmp-collector'] = 'contrail-snmp-collector'
+variant_dir_map['tf-snmp-collector'] = 'tf-snmp-collector'
 variant_dir_map['tf-topology'] = 'tf-topology'
 variant_dir_map['contrail-opserver'] = 'opserver'
 
@@ -106,9 +108,9 @@ for dir in subdirs_dup:
                          variant_dir=BuildEnv['TOP'] + '/' + variant_dir_map[dir],
                          duplicate=1)
 
-#AnalyticsEnv.SConscript(dirs=['contrail-snmp-collector'],
+#AnalyticsEnv.SConscript(dirs=['tf-snmp-collector'],
 #        exports='AnalyticsEnv',
-#        variant_dir=BuildEnv['TOP'] + '/contrail-snmp-collector',
+#        variant_dir=BuildEnv['TOP'] + '/tf-snmp-collector',
 #        duplicate=1)
 
 #AnalyticsEnv.SConscript(dirs=['tf-topology'],
