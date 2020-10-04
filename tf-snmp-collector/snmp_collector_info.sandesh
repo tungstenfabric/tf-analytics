@@ -3,8 +3,8 @@
  */
 
 /**
- *  Definitions of structures used by contrail-snmp-collector to send
- *  information to the contrail-collector
+ *  Definitions of structures used by tf-snmp-collector to send
+ *  information to the tf-collector
  */
 
 /**
