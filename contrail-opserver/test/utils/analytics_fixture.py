@@ -716,6 +716,16 @@ class Zookeeper(object):
         self.running = True
     # end start
 
+    def check_zk_node(self):
+        if self.running:
+            return mockzoo.check_zk_node(self.port)
+
+    def add_iptable_rule(self):
+        os.system("iptables -A INPUT -j DROP -p tcp --destination-port " + str(self.port))
+
+    def delete_iptable_rule(self):
+        os.system("iptables --delete INPUT -j DROP -p tcp --destination-port " + str(self.port))
+
     def stop(self):
         if self.running:
             mockzoo.stop_zoo(self.port)
@@ -3647,3 +3657,12 @@ class AnalyticsFixture(fixtures.Fixture):
         else:
             return True
     # end verify_analytics_api_tls_negotiation
+
+    def check_zk_node(self):
+        return self.zookeeper.check_zk_node()
+
+    def add_iptable_rule(self):
+	    self.zookeeper.add_iptable_rule()
+
+    def delete_iptable_rule(self):
+	    self.zookeeper.delete_iptable_rule()
