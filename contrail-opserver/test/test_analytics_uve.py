@@ -2521,6 +2521,30 @@ class AnalyticsUveTest(testtools.TestCase, fixtures.TestWithFixtures):
                 server_ssl_params)
     #end test_21_analytics_tls_version_negotiation
 
+    def test_22_zookeeper_node(self):
+
+        '''
+        This test case is to check if one node become unreachable then zookeeper
+        delete the node after timeout. This test case is to check that should
+        n't happen.
+        So, first it will add iptable rule to block all traffic to zookeeper
+        port then check for zk nodes and then remove iptable rule and then check
+        for zk nodes.
+        '''
+        logging.info("%%% test_22_zookeeper_node %%%")
+
+        vizd_obj = self.useFixture(
+                AnalyticsFixture(logging, builddir, 0))
+        assert vizd_obj.verify_on_setup()
+
+        assert vizd_obj.check_zk_node()
+        vizd_obj.add_iptable_rule()
+        time.sleep(40)
+        assert not vizd_obj.check_zk_node()
+        vizd_obj.delete_iptable_rule()
+        time.sleep(20)
+        assert vizd_obj.check_zk_node()
+
     @staticmethod
     def get_free_port():
         cs = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
