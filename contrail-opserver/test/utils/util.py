@@ -125,3 +125,13 @@ def get_free_port():
 
     return output
 #end get_free_port
+    
+def add_iptables_rule(zk_port):
+    subprocess.call(['iptables', '-A', 'INPUT', '-j', 'DROP', '-p',\
+             'tcp', '--destination-port', str(zk_port)])
+#end add_iptables_rule
+
+def delete_iptables_rule(zk_port):
+    subprocess.call(['iptables', '--delete', 'INPUT', '-j', 'DROP', '-p',\
+             'tcp', '--destination-port', str(zk_port)])
+#end delete_iptables_rule
