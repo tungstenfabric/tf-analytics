@@ -13,7 +13,8 @@ import socket
 import fixtures
 import subprocess
 import uuid
-from .util import retry, get_free_port
+from .util import retry, get_free_port, \
+    delete_iptables_rule
 from mockredis import mockredis
 from mockstunnel import mockstunnel
 from mockkafka import mockkafka
@@ -715,6 +716,13 @@ class Zookeeper(object):
         mockzoo.start_zoo(self.port)
         self.running = True
     # end start
+
+    def check_zk_node(self):
+        if self.running:
+            return mockzoo.check_zk_node(self.port)
+
+    def get_zk_port(self):
+        return self.port
 
     def stop(self):
         if self.running:
@@ -3421,6 +3429,8 @@ class AnalyticsFixture(fixtures.Fixture):
     def cleanUp(self):
         self.logger.info('cleanUp started')
 
+        delete_iptables_rule(self.zookeeper.get_zk_port())
+        
         try:
             self.opserver.stop()
         except:
@@ -3647,3 +3657,9 @@ class AnalyticsFixture(fixtures.Fixture):
         else:
             return True
     # end verify_analytics_api_tls_negotiation
+
+    def check_zk_node(self):
+        return self.zookeeper.check_zk_node()
+
+    def get_zk_port(self):
+        return self.zookeeper.get_zk_port()
