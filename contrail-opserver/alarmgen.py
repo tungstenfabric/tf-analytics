@@ -2160,7 +2160,7 @@ class Controller(object):
                 for partno in parts:
                     self.clear_agg_uve(lredis, self._instance_id, partno)
                     ph = UveStreamProc(','.join(self._conf.kafka_broker_list()),
-                            partno, self._conf.kafka_prefix()+"-uve-" + str(partno),
+                            partno, self._conf.kafka_prefix()+"-uve-topic-" + str(partno),
                             self._logger,
                             self.handle_uve_notifq, self._conf.host_ip(),
                             self.handle_resource_check,
