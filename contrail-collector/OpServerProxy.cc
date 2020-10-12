@@ -500,7 +500,7 @@ OpServerProxy::OpServerProxy(EventManager *evm, VizCollector *collector,
     impl_ = new OpServerImpl(evm, collector, redis_uve_ip, redis_uve_port,
                              redis_password,
                              aggconf,
-                             brokers, kafka_prefix + string("-uve-"), partitions, kafka_options);
+                             brokers, kafka_prefix + string("-uve-topic-"), partitions, kafka_options);
 }
 
 OpServerProxy::~OpServerProxy() {
