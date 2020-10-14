@@ -147,12 +147,9 @@ if 'install' in BUILD_TARGETS:
 env.Alias('install', env.Install(env['INSTALL_CONF'],
             'tf-snmp-collector.conf'))
 
-#
-# Uncomment on next stage of renaming
-#
-# env.Alias('install', env.Install(env['INSTALL_CONF'], 'snmp.conf'))
-# env.Alias('install', env.Install(env['INSTALL_DOC'] + '/../mibs/netsnmp',
-#             mibs))
+env.Alias('install', env.Install(env['INSTALL_CONF'], 'snmp.conf'))
+env.Alias('install', env.Install(env['INSTALL_DOC'] + '/../mibs/netsnmp',
+             mibs))
 
 env.Alias('install', env.Install(
     env['INSTALL_MESSAGE_DOC'] + '/tf-snmp-collector/', doc_files))
