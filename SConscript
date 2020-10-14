@@ -21,7 +21,6 @@ subdirs_no_dup = [
            ]
 
 subdirs_dup = [
-          'contrail-snmp-collector',
           'tf-snmp-collector',
           'tf-topology'
            ]
@@ -29,7 +28,6 @@ subdirs_dup = [
 variant_dir_map = {}
 variant_dir_map['contrail-collector'] = 'analytics'
 variant_dir_map['contrail-query-engine'] = 'query_engine'
-variant_dir_map['contrail-snmp-collector'] = 'contrail-snmp-collector'
 variant_dir_map['tf-snmp-collector'] = 'tf-snmp-collector'
 variant_dir_map['tf-topology'] = 'tf-topology'
 variant_dir_map['contrail-opserver'] = 'opserver'
