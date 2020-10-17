@@ -35,11 +35,6 @@ AnalyticsEnv.Append(LIBS=['boost_python', python])
 def MapBuildDir(list):
     return map(lambda x: '#/' + Dir('.').path + '/../' + x, list)
 
-etcd_incl = os.environ.get('CONTRAIL_ETCD_INCL');
-
-if etcd_incl:
-    AnalyticsEnv.Prepend(LIBS = ['etcdql', 'protobuf', 'grpc++', 'grpc', 'z'])
-
 AnalyticsEnv.Prepend(LIBS=['cpuinfo',
         'io',
         'vncapi',
@@ -62,13 +57,13 @@ AnalyticsEnv.Prepend(LIBS=['cpuinfo',
         'sandeshvns',
         'pugixml',
         'hiredis',
-        'protobuf',
         'zookeeper_client',
         'zookeeper_mt',
         'ssl',
         'crypto',
         'boost_filesystem',
         'boost_program_options',
+        'boost_thread',
         'libdl',
         'sasl2',
         'config_client_mgr',
@@ -76,7 +71,9 @@ AnalyticsEnv.Prepend(LIBS=['cpuinfo',
         'boost_chrono',
         'rabbitmq',
         'rdkafka++',
-        'rdkafka'])
+        'rdkafka',
+        'k8s_client',
+        'restclient-cpp'])
 
 (PLATFORM, VERSION, EXTRA) = platform.linux_distribution()
 if PLATFORM.lower() != 'ubuntu' or (PLATFORM.lower() == 'ubuntu' and VERSION.find('16.') == 0):
