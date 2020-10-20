@@ -1,0 +1,72 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "44d6123f_50574680",
+        "filename": "contrail-opserver/test/test_analytics_uve.py",
+        "patchSetId": 16
+      },
+      "lineNbr": 2543,
+      "author": {
+        "id": 752
+      },
+      "writtenOn": "2020-10-20T06:22:20Z",
+      "side": 1,
+      "message": "If this check fails then iptable rule remains in vm. Please make sure you are cleaning up iptable rules irrespective if test passes or fails.",
+      "revId": "08dc60877ee38b154cc88ebce3aca9f179a94f14",
+      "serverId": "c72cd27d-1743-4a55-84a4-cd13b8400c52",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "51d41693_e5484752",
+        "filename": "contrail-opserver/test/utils/analytics_fixture.py",
+        "patchSetId": 16
+      },
+      "lineNbr": 723,
+      "author": {
+        "id": 752
+      },
+      "writtenOn": "2020-10-20T06:22:20Z",
+      "side": 1,
+      "message": "These 2 functions are not zookeeper specific. Can move them to utils as they are independent functions.",
+      "revId": "08dc60877ee38b154cc88ebce3aca9f179a94f14",
+      "serverId": "c72cd27d-1743-4a55-84a4-cd13b8400c52",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "d7b4856c_51ca4714",
+        "filename": "contrail-opserver/test/utils/analytics_fixture.py",
+        "patchSetId": 16
+      },
+      "lineNbr": 724,
+      "author": {
+        "id": 752
+      },
+      "writtenOn": "2020-10-20T06:22:20Z",
+      "side": 1,
+      "message": "Dont use system calls. It creates a new shell and few extra processes. Use subprocess calls.",
+      "revId": "08dc60877ee38b154cc88ebce3aca9f179a94f14",
+      "serverId": "c72cd27d-1743-4a55-84a4-cd13b8400c52",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "8ad86c18_47a7585c",
+        "filename": "contrail-opserver/test/utils/analytics_fixture.py",
+        "patchSetId": 16
+      },
+      "lineNbr": 3667,
+      "author": {
+        "id": 752
+      },
+      "writtenOn": "2020-10-20T06:22:20Z",
+      "side": 1,
+      "message": "Again same comment as above",
+      "revId": "08dc60877ee38b154cc88ebce3aca9f179a94f14",
+      "serverId": "c72cd27d-1743-4a55-84a4-cd13b8400c52",
+      "unresolved": true
+    }
+  ]
+}
