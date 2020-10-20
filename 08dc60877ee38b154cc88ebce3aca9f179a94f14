@@ -36,6 +36,24 @@
     },
     {
       "key": {
+        "uuid": "3b1bee46_e5c91c70",
+        "filename": "contrail-opserver/test/utils/analytics_fixture.py",
+        "patchSetId": 16
+      },
+      "lineNbr": 723,
+      "author": {
+        "id": 750
+      },
+      "writtenOn": "2020-10-20T07:27:06Z",
+      "side": 1,
+      "message": "Utils means where? I am using this function here because I need zookeeper port that is being used currently to add rules.\nThis self.port",
+      "parentUuid": "51d41693_e5484752",
+      "revId": "08dc60877ee38b154cc88ebce3aca9f179a94f14",
+      "serverId": "c72cd27d-1743-4a55-84a4-cd13b8400c52",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "d7b4856c_51ca4714",
         "filename": "contrail-opserver/test/utils/analytics_fixture.py",
         "patchSetId": 16
