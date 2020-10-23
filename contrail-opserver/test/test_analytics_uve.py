@@ -208,7 +208,7 @@ class AnalyticsUveTest(testtools.TestCase, fixtures.TestWithFixtures):
                             vizd_obj.opserver)
         # verify redis-uve list
         host = socket.getfqdn("127.0.0.1")
-        gen_list = [host+':Analytics:contrail-collector:0',
+        gen_list = [host+':Analytics:tf-collector:0',
                     host+':Database:contrail-query-engine:0',
                     host+':Analytics:contrail-analytics-api:0']
         assert vizd_obj.verify_generator_uve_list(gen_list)
@@ -219,7 +219,7 @@ class AnalyticsUveTest(testtools.TestCase, fixtures.TestWithFixtures):
                             vizd_obj.collectors[0], False)
         assert vizd_obj.verify_opserver_redis_uve_connection(
                             vizd_obj.opserver, False)
-        # start redis-uve and verify that contrail-collector and Opserver are
+        # start redis-uve and verify that tf-collector and Opserver are
         # connected to the redis-uve
         vizd_obj.redis_uves[0].start()
         assert vizd_obj.verify_collector_redis_uve_connection(
@@ -229,7 +229,7 @@ class AnalyticsUveTest(testtools.TestCase, fixtures.TestWithFixtures):
         # verify that UVEs are resynced with redis-uve
         assert vizd_obj.verify_generator_uve_list(gen_list)
 
-    #@unittest.skip('Skipping contrail-collector HA test')
+    #@unittest.skip('Skipping tf-collector HA test')
     def test_05_collector_ha(self):
         logging.info('%%% test_05_collector_ha %%%')
         
@@ -245,11 +245,11 @@ class AnalyticsUveTest(testtools.TestCase, fixtures.TestWithFixtures):
         assert vr_agent.verify_on_setup()
         source = socket.getfqdn("127.0.0.1")
         exp_genlist = [
-            source+':Analytics:contrail-collector:0',
+            source+':Analytics:tf-collector:0',
             source+':Analytics:contrail-analytics-api:0',
             source+':Database:contrail-query-engine:0',
             source+':Test:contrail-vrouter-agent:0',
-            source+'dup:Analytics:contrail-collector:0'
+            source+'dup:Analytics:tf-collector:0'
         ]
         assert vizd_obj.verify_generator_list(vizd_obj.collectors,
                                               exp_genlist)
@@ -257,7 +257,7 @@ class AnalyticsUveTest(testtools.TestCase, fixtures.TestWithFixtures):
         # to collectors[1]
         vizd_obj.collectors[0].stop()
         exp_genlist = [
-            source+'dup:Analytics:contrail-collector:0',
+            source+'dup:Analytics:tf-collector:0',
             source+':Analytics:contrail-analytics-api:0',
             source+':Database:contrail-query-engine:0',
             source+':Test:contrail-vrouter-agent:0'
@@ -266,7 +266,7 @@ class AnalyticsUveTest(testtools.TestCase, fixtures.TestWithFixtures):
                                               exp_genlist)
         # start collectors[0]
         vizd_obj.collectors[0].start()
-        exp_genlist = [source+':Analytics:contrail-collector:0']
+        exp_genlist = [source+':Analytics:tf-collector:0']
         assert vizd_obj.verify_generator_list([vizd_obj.collectors[0]],
                                               exp_genlist)
         # verify that the old UVEs are flushed from redis when collector restarts
@@ -279,7 +279,7 @@ class AnalyticsUveTest(testtools.TestCase, fixtures.TestWithFixtures):
         # to collectors[0]
         vizd_obj.collectors[1].stop()
         exp_genlist = [
-            source+':Analytics:contrail-collector:0',
+            source+':Analytics:tf-collector:0',
             source+':Analytics:contrail-analytics-api:0',
             source+':Database:contrail-query-engine:0',
             source+':Test:contrail-vrouter-agent:0'
@@ -298,7 +298,7 @@ class AnalyticsUveTest(testtools.TestCase, fixtures.TestWithFixtures):
         # stop QE 
         vizd_obj.query_engine.stop()
         exp_genlist = [
-            source+':Analytics:contrail-collector:0',
+            source+':Analytics:tf-collector:0',
             source+':Analytics:contrail-analytics-api:0',
             source+':Test:contrail-vrouter-agent:0'
         ]
@@ -323,7 +323,7 @@ class AnalyticsUveTest(testtools.TestCase, fixtures.TestWithFixtures):
         assert vr2_agent.verify_on_setup()
         vizd_obj.query_engine.start()
         exp_genlist = [
-            source+':Analytics:contrail-collector:0',
+            source+':Analytics:tf-collector:0',
             source+':Analytics:contrail-analytics-api:0',
             source+':Test:contrail-vrouter-agent:0',
             source+':Database:contrail-query-engine:0',
@@ -344,7 +344,7 @@ class AnalyticsUveTest(testtools.TestCase, fixtures.TestWithFixtures):
                              num_vm_ifs=5, msg_count=5) 
         vizd_obj.collectors[1].start()
         exp_genlist = [
-            source+'dup:Analytics:contrail-collector:0',
+            source+'dup:Analytics:tf-collector:0',
             source+':Analytics:contrail-analytics-api:0',
             source+':Test:contrail-vrouter-agent:0',
             source+':Database:contrail-query-engine:0',
@@ -2058,7 +2058,7 @@ class AnalyticsUveTest(testtools.TestCase, fixtures.TestWithFixtures):
 
         source = socket.getfqdn("127.0.0.1")
         exp_genlist = [
-            source+':Analytics:contrail-collector:0',
+            source+':Analytics:tf-collector:0',
             source+':Analytics:contrail-analytics-api:0',
             source+':Database:contrail-query-engine:0',
             source+':Test:contrail-vrouter-agent:0',

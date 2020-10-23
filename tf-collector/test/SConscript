@@ -126,7 +126,7 @@ options_test = env.UnitTest('options_test',
                             analytics_request_obj,
                             ]
                             )
-env.Alias('src/contrail-analytics/contrail-collector:options_test', options_test)
+env.Alias('src/contrail-analytics/tf-collector:options_test', options_test)
 env.Requires(options_test, '#/build/lib/libipfix.so')
 
 
@@ -202,16 +202,16 @@ test_suite = [
              ]
 test = env.TestSuite('analytics-test', test_suite)
 
-env.Alias('src/contrail-analytics/contrail-collector:test', [
+env.Alias('src/contrail-analytics/tf-collector:test', [
     test,
-    'src/contrail-analytics/contrail-collector/ruleparser:test',
+    'src/contrail-analytics/tf-collector/ruleparser:test',
 ])
-env.Requires('src/contrail-analytics/contrail-collector/ruleparser:test', '#/build/lib/libipfix.so')
+env.Requires('src/contrail-analytics/tf-collector/ruleparser:test', '#/build/lib/libipfix.so')
 
 flaky_test_suite = [
 ]
 
 flaky_test = env.TestSuite('analytics-flaky-test', flaky_test_suite)
-env.Alias('src/contrail-analytics/contrail-collector:flaky-test', flaky_test)
+env.Alias('src/contrail-analytics/tf-collector:flaky-test', flaky_test)
 
 Return('test_suite')
