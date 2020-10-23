@@ -1077,7 +1077,7 @@ class TestAlarmPlugins(unittest.TestCase):
                             'process_state': 'PROCESS_STATE_RUNNING'
                         },
                         {
-                            'process_name': 'contrail-collector',
+                            'process_name': 'tf-collector',
                             'process_state': 'PROCESS_STATE_RUNNING'
                         }
                     ]}}

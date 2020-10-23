@@ -166,7 +166,7 @@ class UVEServer(object):
                     if rinst.collector_pid is None:
                         for gen in rinst.redis_handle.smembers("NGENERATORS"):
                             module = convert_to_string(gen).split(':')[2]
-                            if module == "contrail-collector":
+                            if module == "tf-collector":
                                 rinst.collector_pid = gen
                 except gevent.GreenletExit:
                     self._logger.error('UVEServer Exiting on gevent-kill')

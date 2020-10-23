@@ -187,7 +187,7 @@ class Collector(object):
         self._logger.info('Setting up Vizd: %s' % (' '.join(args)))
         ports, self._instance = \
                          self.analytics_fixture.start_with_ephemeral_ports(
-                         "contrail-collector", ["http","collector"],
+                         "tf-collector", ["http","collector"],
                          args, AnalyticsFixture.enable_core)
         self._generator_id = self.hostname+':'+NodeTypeNames[NodeType.ANALYTICS]+\
                             ':'+ModuleNames[Module.COLLECTOR]+':'+str(self._instance.pid)
@@ -206,7 +206,7 @@ class Collector(object):
     def stop(self):
         if self._instance is not None:
             rcode = self.analytics_fixture.process_stop(
-                "contrail-collector:%s" % str(self.listen_port),
+                "tf-collector:%s" % str(self.listen_port),
                 self._instance, self._log_file)
             #assert(rcode == 0)
             self._instance = None
@@ -1139,7 +1139,7 @@ class AnalyticsFixture(fixtures.Fixture):
         # only one moduleid: Collector
         if (not((len(moduleids) == 1))):
             return False
-        if (not ("contrail-collector" in moduleids)):
+        if (not ("tf-collector" in moduleids)):
             return False
         return True
 
@@ -1182,7 +1182,7 @@ class AnalyticsFixture(fixtures.Fixture):
         res_c = vns.post_query(MESSAGE_TABLE,
                                start_time='-10m', end_time='now',
                                select_fields=["Type", "Messagetype"],
-                               where_clause="ModuleId = contrail-collector")
+                               where_clause="ModuleId = tf-collector")
         self.logger.info("res_c %s" % str(res_c))
         if (res_qe == []) or (res_c == []):
             return False
@@ -1209,7 +1209,7 @@ class AnalyticsFixture(fixtures.Fixture):
             assert(len(res) > 0)
             moduleids = list(set(x['ModuleId'] for x in res))
             self.logger.info("moduleids %s" % str(moduleids))
-            if ('contrail-collector' in moduleids) and ('contrail-query-engine' in moduleids):
+            if ('tf-collector' in moduleids) and ('contrail-query-engine' in moduleids):
                 return True
             else:
                 return False
@@ -1277,7 +1277,7 @@ class AnalyticsFixture(fixtures.Fixture):
             assert(len(res) > 0)
             moduleids = list(set(x['ModuleId'] for x in res))
             self.logger.info("moduleids %s" % str(moduleids))
-            if len(moduleids) != 1:  # 1 moduleid: contrail-collector
+            if len(moduleids) != 1:  # 1 moduleid: tf-collector
                 return False
 
         res = vns.post_query(MESSAGE_TABLE,
@@ -1285,7 +1285,7 @@ class AnalyticsFixture(fixtures.Fixture):
                               select_fields=["ModuleId"],
                               where_clause=str(
                                   where_clause1 + " AND  " + where_clause2),
-                              filter="ModuleId = contrail-collector")
+                              filter="ModuleId = tf-collector")
         self.logger.info("res %s" % str(res))
         if res != []:
             return False
@@ -1300,7 +1300,7 @@ class AnalyticsFixture(fixtures.Fixture):
                 start_time='now-10m',
                 end_time='now',
                 select_fields=["ModuleId"],
-                filter=[[{"name": "ModuleId", "value": "contrail-collector", "op": 1}]])
+                filter=[[{"name": "ModuleId", "value": "tf-collector", "op": 1}]])
         json_qstr = json.dumps(a_query.__dict__)
         res = vns.post_query_json(json_qstr)
         if res == []:
@@ -1309,13 +1309,13 @@ class AnalyticsFixture(fixtures.Fixture):
             assert(len(res) > 0)
             moduleids = list(set(x['ModuleId'] for x in res))
             self.logger.info(str(moduleids))
-            assert(len(moduleids) == 1 and "contrail-collector" in moduleids)
+            assert(len(moduleids) == 1 and "tf-collector" in moduleids)
 
         a_query = Query(table=MESSAGE_TABLE,
                 start_time='now-10m',
                 end_time='now',
                 select_fields=["ModuleId"],
-                filter=[[{"name": "ModuleId", "value": "contrail-collector", "op": 1}], [{"name": "ModuleId", "value": "contrail-analytics-api", "op": 1}]])
+                filter=[[{"name": "ModuleId", "value": "tf-collector", "op": 1}], [{"name": "ModuleId", "value": "contrail-analytics-api", "op": 1}]])
         json_qstr = json.dumps(a_query.__dict__)
         res = vns.post_query_json(json_qstr)
         self.logger.info("res %s" % str(res))
@@ -1325,9 +1325,9 @@ class AnalyticsFixture(fixtures.Fixture):
             assert(len(res) > 0)
             moduleids = list(set(x['ModuleId'] for x in res))
             self.logger.info(str(moduleids))
-            # 1 moduleid: contrail-collector || contrail-analytics-api
+            # 1 moduleid: tf-collector || contrail-analytics-api
             assert(len(moduleids) == 2 and\
-                   "contrail-collector" in moduleids and\
+                   "tf-collector" in moduleids and\
                    "contrail-analytics-api" in moduleids)  
                 
         return True
@@ -1341,7 +1341,7 @@ class AnalyticsFixture(fixtures.Fixture):
         where_clause2 = str("Source =" + socket.getfqdn("127.0.0.1"))
 
         exp_moduleids = ['contrail-analytics-api',
-                         'contrail-collector', 'contrail-query-engine']
+                         'tf-collector', 'contrail-query-engine']
 
         # Ascending sort
         res = vns.post_query(MESSAGE_TABLE,

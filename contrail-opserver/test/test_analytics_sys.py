@@ -308,7 +308,7 @@ class AnalyticsTest(testtools.TestCase, fixtures.TestWithFixtures):
                              collector_ha_test=True))
         assert vizd_obj.verify_on_setup()
         assert vizd_obj.verify_collector_obj_count()
-        # Make sure the contrail-collector is connected to the redis-uve before 
+        # Make sure the tf-collector is connected to the redis-uve before 
         # sending the trace buffer request
         assert vizd_obj.verify_collector_redis_uve_connection(
                                     vizd_obj.collectors[0])
@@ -324,7 +324,7 @@ class AnalyticsTest(testtools.TestCase, fixtures.TestWithFixtures):
         assert not vizd_obj.verify_tracebuffer_in_analytics_db(
                         vizd_obj.collectors[1].hostname,
                         ModuleNames[Module.COLLECTOR], 'UveTrace')
-        # Make sure the contrail-collector is connected to the redis-uve before 
+        # Make sure the tf-collector is connected to the redis-uve before 
         # sending the trace buffer request
         assert vizd_obj.verify_collector_redis_uve_connection(
                                     vizd_obj.collectors[1])
@@ -463,7 +463,7 @@ class AnalyticsTest(testtools.TestCase, fixtures.TestWithFixtures):
     #@unittest.skip('verify sandesh ssl')
     def test_13_verify_sandesh_ssl(self):
         '''
-        This test enables sandesh ssl on contrail-collector and all the
+        This test enables sandesh ssl on tf-collector and all the
         analytics generators in the AnalyticsFixture and verifies that the
         secure sandesh connection is established between the Collector and all
         the Generators.
@@ -484,7 +484,7 @@ class AnalyticsTest(testtools.TestCase, fixtures.TestWithFixtures):
 
         source = socket.getfqdn("127.0.0.1")
         exp_genlist = [
-            source+':Analytics:contrail-collector:0',
+            source+':Analytics:tf-collector:0',
             source+':Analytics:contrail-analytics-api:0',
             source+':Database:contrail-query-engine:0'
         ]
@@ -510,7 +510,7 @@ class AnalyticsTest(testtools.TestCase, fixtures.TestWithFixtures):
         # stop QE and verify the generator list
         vizd_obj.query_engine.stop()
         exp_genlist = [
-            source+':Analytics:contrail-collector:0',
+            source+':Analytics:tf-collector:0',
             source+':Analytics:contrail-analytics-api:0',
             source+':Test:contrail-test-generator2:0'
         ]
@@ -536,7 +536,7 @@ class AnalyticsTest(testtools.TestCase, fixtures.TestWithFixtures):
         assert not vizd_obj.verify_generator_collector_connection(
             vizd_obj.opserver.http_port)
         exp_genlist = [
-            source+':Analytics:contrail-collector:0',
+            source+':Analytics:tf-collector:0',
             source+':Database:contrail-query-engine:0',
             source+':Test:contrail-test-generator1:0'
         ]
