@@ -146,7 +146,7 @@ def run_coverage(env, target, source):
     lcov_run = 'lcov -e ' + Dir(env['TOP']).abspath + \
                '/opserver/test/analytics_test_intermediate.info ' + \
                Dir('#').abspath + '/src/contrail-analytics/contrail-collector/* ' + \
-               Dir('#').abspath + '/src/contrail-analytics/contrail-query-engine/* ' + \
+               Dir('#').abspath + '/src/contrail-analytics/tf-query-engine/* ' + \
                Dir('#').abspath + '/controller/src/database/* ' + \
                ' -o ' + Dir(env['TOP']).abspath + \
                '/opserver/test/analytics_test.info'
@@ -219,7 +219,7 @@ flow_pkg = OpEnv.SandeshGenPy(
         '#controller/src/sandesh/common/flow.sandesh',
         'sandesh/', False)
 qe_test_pkg = OpEnv.SandeshGenPy(
-        '#src/contrail-analytics/contrail-query-engine/qe.sandesh',
+        '#src/contrail-analytics/tf-query-engine/qe.sandesh',
         'sandesh/', False)
 sandesh_pkgs = [vm_pkg, vn_pkg, stats_test_pkg, alarm_test_pkg,
                 object_table_test_pkg, flow_pkg, qe_test_pkg]

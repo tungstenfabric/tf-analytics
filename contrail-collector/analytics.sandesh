@@ -7,7 +7,7 @@
  */
 
 /**
- * structure to carry contrail-query-engine query statistics
+ * structure to carry tf-query-engine query statistics
  */
 struct QueryStats {
     2: string                      qid
