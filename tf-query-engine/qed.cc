@@ -27,7 +27,7 @@
 #include "query.h"
 #include "qe_sandesh.h"
 #include <base/misc_utils.h>
-#include <query_engine/buildinfo.h>
+#include <tf_query_engine/buildinfo.h>
 #include <sandesh/sandesh_http.h>
 #include <io/process_signal.h>
 #include <malloc.h>

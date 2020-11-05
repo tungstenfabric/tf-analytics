@@ -68,7 +68,7 @@ env.Append(LIBPATH=['.', SrcBuildDir('base'),
 
 env.Append(CCFLAGS=' -DUSE_SESSION')
 
-includes = MapBuildDir(['analytics', 'query_engine', 'database'])
+includes = MapBuildDir(['analytics', 'tf_query_engine', 'database'])
 env.Append(CPPPATH = includes)
 
 RedisConn_obj = env.Object('redis_connection.o', '../analytics/redis_connection.cc')
@@ -172,8 +172,8 @@ qedt = env.UnitTest(
         ['../analytics/vizd_table_desc.o', rac,
         '../analytics/viz_constants.o'])
 
-env.Alias("contrail-query-engine", qed)
-env.Alias("src/query_engine:qedt", qedt)
+env.Alias("tf-query-engine", qed)
+env.Alias("src/tf_query_engine:qedt", qedt)
 
 env.Depends(qed, '#/build/include/hiredis/hiredis.h')
 env.Depends(qedt, '#/build/include/hiredis/hiredis.h')
@@ -193,8 +193,8 @@ doc_files += env.SandeshGenDoc('qe.sandesh')
 
 # Please update sandesh/common/vns.sandesh on process name change
 env.Alias('install',
-        env.InstallAs(env['INSTALL_BIN'] + '/contrail-query-engine', qed))
+        env.InstallAs(env['INSTALL_BIN'] + '/tf-query-engine', qed))
 env.Alias('install', env.Install(env['INSTALL_CONF'],
-            'contrail-query-engine.conf'))
+            'tf-query-engine.conf'))
 env.Alias('install', env.Install(
-    env['INSTALL_MESSAGE_DOC'] + '/contrail-query-engine/', doc_files))
+    env['INSTALL_MESSAGE_DOC'] + '/tf-query-engine/', doc_files))

@@ -13,7 +13,7 @@
 #include "base/address_util.h"
 #include "base/util.h"
 #include <base/options_util.h>
-#include <query_engine/buildinfo.h>
+#include <tf_query_engine/buildinfo.h>
 #include "viz_constants.h"
 
 #include "options.h"
@@ -47,7 +47,7 @@ uint32_t Options::GenerateHash(std::vector<std::string> &list) {
 
 // Initialize query-engine's command line option tags with appropriate default
 // values. Options can from a config file as well. By default, we read
-// options from /etc/contrail/contrail-query-engine.conf
+// options from /etc/contrail/tf-query-engine.conf
 void Options::Initialize(EventManager &evm,
                          opt::options_description &cmdline_options) {
     boost::system::error_code error;

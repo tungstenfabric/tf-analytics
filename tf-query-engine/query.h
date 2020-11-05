@@ -73,8 +73,8 @@
 #include <sandesh/sandesh_trace.h>
 #include <sandesh/common/vns_constants.h>
 #include <analytics/viz_constants.h>
-#include <query_engine/qe_constants.h>
-#include <query_engine/qe_types.h>
+#include <tf_query_engine/qe_constants.h>
+#include <tf_query_engine/qe_types.h>
 #include "rapidjson/document.h"
 #include <boost/shared_ptr.hpp>
 
