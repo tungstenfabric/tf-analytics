@@ -607,10 +607,10 @@ class QueryEngine(object):
             args.append('--REDIS.redis_ca_cert')
             args.append(self.redis_ssl_params['ca_cert'])
 
-        self._logger.info('Setting up contrail-query-engine: %s' % ' '.join(args))
+        self._logger.info('Setting up tf-query-engine: %s' % ' '.join(args))
         ports, self._instance = \
                          self.analytics_fixture.start_with_ephemeral_ports(
-                         "contrail-query-engine", ["http"],
+                         "tf-query-engine", ["http"],
                          args, AnalyticsFixture.enable_core)
         self.http_port = ports["http"]
         return self.verify_setup()
@@ -624,7 +624,7 @@ class QueryEngine(object):
     def stop(self):
         if self._instance is not None:
             rcode = self.analytics_fixture.process_stop(
-                "contrail-query-engine:%s" % str(self.listen_port),
+                "tf-query-engine:%s" % str(self.listen_port),
                 self._instance, self._log_file, False)
             #assert(rcode == 0)
             self._instance = None
@@ -1180,11 +1180,11 @@ class AnalyticsFixture(fixtures.Fixture):
         self.logger.info("verify_message_table_moduleid")
         vns = VerificationOpsSrv(socket.getfqdn("127.0.0.1"), self.opserver_port,
             self.admin_user, self.admin_password)
-        # query for contrail-query-engine logs
+        # query for tf-query-engine logs
         res_qe = vns.post_query(MESSAGE_TABLE,
                                 start_time='-10m', end_time='now',
                                 select_fields=["Type", "Messagetype"],
-                                where_clause="ModuleId = contrail-query-engine")
+                                where_clause="ModuleId = tf-query-engine")
         self.logger.info("res_qe %s" % str(res_qe))
         # query for Collector logs
         res_c = vns.post_query(MESSAGE_TABLE,
@@ -1203,7 +1203,7 @@ class AnalyticsFixture(fixtures.Fixture):
         self.logger.info("verify_message_table_where_or")
         vns = VerificationOpsSrv(socket.getfqdn("127.0.0.1"), self.opserver_port,
             self.admin_user, self.admin_password)
-        where_clause1 = "ModuleId = contrail-query-engine"
+        where_clause1 = "ModuleId = tf-query-engine"
         where_clause2 = str("Source =" + socket.getfqdn("127.0.0.1"))
         res = vns.post_query(
             MESSAGE_TABLE,
@@ -1217,7 +1217,7 @@ class AnalyticsFixture(fixtures.Fixture):
             assert(len(res) > 0)
             moduleids = list(set(x['ModuleId'] for x in res))
             self.logger.info("moduleids %s" % str(moduleids))
-            if ('contrail-collector' in moduleids) and ('contrail-query-engine' in moduleids):
+            if ('contrail-collector' in moduleids) and ('tf-query-engine' in moduleids):
                 return True
             else:
                 return False
@@ -1227,7 +1227,7 @@ class AnalyticsFixture(fixtures.Fixture):
         self.logger.info("verify_message_table_where_and")
         vns = VerificationOpsSrv(socket.getfqdn("127.0.0.1"), self.opserver_port,
             self.admin_user, self.admin_password)
-        where_clause1 = "ModuleId = contrail-query-engine"
+        where_clause1 = "ModuleId = tf-query-engine"
         where_clause2 = str("Source =" + socket.getfqdn("127.0.0.1"))
         res = vns.post_query(
             MESSAGE_TABLE,
@@ -1240,7 +1240,7 @@ class AnalyticsFixture(fixtures.Fixture):
             assert(len(res) > 0)
             moduleids = list(set(x['ModuleId'] for x in res))
             self.logger.info("moduleids %s" % str(moduleids))
-            if len(moduleids) == 1:  # 1 moduleid: contrail-query-engine
+            if len(moduleids) == 1:  # 1 moduleid: tf-query-engine
                 return True
             else:
                 return False
@@ -1270,14 +1270,14 @@ class AnalyticsFixture(fixtures.Fixture):
         self.logger.info("verify_message_table_where_filter")
         vns = VerificationOpsSrv(socket.getfqdn("127.0.0.1"), self.opserver_port,
             self.admin_user, self.admin_password)
-        where_clause1 = "ModuleId = contrail-query-engine"
+        where_clause1 = "ModuleId = tf-query-engine"
         where_clause2 = str("Source =" + socket.getfqdn("127.0.0.1"))
         res = vns.post_query(MESSAGE_TABLE,
                              start_time='-10m', end_time='now',
                              select_fields=["ModuleId"],
                              where_clause=str(
                                  where_clause1 + " OR  " + where_clause2),
-                             filter="ModuleId = contrail-query-engine")
+                             filter="ModuleId = tf-query-engine")
         self.logger.info("res %s" % str(res))
         if res == []:
             return False
@@ -1345,11 +1345,11 @@ class AnalyticsFixture(fixtures.Fixture):
         self.logger.info("verify_message_table_sort:Ascending Sort")
         vns = VerificationOpsSrv(socket.getfqdn("127.0.0.1"), self.opserver_port,
             self.admin_user, self.admin_password)
-        where_clause1 = "ModuleId = contrail-query-engine"
+        where_clause1 = "ModuleId = tf-query-engine"
         where_clause2 = str("Source =" + socket.getfqdn("127.0.0.1"))
 
         exp_moduleids = ['contrail-analytics-api',
-                         'contrail-collector', 'contrail-query-engine']
+                         'contrail-collector', 'tf-query-engine']
 
         # Ascending sort
         res = vns.post_query(MESSAGE_TABLE,

@@ -1145,7 +1145,7 @@ class TestAlarmPlugins(unittest.TestCase):
                             'process_state': 'PROCESS_STATE_RUNNING'
                         },
                         {
-                            'process_name': 'contrail-query-engine',
+                            'process_name': 'tf-query-engine',
                             'process_state': 'PROCESS_STATE_EXITED'
                         }
                     ]}}
@@ -1182,7 +1182,7 @@ class TestAlarmPlugins(unittest.TestCase):
                                         'json_variables': {
                                             'NodeStatus.process_info.'
                                                 'process_name':
-                                                    '"contrail-query-engine"'
+                                                    '"tf-query-engine"'
                                         }
                                     }
                                 ]

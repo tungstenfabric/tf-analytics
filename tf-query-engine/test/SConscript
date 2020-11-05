@@ -50,13 +50,13 @@ options_test = env.UnitTest('options_test', ['../buildinfo.o', '../options.o',
                                      '../../analytics/viz_constants.o',
                                              'options_test.cc'],
 			    )
-env.Alias('src/contrail-analytics/contrail-query-engine:options_test', options_test)
+env.Alias('src/contrail-analytics/tf-query-engine:options_test', options_test)
 
 utils_test = env.UnitTest('utils_test', ['../utils.o',
                                          'utils_test.cc',
                                          '../../analytics/viz_constants.o']
 			    )
-env.Alias('contrail-query-engine:utils_test', utils_test)
+env.Alias('tf-query-engine:utils_test', utils_test)
 
 select_test_obj = env_noWerror_excep.Object('select_test.o',
                                             'select_test.cc')
@@ -109,6 +109,6 @@ test_suite = [
              ]
 
 test = env.TestSuite('qe-test', test_suite)
-env.Alias('src/contrail-analytics/contrail-query-engine:test', test)
+env.Alias('src/contrail-analytics/tf-query-engine:test', test)
 
 Return('test_suite')
