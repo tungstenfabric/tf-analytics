@@ -172,7 +172,7 @@ qedt = env.UnitTest(
         ['../analytics/vizd_table_desc.o', rac,
         '../analytics/viz_constants.o'])
 
-env.Alias("contrail-query-engine", qed)
+env.Alias("tf-query-engine", qed)
 env.Alias("src/query_engine:qedt", qedt)
 
 env.Depends(qed, '#/build/include/hiredis/hiredis.h')
@@ -193,8 +193,8 @@ doc_files += env.SandeshGenDoc('qe.sandesh')
 
 # Please update sandesh/common/vns.sandesh on process name change
 env.Alias('install',
-        env.InstallAs(env['INSTALL_BIN'] + '/contrail-query-engine', qed))
+        env.InstallAs(env['INSTALL_BIN'] + '/tf-query-engine', qed))
 env.Alias('install', env.Install(env['INSTALL_CONF'],
-            'contrail-query-engine.conf'))
+            'tf-query-engine.conf'))
 env.Alias('install', env.Install(
-    env['INSTALL_MESSAGE_DOC'] + '/contrail-query-engine/', doc_files))
+    env['INSTALL_MESSAGE_DOC'] + '/tf-query-engine/', doc_files))
