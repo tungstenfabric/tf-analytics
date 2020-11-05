@@ -3,7 +3,7 @@
  */
 
 /**
- *  Definitions of structures used by contrail-query-engine that go into
+ *  Definitions of structures used by tf-query-engine that go into
  *  Database Node UVE.
  */
 
@@ -110,7 +110,7 @@ struct QEDbStats {
 }
 
 /**
- * @description: Statistics for database operations in contrail-query-engine
+ * @description: Statistics for database operations in tf-query-engine
  * @object: analytics-node
  */
 
