@@ -60,12 +60,12 @@
 #include "hiredis/hiredis.h"
 #include "hiredis/boostasio.hpp"
 #include <list>
-#include <contrail-collector/redis_connection.h>
+#include <tf-collector/redis_connection.h>
 #include "base/regex.h"
 #include "base/work_pipeline.h"
 #include "database/gendb_if.h"
 #include "database/gendb_statistics.h"
-#include <contrail-collector/viz_message.h>
+#include <tf-collector/viz_message.h>
 #include "json_parse.h"
 #include "QEOpServerProxy.h"
 #include "base/logging.h"

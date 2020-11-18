@@ -135,7 +135,7 @@ struct CollectorDbStats {
 }
 
 /**
- * @description: Statistics for database operations in contrail-collector
+ * @description: Statistics for database operations in tf-collector
  * @object: analytics-node
  */
 uve sandesh CollectorDbStatsTrace {
@@ -144,7 +144,7 @@ uve sandesh CollectorDbStatsTrace {
 
 /**
  * @description: This structure used to send statistics data related to Protobuf
- * Receiver in the contrail-collector
+ * Receiver in the tf-collector
  * @object: analytics-node
  */
 objectlog sandesh ProtobufCollectorStats {

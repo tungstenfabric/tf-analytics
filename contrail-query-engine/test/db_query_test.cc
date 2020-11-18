@@ -9,8 +9,8 @@
 #include "base/logging.h"
 #include <query.h>
 #include <analytics_query_mock.h>
-#include "contrail-collector/db_handler.h"
-#include "contrail-collector/test/cql_if_mock.h"
+#include "tf-collector/db_handler.h"
+#include "tf-collector/test/cql_if_mock.h"
 #include "base/test/task_test_util.h"
 
 using ::testing::_;

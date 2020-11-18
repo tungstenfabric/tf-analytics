@@ -188,7 +188,7 @@ class Collector(object):
         self._logger.info('Setting up Vizd: %s' % (' '.join(args)))
         ports, self._instance = \
                          self.analytics_fixture.start_with_ephemeral_ports(
-                         "contrail-collector", ["http","collector"],
+                         "tf-collector", ["http","collector"],
                          args, AnalyticsFixture.enable_core)
         self._generator_id = self.hostname+':'+NodeTypeNames[NodeType.ANALYTICS]+\
                             ':'+ModuleNames[Module.COLLECTOR]+':'+str(self._instance.pid)
@@ -207,7 +207,7 @@ class Collector(object):
     def stop(self):
         if self._instance is not None:
             rcode = self.analytics_fixture.process_stop(
-                "contrail-collector:%s" % str(self.listen_port),
+                "tf-collector:%s" % str(self.listen_port),
                 self._instance, self._log_file)
             #assert(rcode == 0)
             self._instance = None
@@ -420,7 +420,7 @@ class OpServer(object):
         if self.analytics_fixture.redis_uves[0].password:
             args.append('--redis_password')
             args.append(self.analytics_fixture.redis_uves[0].password)
-        args.append('--redis_uve_list') 
+        args.append('--redis_uve_list')
         if self.redis_ssl_params['ssl_enable'] is False:
             for redis_uve in self.analytics_fixture.redis_uves:
                 args.append(socket.getfqdn("127.0.0.1")+':'+str(redis_uve.port))
@@ -527,7 +527,7 @@ class QueryEngine(object):
         self.cassandra_user = self.analytics_fixture.cassandra_user
         self.cassandra_password = self.analytics_fixture.cassandra_password
         if self.analytics_fixture.redis_uves[0].password:
-           self.redis_password = str(self.analytics_fixture.redis_uves[0].password) 
+           self.redis_password = str(self.analytics_fixture.redis_uves[0].password)
         self._generator_id = self.hostname+':'+NodeTypeNames[NodeType.DATABASE]+\
                             ':'+ModuleNames[Module.QUERY_ENGINE]+':0'
         self.cluster_id = cluster_id
@@ -817,7 +817,7 @@ class AnalyticsFixture(fixtures.Fixture):
                            sandesh_config=self.sandesh_config)]
         if not self.collectors[0].start():
             self.logger.error("Collector did NOT start")
-            return 
+            return
 
         if not self.verify_collector_gen(self.collectors[0]):
             self.logger.error("Collector UVE not in Redis")
@@ -1147,7 +1147,7 @@ class AnalyticsFixture(fixtures.Fixture):
         # only one moduleid: Collector
         if (not((len(moduleids) == 1))):
             return False
-        if (not ("contrail-collector" in moduleids)):
+        if (not ("tf-collector" in moduleids)):
             return False
         return True
 
@@ -1190,7 +1190,7 @@ class AnalyticsFixture(fixtures.Fixture):
         res_c = vns.post_query(MESSAGE_TABLE,
                                start_time='-10m', end_time='now',
                                select_fields=["Type", "Messagetype"],
-                               where_clause="ModuleId = contrail-collector")
+                               where_clause="ModuleId = tf-collector")
         self.logger.info("res_c %s" % str(res_c))
         if (res_qe == []) or (res_c == []):
             return False
@@ -1217,7 +1217,7 @@ class AnalyticsFixture(fixtures.Fixture):
             assert(len(res) > 0)
             moduleids = list(set(x['ModuleId'] for x in res))
             self.logger.info("moduleids %s" % str(moduleids))
-            if ('contrail-collector' in moduleids) and ('contrail-query-engine' in moduleids):
+            if ('tf-collector' in moduleids) and ('contrail-query-engine' in moduleids):
                 return True
             else:
                 return False
@@ -1285,7 +1285,7 @@ class AnalyticsFixture(fixtures.Fixture):
             assert(len(res) > 0)
             moduleids = list(set(x['ModuleId'] for x in res))
             self.logger.info("moduleids %s" % str(moduleids))
-            if len(moduleids) != 1:  # 1 moduleid: contrail-collector
+            if len(moduleids) != 1:  # 1 moduleid: tf-collector
                 return False
 
         res = vns.post_query(MESSAGE_TABLE,
@@ -1293,7 +1293,7 @@ class AnalyticsFixture(fixtures.Fixture):
                               select_fields=["ModuleId"],
                               where_clause=str(
                                   where_clause1 + " AND  " + where_clause2),
-                              filter="ModuleId = contrail-collector")
+                              filter="ModuleId = tf-collector")
         self.logger.info("res %s" % str(res))
         if res != []:
             return False
@@ -1308,7 +1308,7 @@ class AnalyticsFixture(fixtures.Fixture):
                 start_time='now-10m',
                 end_time='now',
                 select_fields=["ModuleId"],
-                filter=[[{"name": "ModuleId", "value": "contrail-collector", "op": 1}]])
+                filter=[[{"name": "ModuleId", "value": "tf-collector", "op": 1}]])
         json_qstr = json.dumps(a_query.__dict__)
         res = vns.post_query_json(json_qstr)
         if res == []:
@@ -1317,13 +1317,13 @@ class AnalyticsFixture(fixtures.Fixture):
             assert(len(res) > 0)
             moduleids = list(set(x['ModuleId'] for x in res))
             self.logger.info(str(moduleids))
-            assert(len(moduleids) == 1 and "contrail-collector" in moduleids)
+            assert(len(moduleids) == 1 and "tf-collector" in moduleids)
 
         a_query = Query(table=MESSAGE_TABLE,
                 start_time='now-10m',
                 end_time='now',
                 select_fields=["ModuleId"],
-                filter=[[{"name": "ModuleId", "value": "contrail-collector", "op": 1}], [{"name": "ModuleId", "value": "contrail-analytics-api", "op": 1}]])
+                filter=[[{"name": "ModuleId", "value": "tf-collector", "op": 1}], [{"name": "ModuleId", "value": "contrail-analytics-api", "op": 1}]])
         json_qstr = json.dumps(a_query.__dict__)
         res = vns.post_query_json(json_qstr)
         self.logger.info("res %s" % str(res))
@@ -1333,11 +1333,11 @@ class AnalyticsFixture(fixtures.Fixture):
             assert(len(res) > 0)
             moduleids = list(set(x['ModuleId'] for x in res))
             self.logger.info(str(moduleids))
-            # 1 moduleid: contrail-collector || contrail-analytics-api
+            # 1 moduleid: tf-collector || contrail-analytics-api
             assert(len(moduleids) == 2 and\
-                   "contrail-collector" in moduleids and\
-                   "contrail-analytics-api" in moduleids)  
-                
+                   "tf-collector" in moduleids and\
+                   "contrail-analytics-api" in moduleids)
+
         return True
 
     @retry(delay=1, tries=1)
@@ -1349,7 +1349,7 @@ class AnalyticsFixture(fixtures.Fixture):
         where_clause2 = str("Source =" + socket.getfqdn("127.0.0.1"))
 
         exp_moduleids = ['contrail-analytics-api',
-                         'contrail-collector', 'contrail-query-engine']
+                         'tf-collector', 'contrail-query-engine']
 
         # Ascending sort
         res = vns.post_query(MESSAGE_TABLE,
@@ -1415,7 +1415,7 @@ class AnalyticsFixture(fixtures.Fixture):
                 if x['ModuleId'] not in moduleids:
                     moduleids.append(x['ModuleId'])
             self.logger.info("moduleids %s" % str(moduleids))
-            if len(moduleids) == 1: 
+            if len(moduleids) == 1:
                 if moduleids[0] != 'contrail-analytics-api':
                     return False
                 return True
@@ -1448,7 +1448,7 @@ class AnalyticsFixture(fixtures.Fixture):
         self.logger.info("res %s" % str(res))
         if len(res) == gen_obj.vn_all_rows['rows']:
             return True
-        return False      
+        return False
 
     @retry(delay=1, tries=8)
     def verify_intervn_sum(self, gen_obj):
@@ -1463,12 +1463,12 @@ class AnalyticsFixture(fixtures.Fixture):
         self.logger.info("res %s" % str(res))
         if len(res) == gen_obj.vn_sum_rows['rows']:
             return True
-        return False 
+        return False
 
     @retry(delay=1, tries=10)
- 
+
     def verify_where_query_prefix(self,generator_obj):
-        
+
         self.logger.info('verify where query in FlowSeriesTable')
         vns = VerificationOpsSrv(socket.getfqdn("127.0.0.1"), self.opserver_port,
             self.admin_user, self.admin_password)
@@ -2040,7 +2040,7 @@ class AnalyticsFixture(fixtures.Fixture):
             'SessionSeriesTable',
             start_time=str(generator_obj.session_start_time),
             end_time=str(generator_obj.session_end_time),
-            select_fields=['deployment', 'tier', 'application', 'site', 
+            select_fields=['deployment', 'tier', 'application', 'site',
                            'SUM(forward_sampled_bytes)',
                            'SUM(reverse_sampled_pkts)', 'sample_count'],
             session_type="client")
@@ -2169,7 +2169,7 @@ class AnalyticsFixture(fixtures.Fixture):
                 end_time = ts + gms
                 if end_time > int(et):
                     end_time = int(et)
-                ts_stats[ts] = _aggregate_session_stats(generator_obj.client_sessions, 
+                ts_stats[ts] = _aggregate_session_stats(generator_obj.client_sessions,
                         ts, end_time, protocol=i)
             exp_result[i] = ts_stats
         self.logger.info('exp_result: %s' % str(exp_result))
@@ -2628,7 +2628,7 @@ class AnalyticsFixture(fixtures.Fixture):
             assert(r['protocol'] == stats['protocol'])
             assert(r['SUM(bytes)'] == stats['SUM(bytes)'])
             assert(r['SUM(packets)'] == stats['SUM(packets)'])
-        
+
         # 6. direction_ing + stats
         self.logger.info('Flowseries: [direction_ing, SUM(bytes), SUM(packets)')
         res = vns.post_query(
@@ -2651,7 +2651,7 @@ class AnalyticsFixture(fixtures.Fixture):
         assert(res[0]['SUM(packets)'] == 3*exp_sum_pkts)
         assert(res[0]['SUM(bytes)'] == 3*exp_sum_bytes)
         assert(res[0]['direction_ing'] == 1)
-        
+
         self.logger.info('Flowseries: [direction_ing, SUM(bytes), SUM(packets)]')
         result = vns.post_query(
             'FlowSeriesTable',
@@ -2664,7 +2664,7 @@ class AnalyticsFixture(fixtures.Fixture):
         assert(result[0]['SUM(packets)'] == 3*exp_sum_pkts)
         assert(result[0]['SUM(bytes)'] == 3*exp_sum_bytes)
         assert(result[0]['direction_ing'] == 0)
-        
+
         # 7. T=<granularity> + tuples
         self.logger.info(
             'Flowseries: [T=<x>, sourcevn, destvn, sport, dport, protocol]')
@@ -2849,7 +2849,7 @@ class AnalyticsFixture(fixtures.Fixture):
         except Exception as err:
             self.logger.error('Exception: %s' % err)
         return not connected
-    # end verify_collector_redis_uve_connection 
+    # end verify_collector_redis_uve_connection
 
     @retry(delay=2, tries=5)
     def verify_collector_db_info(self, collector,
@@ -2925,7 +2925,7 @@ class AnalyticsFixture(fixtures.Fixture):
         vops = VerificationOpsSrv(socket.getfqdn("127.0.0.1"), self.opserver.rest_api_port)
         return vops.get_ops_vns_response()
     #end get_opserver_vns_response
- 
+
     def get_opserver_alarms(self):
         self.logger.info('get_opserver_alarms')
         vops = VerificationOpsSrv(socket.getfqdn("127.0.0.1"), self.opserver.rest_api_port)
@@ -3334,7 +3334,7 @@ class AnalyticsFixture(fixtures.Fixture):
         vns = VerificationOpsSrv(socket.getfqdn("127.0.0.1"), self.opserver_port,
             self.admin_user, self.admin_password)
         yfilts = filts or {}
-        yfilts['cfilt'] = ["UVEAlarms"] 
+        yfilts['cfilt'] = ["UVEAlarms"]
         filters = self._get_filters_url_param(yfilts)
         table_query = table+'s'
         self.logger.info('verify_alarm_list: %s:%s' %
@@ -3430,7 +3430,7 @@ class AnalyticsFixture(fixtures.Fixture):
         self.logger.info('cleanUp started')
 
         delete_iptables_rule(self.zookeeper.get_zk_port())
-        
+
         try:
             self.opserver.stop()
         except:
@@ -3531,7 +3531,7 @@ class AnalyticsFixture(fixtures.Fixture):
             is_py=False):
 
         pipes = {}
-        for pname in pnames: 
+        for pname in pnames:
             if is_py:
                 pid = os.getppid()
             else:
@@ -3548,7 +3548,7 @@ class AnalyticsFixture(fixtures.Fixture):
             flags = fcntl(pipein, F_GETFL)
             fcntl(pipein, F_SETFL, flags | os.O_NONBLOCK)
             pipes[pname] = pipein , pipe_name
-            
+
         stdout_name = None
         if is_py:
             instance = self.run_py_daemon(args)
@@ -3558,9 +3558,9 @@ class AnalyticsFixture(fixtures.Fixture):
                 instance = subprocess.Popen(args, stdout=o,
                                  stderr=subprocess.STDOUT, bufsize=0,
                                  preexec_fn = preexec)
-      
-        pmap = {} 
-        for k,v in pipes.items(): 
+
+        pmap = {}
+        for k,v in pipes.items():
             tries = 50
             port = None
             pipein , pipe_name = v

@@ -4,7 +4,7 @@
 
 /**
  *  Definitions of structures used by contrail-analytics-api
- *  API information that is sent to contrail-collector
+ *  API information that is sent to tf-collector
  */
 
 
