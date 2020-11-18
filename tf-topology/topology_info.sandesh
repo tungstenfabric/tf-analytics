@@ -4,7 +4,7 @@
 
 /**
  *  Definitions of structures used by tf-snmp-collector to send
- *  information to the contrail-collector
+ *  information to the tf-collector
  */
 
 /**

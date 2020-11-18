@@ -12,7 +12,7 @@
 #include "rapidjson/document.h"
 #include <analytics/viz_types.h>
 #include <analytics/viz_constants.h>
-#include <contrail-collector/vizd_table_desc.h>
+#include <tf-collector/vizd_table_desc.h>
 #include "utils.h"
 #include "stats_select.h"
 
