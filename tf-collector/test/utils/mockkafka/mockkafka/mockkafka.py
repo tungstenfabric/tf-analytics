@@ -8,9 +8,9 @@
 # mockkafka
 #
 # This module helps start and stop kafka instances for unit testing
-# It uses mock zookeeper provided by config 
+# It uses mock zookeeper provided by config
 #
-    
+
 from __future__ import print_function
 from builtins import str
 import os
@@ -34,7 +34,7 @@ def start_kafka(zk_client_port, broker_listen_port, broker_id=0):
     if not os.path.exists(kafka_bdir):
         output,_ = call_command_("mkdir " + kafka_bdir)
     kafka_download = 'wget -nv --tries=3 -c -O ' + kafka_bdir + kafka_dl + \
-        ' https://github.com/Juniper/contrail-third-party-cache/blob/master/kafka' + \
+        ' https://github.com/tungstenfabric/tf-third-party-cache/blob/master/kafka' + \
         kafka_dl + '?raw=true'
     if not os.path.exists(kafka_bdir + kafka_dl):
         process = subprocess.Popen(kafka_download.split(' '))
@@ -52,9 +52,9 @@ def start_kafka(zk_client_port, broker_listen_port, broker_id=0):
     zk = KazooClient(hosts='127.0.0.1:'+str(zk_client_port), timeout=60.0)
     try:
         zk.start()
-        zk.delete("/brokers", recursive=True) 
-        zk.delete("/consumers", recursive=True) 
-        zk.delete("/controller", recursive=True) 
+        zk.delete("/brokers", recursive=True)
+        zk.delete("/consumers", recursive=True)
+        zk.delete("/controller", recursive=True)
     except:
         logging.info("Zookeeper client cannot connect")
         zk.stop()
@@ -67,7 +67,7 @@ def start_kafka(zk_client_port, broker_listen_port, broker_id=0):
         return False
 
     logging.info('kafka Port %d' % broker_listen_port)
- 
+
     replace_string_(confdir+"server.properties",
                     [("#listeners=PLAINTEXT://:9092","listeners=PLAINTEXT://:"+str(broker_listen_port))])
 
@@ -83,7 +83,7 @@ def start_kafka(zk_client_port, broker_listen_port, broker_id=0):
         [("SIGINT", "SIGKILL")])
     replace_string_(kafkabase + basefile + "/bin/kafka-server-stop.sh",
         [("#!/bin/sh", "#!/bin/sh -x")])
-    output,_ = call_command_("chmod +x " + kafkabase + basefile + "/bin/kafka-server-stop.sh") 
+    output,_ = call_command_("chmod +x " + kafkabase + basefile + "/bin/kafka-server-stop.sh")
 
     # Extra options for JMX : -Djava.net.preferIPv4Stack=true -Djava.rmi.server.hostname=xx.xx.xx.xx
     output,_ = call_command_(kafkabase + basefile + "/bin/kafka-server-start.sh -daemon " + kafkabase + basefile + "/config/server.properties")

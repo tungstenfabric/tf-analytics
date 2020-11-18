@@ -7,7 +7,7 @@
  */
 
 /**
- * structure to carry contrail-query-engine query statistics
+ * structure to carry tf-query-engine query statistics
  */
 struct QueryStats {
     2: string                      qid
@@ -39,7 +39,7 @@ objectlog sandesh QueryPerfInfo {
 }
 
 /**
- * structure to carry contrail-analytics-api query statistics
+ * structure to carry tf-analytics-api query statistics
  */
 struct AnalyticsApiSample {
     1: string operation_type // (GET, POST)
@@ -55,7 +55,7 @@ struct AnalyticsApiSample {
 }
 
 /**
- * @description: objectlog structure to send contrail-analytics-api query statistics
+ * @description: objectlog structure to send tf-analytics-api query statistics
  * @object: analytics-node
  */
 objectlog sandesh AnalyticsApiStats {
