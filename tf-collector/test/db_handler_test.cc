@@ -17,13 +17,13 @@
 
 #include <analytics/viz_types.h>
 #include <analytics/viz_constants.h>
-#include "contrail-collector/db_handler.h"
-#include "contrail-collector/db_handler_impl.h"
-#include "contrail-collector/vizd_table_desc.h"
-#include "contrail-collector/usrdef_counters.h"
+#include "tf-collector/db_handler.h"
+#include "tf-collector/db_handler_impl.h"
+#include "tf-collector/vizd_table_desc.h"
+#include "tf-collector/usrdef_counters.h"
 
-#include "contrail-collector/test/cql_if_mock.h"
-#include "contrail-collector/test/usrdef_counters_mock.h"
+#include "tf-collector/test/cql_if_mock.h"
+#include "tf-collector/test/usrdef_counters_mock.h"
 
 using ::testing::Return;
 using ::testing::Field;

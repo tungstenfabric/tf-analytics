@@ -150,7 +150,7 @@ zookeeper nodes (```ZOOKEEPER_SERVERS```). ```zookeeper``` component is removed 
 If any of the above optional role is not provisioned, then corresponding analytics component related configuration
 should not be available in other component's individual configuration file.
 For example:
-If ```analytics_database``` is not provisioned, then contrail-collector.conf file should not have ```DATABASE``` section.
+If ```analytics_database``` is not provisioned, then tf-collector.conf file should not have ```DATABASE``` section.
 
 ### 4.1.4 Changes in nodemgr
 If any of the optional role is not provisioned, then nodemgr should not send NodeStatus UVE for the corresponding components.

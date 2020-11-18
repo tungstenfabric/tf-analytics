@@ -155,7 +155,7 @@ else:
 def RedisLuaBuild(env, scr_name):
   env.Command('%s_lua.cpp' % scr_name ,'%s.lua' % scr_name,\
                   '(cd %s ; xxd -i %s.lua > ../../../%s/%s_lua.cpp)' %
-              (Dir('#src/contrail-analytics/contrail-collector').path,
+              (Dir('#src/tf-analytics/tf-collector').path,
                scr_name, Dir('.').path, scr_name))
   env.Depends('redis_processor_vizd.cc','%s_lua.cpp' % scr_name)
 
@@ -202,7 +202,7 @@ vizd = AnalyticsEnv.Program(target = 'vizd',
         syslog_collector_obj,
         parser_util_obj,
         ])
-AnalyticsEnv.Alias('contrail-collector', vizd)
+AnalyticsEnv.Alias('tf-collector', vizd)
 AnalyticsEnv.Default(vizd)
 
 AnalyticsEnv.Requires(vizd, '#/build/include/boost')
@@ -259,18 +259,18 @@ CollectorDocFiles += AnalyticsEnv.SandeshGenDoc('collector_uve.sandesh')
 CollectorDocFiles += AnalyticsEnv.SandeshGenDoc('sdwan_uve.sandesh')
 CollectorDocFiles += AnalyticsEnv.SandeshGenDoc('uflow.sandesh')
 CollectorDocFiles += AnalyticsEnv.SandeshGenDoc('sflow.sandesh')
-CollectorDocFiles += AnalyticsEnv.SandeshGenDoc('#src/contrail-common/database/gendb.sandesh')
-CollectorDocFiles += AnalyticsEnv.SandeshGenDoc('#src/contrail-common/database/cassandra/cql/cql.sandesh')
-CollectorDocFiles += AnalyticsEnv.SandeshGenDoc('#src/contrail-common/sandesh/library/common/sandesh_uve.sandesh')
-CollectorDocFiles += AnalyticsEnv.SandeshGenDoc('#src/contrail-common/sandesh/library/common/derived_stats_results.sandesh')
+CollectorDocFiles += AnalyticsEnv.SandeshGenDoc('#src/tf-common/database/gendb.sandesh')
+CollectorDocFiles += AnalyticsEnv.SandeshGenDoc('#src/tf-common/database/cassandra/cql/cql.sandesh')
+CollectorDocFiles += AnalyticsEnv.SandeshGenDoc('#src/tf-common/sandesh/library/common/sandesh_uve.sandesh')
+CollectorDocFiles += AnalyticsEnv.SandeshGenDoc('#src/tf-common/sandesh/library/common/derived_stats_results.sandesh')
 
 # Please update sandesh/common/vns.sandesh on process name change
 AnalyticsEnv.Alias('install', AnalyticsEnv.InstallAs(
-            AnalyticsEnv['INSTALL_BIN'] + '/contrail-collector', vizd))
+            AnalyticsEnv['INSTALL_BIN'] + '/tf-collector', vizd))
 AnalyticsEnv.Alias('install', AnalyticsEnv.Install(
-            AnalyticsEnv['INSTALL_CONF'], 'contrail-collector.conf'))
+            AnalyticsEnv['INSTALL_CONF'], 'tf-collector.conf'))
 AnalyticsEnv.Alias('install', AnalyticsEnv.Install(
-            AnalyticsEnv['INSTALL_MESSAGE_DOC'] + '/contrail-collector/', CollectorDocFiles))
+            AnalyticsEnv['INSTALL_MESSAGE_DOC'] + '/tf-collector/', CollectorDocFiles))
 
 # Local Variables:
 # mode: python
