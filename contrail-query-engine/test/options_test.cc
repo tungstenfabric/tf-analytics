@@ -514,8 +514,8 @@ TEST_F(OptionsTest, MultitokenVector) {
     char argv_1[] = "--DEFAULT.collectors=10.10.10.1:100 20.20.20.2:200";
     char argv_2[] = "--DEFAULT.cassandra_server_list=30.30.30.3:300";
     char argv_3[] = "--conf_file=src/contrail-analytics/contrail-query-engine/contrail-query-engine.conf"
-                    " src/contrail-analytics/contrail-collector/contrail-database.conf";
-    char argv_4[] = "--conf_file=src/contrail-analytics/contrail-collector/test-conf.conf";
+                    " src/contrail-analytics/tf-collector/tf-database.conf";
+    char argv_4[] = "--conf_file=src/contrail-analytics/tf-collector/test-conf.conf";
     argv[0] = argv_0;
     argv[1] = argv_1;
     argv[2] = argv_2;
@@ -531,8 +531,8 @@ TEST_F(OptionsTest, MultitokenVector) {
     cassandra_server_list.push_back("30.30.30.3:300");
     vector<string> option_file_list;
     option_file_list.push_back("src/contrail-analytics/contrail-query-engine/contrail-query-engine.conf");
-    option_file_list.push_back("src/contrail-analytics/contrail-collector/contrail-database.conf");
-    option_file_list.push_back("src/contrail-analytics/contrail-collector/test-conf.conf");
+    option_file_list.push_back("src/contrail-analytics/tf-collector/tf-database.conf");
+    option_file_list.push_back("src/contrail-analytics/tf-collector/test-conf.conf");
     TASK_UTIL_EXPECT_VECTOR_EQ(options_.config_file(),
                      option_file_list);
     TASK_UTIL_EXPECT_VECTOR_EQ(options_.collector_server_list(),
