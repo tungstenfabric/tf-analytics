@@ -15,7 +15,7 @@ Import('contrail_common_io_doc_files')
 Import('controller_vns_sandesh_doc_files')
 
 subdirs_no_dup = [
-          'contrail-collector',
+          'tf-collector',
           'contrail-query-engine',
           'contrail-opserver',
            ]
@@ -26,7 +26,7 @@ subdirs_dup = [
            ]
 
 variant_dir_map = {}
-variant_dir_map['contrail-collector'] = 'analytics'
+variant_dir_map['tf-collector'] = 'analytics'
 variant_dir_map['contrail-query-engine'] = 'query_engine'
 variant_dir_map['tf-snmp-collector'] = 'tf-snmp-collector'
 variant_dir_map['tf-topology'] = 'tf-topology'
@@ -80,14 +80,14 @@ BuildEnv['IO_DOC_FILES'] = contrail_common_io_doc_files
 # SANDESH
 BuildEnv['VNS_SANDESH_DOC_FILES'] = controller_vns_sandesh_doc_files
 
-# Analytics (contrail-collector)
-contrail_collector_doc_files = []
-analytics_doc_target = common['TOP'] + '/' + variant_dir_map['contrail-collector'] + '/'
-contrail_collector_doc_files += common.SandeshGenDoc('#src/contrail-analytics/contrail-collector/analytics.sandesh', analytics_doc_target)
-contrail_collector_doc_files += common.SandeshGenDoc('#src/contrail-analytics/contrail-collector/viz.sandesh', analytics_doc_target)
-contrail_collector_doc_files += common.SandeshGenDoc('#src/contrail-analytics/contrail-collector/redis.sandesh', analytics_doc_target)
-BuildEnv['ANALYTICS_DOC_FILES'] = contrail_collector_doc_files
-#Export('contrail_collector_doc_files')
+# Analytics (tf-collector)
+tf_collector_doc_files = []
+analytics_doc_target = common['TOP'] + '/' + variant_dir_map['tf-collector'] + '/'
+tf_collector_doc_files += common.SandeshGenDoc('#src/contrail-analytics/tf-collector/analytics.sandesh', analytics_doc_target)
+tf_collector_doc_files += common.SandeshGenDoc('#src/contrail-analytics/tf-collector/viz.sandesh', analytics_doc_target)
+tf_collector_doc_files += common.SandeshGenDoc('#src/contrail-analytics/tf-collector/redis.sandesh', analytics_doc_target)
+BuildEnv['ANALYTICS_DOC_FILES'] = tf_collector_doc_files
+#Export('tf_collector_doc_files')
 
 
 BuildEnv['INSTALL_DOC_PKG'] = BuildEnv['INSTALL_DOC'] + '/contrail-docs/html'

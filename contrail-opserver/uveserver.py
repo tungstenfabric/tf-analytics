@@ -37,7 +37,7 @@ from kazoo.client import KazooClient
 from kazoo.client import KazooState
 from .opserver_util import convert_to_string
 
-more_than_100k = 0 
+more_than_100k = 0
 
 RedisInfo = namedtuple("RedisInfo",["ip","port","pid"])
 
@@ -166,7 +166,7 @@ class UVEServer(object):
                     if rinst.collector_pid is None:
                         for gen in rinst.redis_handle.smembers("NGENERATORS"):
                             module = convert_to_string(gen).split(':')[2]
-                            if module == "contrail-collector":
+                            if module == "tf-collector":
                                 rinst.collector_pid = gen
                 except gevent.GreenletExit:
                     self._logger.error('UVEServer Exiting on gevent-kill')

@@ -3,7 +3,7 @@
  */
 
 #include "base/logging.h"
-#include "base/contrail-globals.h"
+#include "base/tf-globals.h"
 #include "base/string_util.h"
 #include "redis_processor_vizd.h"
 #include "redis_connection.h"
@@ -193,7 +193,7 @@ RedisProcessorExec::SyncDeleteUVEs(const std::string & redis_ip, unsigned short 
     if (c->err) {
         LOG(ERROR, "No connection for SyncDeleteUVEs : " << generator);
         redisFree(c);
-        /*when redis is down, restart contrail-collector directly.*/
+        /*when redis is down, restart tf-collector directly.*/
         exit(1);
     }
 
