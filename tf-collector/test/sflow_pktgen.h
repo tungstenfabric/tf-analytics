@@ -6,7 +6,7 @@
 #include <netinet/udp.h>
 #include <netinet/ip_icmp.h>
 
-#include "contrail-collector/sflow.h"
+#include "tf-collector/sflow.h"
 
 class PktHeaderGen {
 public:

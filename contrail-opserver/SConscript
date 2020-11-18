@@ -62,14 +62,14 @@ for file in local_sources:
 for file in plugins_sources:
     local_sources_rules.append(OpEnv.Install(Dir("opserver/plugins"), file))
 
-viz_pkg = OpEnv.SandeshGenPy('#src/contrail-analytics/contrail-collector/viz.sandesh', 'opserver/sandesh/', False)
-analytics_pkg = OpEnv.SandeshGenPy('#src/contrail-analytics/contrail-collector/analytics.sandesh', 'opserver/sandesh/', False)
+viz_pkg = OpEnv.SandeshGenPy('#src/contrail-analytics/tf-collector/viz.sandesh', 'opserver/sandesh/', False)
+analytics_pkg = OpEnv.SandeshGenPy('#src/contrail-analytics/tf-collector/analytics.sandesh', 'opserver/sandesh/', False)
 cpuinfo_pkg2 = OpEnv.SandeshGenPy('#src/contrail-common/base/sandesh/cpuinfo.sandesh', 'opserver/sandesh/analytics/', False)
 process_info_pkg2 = OpEnv.SandeshGenPy('#src/contrail-common/base/sandesh/process_info.sandesh', 'opserver/sandesh/analytics/', False)
 cpuinfo_pkg = OpEnv.SandeshGenPy('#src/contrail-common/base/sandesh/cpuinfo.sandesh', 'opserver/sandesh/nodeinfo/', False)
 process_info_pkg = OpEnv.SandeshGenPy('#src/contrail-common/base/sandesh/process_info.sandesh', 'opserver/sandesh/nodeinfo/', False)
 nodeinfo_pkg = OpEnv.SandeshGenPy('#src/contrail-common/base/sandesh/nodeinfo.sandesh', 'opserver/sandesh/', False)
-redis_pkg = OpEnv.SandeshGenPy('#src/contrail-analytics/contrail-collector/redis.sandesh', 'opserver/sandesh/', False)
+redis_pkg = OpEnv.SandeshGenPy('#src/contrail-analytics/tf-collector/redis.sandesh', 'opserver/sandesh/', False)
 alarmgen_pkg = OpEnv.SandeshGenPy('alarmgen_ctrl.sandesh', 'opserver/sandesh/', False)
 alarm_sandesh_base_pkg = OpEnv.SandeshGenPy('#src/contrail-common/sandesh/library/common/sandesh_alarm_base.sandesh', 'opserver/sandesh/alarmgen_ctrl/', False)
 derived_stats_pkg = OpEnv.SandeshGenPy('#src/contrail-common/sandesh/library/common/derived_stats_results.sandesh', 'opserver/sandesh/analytics/', False)
@@ -145,7 +145,7 @@ def run_coverage(env, target, source):
     os.system(lcov_run)
     lcov_run = 'lcov -e ' + Dir(env['TOP']).abspath + \
                '/opserver/test/analytics_test_intermediate.info ' + \
-               Dir('#').abspath + '/src/contrail-analytics/contrail-collector/* ' + \
+               Dir('#').abspath + '/src/contrail-analytics/tf-collector/* ' + \
                Dir('#').abspath + '/src/contrail-analytics/contrail-query-engine/* ' + \
                Dir('#').abspath + '/controller/src/database/* ' + \
                ' -o ' + Dir(env['TOP']).abspath + \
@@ -176,11 +176,11 @@ for file in test_sources:
        OpEnv.Install(Dir('.'), "#src/contrail-analytics/contrail-opserver/" + file))
 
 util_sources = [
-    '../contrail-collector/test/utils/mockkafka',
-    '../contrail-collector/test/utils/mockredis',
-    '../contrail-collector/test/utils/mockstunnel',
-    '../contrail-collector/test/utils/mockcassandra',
-    '../contrail-collector/test/utils/mockzoo',
+    '../tf-collector/test/utils/mockkafka',
+    '../tf-collector/test/utils/mockredis',
+    '../tf-collector/test/utils/mockstunnel',
+    '../tf-collector/test/utils/mockcassandra',
+    '../tf-collector/test/utils/mockzoo',
 ]
 utils_mkdir = OpEnv.Command("util_sources", [], Mkdir('utils'))
 for util in util_sources:
