@@ -14,11 +14,11 @@
 #include <io/io_types.h>
 #include <io/udp_server.h>
 
-#include "contrail-collector/db_handler.h"
-#include "contrail-collector/structured_syslog_server.h"
-#include "contrail-collector/structured_syslog_server_impl.h"
+#include "tf-collector/db_handler.h"
+#include "tf-collector/structured_syslog_server.h"
+#include "tf-collector/structured_syslog_server_impl.h"
 #include "generator.h"
-#include "contrail-collector/syslog_collector.h"
+#include "tf-collector/syslog_collector.h"
 
 using boost::assign::map_list_of;
 
@@ -321,13 +321,13 @@ TEST_F(StructuredSyslogStatWalkerTest, MessageLengthSplit_1) {
     std::string test_structured_syslog_rest_of_buffer;
     std::ifstream test_structured_syslog_File;
     test_structured_syslog_File.open(
-        "./src/contrail-analytics/contrail-collector/test/"
+        "./src/tf-analytics/tf-collector/test/"
         "test_StructSys_MsgLenSplit_1.txt");
     std::getline (test_structured_syslog_File, test_structured_syslog);
  
     std::ifstream test_structured_syslog_rest_of_buffer_File;
     test_structured_syslog_rest_of_buffer_File.open(
-        "./src/contrail-analytics/contrail-collector/test/"
+        "./src/tf-analytics/tf-collector/test/"
         "test_StructSys_Buff_MsgLenSplit_1.txt");
     std::getline (test_structured_syslog_rest_of_buffer_File, 
         test_structured_syslog_rest_of_buffer);
@@ -379,13 +379,13 @@ TEST_F(StructuredSyslogStatWalkerTest, MessageLengthSplit_2) {
     std::string test_structured_syslog_rest_of_buffer;
     std::ifstream test_structured_syslog_File;
     test_structured_syslog_File.open(
-        "./src/contrail-analytics/contrail-collector/test/"
+        "./src/tf-analytics/tf-collector/test/"
         "test_StructSys_MsgLenSplit_2.txt");
     std::getline (test_structured_syslog_File, test_structured_syslog);
  
     std::ifstream test_structured_syslog_rest_of_buffer_File;
     test_structured_syslog_rest_of_buffer_File.open(
-        "./src/contrail-analytics/contrail-collector/test/"
+        "./src/tf-analytics/tf-collector/test/"
         "test_StructSys_Buff_MsgLenSplit_2.txt");
     std::getline (test_structured_syslog_rest_of_buffer_File, 
         test_structured_syslog_rest_of_buffer);
@@ -432,13 +432,13 @@ TEST_F(StructuredSyslogStatWalkerTest, MessageLengthSplit_3) {
     std::string test_structured_syslog_rest_of_buffer;
     std::ifstream test_structured_syslog_File;
     test_structured_syslog_File.open(
-        "./src/contrail-analytics/contrail-collector/test/"
+        "./src/tf-analytics/tf-collector/test/"
         "test_StructSys_MsgLenSplit_3.txt");
     std::getline (test_structured_syslog_File, test_structured_syslog);
  
     std::ifstream test_structured_syslog_rest_of_buffer_File;
     test_structured_syslog_rest_of_buffer_File.open(
-        "./src/contrail-analytics/contrail-collector/test/"
+        "./src/tf-analytics/tf-collector/test/"
         "test_StructSys_Buff_MsgLenSplit_3.txt");
     std::getline (test_structured_syslog_rest_of_buffer_File, 
         test_structured_syslog_rest_of_buffer);
@@ -484,12 +484,12 @@ TEST_F(StructuredSyslogStatWalkerTest, MessageLengthBad) {
     std::string test_structured_syslog_rest_of_buffer ;
     std::ifstream test_structured_syslog_File;
     test_structured_syslog_File.open(
-        "./src/contrail-analytics/contrail-collector/test/"
+        "./src/tf-analytics/tf-collector/test/"
         "test_StructSys_MsgLenBad.txt");
     std::getline (test_structured_syslog_File, test_structured_syslog);
     std::ifstream test_structured_syslog_rest_of_buffer_File;
     test_structured_syslog_rest_of_buffer_File.open(
-        "./src/contrail-analytics/contrail-collector/test/"
+        "./src/tf-analytics/tf-collector/test/"
         "test_StructSys_Buff_MsgLenBad.txt");
     std::getline (test_structured_syslog_rest_of_buffer_File,
         test_structured_syslog_rest_of_buffer);
@@ -532,7 +532,7 @@ TEST_F(StructuredSyslogStatWalkerTest, SNMP_TRAPSyslog) {
     std::string test_structured_syslog_rest_of_buffer ;
     std::ifstream test_structured_syslog_File;
     test_structured_syslog_File.open(
-        "./src/contrail-analytics/contrail-collector/test/test_StructSys_SNMP.txt");
+        "./src/tf-analytics/tf-collector/test/test_StructSys_SNMP.txt");
     std::getline (test_structured_syslog_File, test_structured_syslog); 
     test_structured_syslog_File.close();
 
