@@ -3,7 +3,7 @@
 //
 
 #include <testing/gunit.h>
-#include <contrail-collector/generator.h>
+#include <tf-collector/generator.h>
 
 namespace {
 

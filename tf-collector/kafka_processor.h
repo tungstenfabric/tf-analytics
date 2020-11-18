@@ -20,7 +20,7 @@ class KafkaProcessor {
 
      
         // This is to publish to the raw UVE topics,
-        // which are consumed by contrail-alarm-gen
+        // which are consumed by tf-alarm-gen
         void KafkaPub(unsigned int pt,
                           const std::string& skey,
                           const std::string& gen,
