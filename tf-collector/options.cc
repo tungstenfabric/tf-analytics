@@ -42,7 +42,7 @@ bool Options::Parse(EventManager &evm, int argc, char *argv[]) {
 
 // Initialize collector's command line option tags with appropriate default
 // values. Options can from a config file as well. By default, we read
-// options from /etc/contrail/contrail-collector.conf
+// options from /etc/contrail/tf-collector.conf
 void Options::Initialize(EventManager &evm,
                          opt::options_description &cmdline_options) {
     boost::system::error_code error;
