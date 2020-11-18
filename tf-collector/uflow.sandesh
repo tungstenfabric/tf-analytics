@@ -4,7 +4,7 @@
 
 /**
  *  Definitions of structures added by underlay flow [sflow/ipfix] receiver in
- *  contrail-collector that go into Physical Router UVE.
+ *  tf-collector that go into Physical Router UVE.
  */
 
 enum FlowType {
@@ -34,7 +34,7 @@ struct UFlowSample {
 
 /**
  * Physical Router UVE data provided by underlay flow receiver in
- * contrail-collector
+ * tf-collector
  */
 struct UFlowData {
     1: string name (key="ObjectPRouterIP")

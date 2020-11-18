@@ -15,7 +15,7 @@
 #include <boost/assign/list_of.hpp>
 #include <boost/foreach.hpp>
 #include <cerrno>
-#include <contrail-collector/vizd_table_desc.h>
+#include <tf-collector/vizd_table_desc.h>
 #include "stats_select.h"
 #include "stats_query.h"
 #include "base/regex.h"
