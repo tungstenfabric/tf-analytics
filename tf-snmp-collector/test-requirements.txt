@@ -1,5 +1,3 @@
-testscenarios
-testrepository
 python-subunit
 coverage
 fixtures==1.3.1
