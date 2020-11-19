@@ -231,7 +231,13 @@ RedisProcessorExec::SyncDeleteUVEs(const std::string & redis_ip, unsigned short 
         redisFree(c);
         return false;
     }
-
+    if (reply->type == REDIS_REPLY_ERROR) {
+        LOG(ERROR, "SyncDeleteUVEs command failed for " << generator
+            << " : " << (0 < reply->len ? reply->str : "silent"));
+        freeReplyObject(reply);
+        redisFree(c);
+        return false;
+    }
     if (reply->type == REDIS_REPLY_ARRAY) {
         for (uint iter=0; iter < reply->elements; iter+=2) {
             LOG(INFO, "SyncDeleteUVE <" << source << ":" << node_type << 
