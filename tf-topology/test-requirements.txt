@@ -1,11 +1,9 @@
 lxml
-gevent
+gevent<1.5.0
 xmltodict
-prettytable
 psutil>=0.6.0,!=5.5.0,!=5.5.1
 bottle
 consistent-hash
-testscenarios
 testrepository
 python-subunit
 coverage
