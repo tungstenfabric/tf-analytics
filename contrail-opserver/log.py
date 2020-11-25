@@ -248,7 +248,8 @@ class LogQuerier(object):
          help="Display list of message type", action="store_true")
         parser.add_argument("--output-file", "-o", help="redirect output to file")
         parser.add_argument("--json", help="Dump output as json", action="store_true")
-        parser.add_argument("--all", action="store_true", help=argparse.SUPPRESS)        
+        parser.add_argument("--all", action="store_true", help=argparse.SUPPRESS)
+        parser.add_argument("--tenant-name", help="Logs related to a particular tenant")
         self._args = parser.parse_args(remaining_argv)
 
         self._args.admin_user = args.admin_user
@@ -360,7 +361,6 @@ class LogQuerier(object):
                 value=SandeshLevel._NAMES_TO_VALUES[self._args.level],
                 op=OpServerUtils.MatchOp.LEQ)
             and_filter.append(level_match.__dict__)
-
         if self._args.node_type is not None:
             node_type_match = OpServerUtils.Match(
                 name=NODE_TYPE,
@@ -518,7 +518,6 @@ class LogQuerier(object):
                 NODE_TYPE,
                 INSTANCE_ID,
             ]
-
         filter = None
         if len(or_filter):
             filter = [and_filter+[filt] for filt in or_filter]
@@ -591,7 +590,29 @@ class LogQuerier(object):
                 sandesh_level]
             self._logger.log(syslog_level, log_str)
         else:
-            print(log_str)
+            if (self._args.tenant_name is not None):
+                #If the log to be printed,log_str, has the keyword,
+                #"project =", then, the value is the tenant name
+                result_project = re.search('project = (.*), user =',log_str)
+                if result_project is not None:
+                    tenant_log_str = result_project.group(1)
+                    if ((tenant_log_str is not None)):
+                        if tenant_log_str == self._args.tenant_name:
+                            print(log_str)
+                    return
+
+                #If project field is not there,
+                #tenant details are contained inside identifier_name field 
+                result_identifier = re.search('identifier_name = (.*), url =',log_str)
+                tenant_log_str = result_identifier.group(1)
+                if result_identifier is not None:
+                    #Splitting tenant_log_str by the separator,':'
+                    tenant_split = tenant_log_str.split(':')
+                    tenant_split_str = tenant_split[1]
+                    if ((self._args.tenant_name is not None) and (((tenant_split_str)==(self._args.tenant_name)))):
+                        print(log_str)
+            else:
+                print(log_str)
     #end output
 
     def read_result(self, result_gen):
@@ -623,7 +644,6 @@ class LogQuerier(object):
             first = True
             self.output('[', SandeshLevel.INVALID)
         for messages_dict in messages_dict_list:
-
             if TIMESTAMP in messages_dict:
                 message_dt = datetime.datetime.fromtimestamp(
                     old_div(int(messages_dict[TIMESTAMP]),
