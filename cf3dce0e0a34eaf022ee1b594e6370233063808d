@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "f8537ebb_fd3ff497",
+        "filename": "contrail-opserver/api_log.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 55,
+      "author": {
+        "id": 705
+      },
+      "writtenOn": "2020-12-10T09:22:23Z",
+      "side": 1,
+      "message": "Please remove this extra space",
+      "revId": "cf3dce0e0a34eaf022ee1b594e6370233063808d",
+      "serverId": "c72cd27d-1743-4a55-84a4-cd13b8400c52",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "dcbd1ff2_85b406d6",
+        "filename": "contrail-opserver/log.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 605,
+      "author": {
+        "id": 705
+      },
+      "writtenOn": "2020-12-10T09:22:23Z",
+      "side": 1,
+      "message": "Is this required? I see line 602 is same as this",
+      "revId": "cf3dce0e0a34eaf022ee1b594e6370233063808d",
+      "serverId": "c72cd27d-1743-4a55-84a4-cd13b8400c52",
+      "unresolved": true
+    }
+  ]
+}
