@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "cc3e440c_e0a91315",
+        "filename": "contrail-opserver/api_log.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 55,
+      "author": {
+        "id": 717
+      },
+      "writtenOn": "2020-12-10T11:01:28Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "f8537ebb_fd3ff497",
+      "revId": "cf3dce0e0a34eaf022ee1b594e6370233063808d",
+      "serverId": "c72cd27d-1743-4a55-84a4-cd13b8400c52",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "dcbd1ff2_85b406d6",
         "filename": "contrail-opserver/log.py",
         "patchSetId": 4
@@ -33,6 +51,24 @@
       "revId": "cf3dce0e0a34eaf022ee1b594e6370233063808d",
       "serverId": "c72cd27d-1743-4a55-84a4-cd13b8400c52",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "15703fd5_a1d568db",
+        "filename": "contrail-opserver/log.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 605,
+      "author": {
+        "id": 717
+      },
+      "writtenOn": "2020-12-10T11:01:28Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "dcbd1ff2_85b406d6",
+      "revId": "cf3dce0e0a34eaf022ee1b594e6370233063808d",
+      "serverId": "c72cd27d-1743-4a55-84a4-cd13b8400c52",
+      "unresolved": false
     }
   ]
 }
