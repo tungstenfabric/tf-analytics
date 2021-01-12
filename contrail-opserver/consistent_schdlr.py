@@ -66,7 +66,7 @@ class ConsistentScheduler(object):
                 message='Connection to Zookeeper initialized')
 
         while True:
-            self._logger.error("Consistent scheduler zk start")
+            self._logger.info("Consistent scheduler zk start")
             self._zk = KazooClient(self._zookeeper_srvr,
                 handler=SequentialGeventHandler(), timeout=60.0)
             self._zk.add_listener(self._zk_lstnr)
@@ -117,7 +117,7 @@ class ConsistentScheduler(object):
     # end _sandesh_connection_info_update
 
     def _zk_lstnr(self, state):
-        self._logger.error("Consistent scheduler listen %s" % str(state))
+        self._logger.info("Consistent scheduler listen %s" % str(state))
         if state == KazooState.CONNECTED:
             # Update connection info
             self._sandesh_connection_info_update(status='UP', 
@@ -151,7 +151,7 @@ class ConsistentScheduler(object):
             if self._wait_allocation < self._MAX_WAIT_4_ALLOCATION:
                 self._wait_allocation += 1
             else:
-                self._logger.error('Giving up after %d tries!' %
+                self._logger.info('Giving up after %d tries!' %
                     (self._wait_allocation))
                 os._exit(2)
         elif self._pc.acquired:
@@ -184,13 +184,13 @@ class ConsistentScheduler(object):
         except:
             self._logger.error("Stopping kazooclient failed")
         else:
-            self._logger.error("Stopping kazooclient successful")
+            self._logger.info("Stopping kazooclient successful")
         try:
             self._zk.close()
         except:
             self._logger.error("Closing kazooclient failed")
         else:
-            self._logger.error("Closing kazooclient successful")
+            self._logger.info("Closing kazooclient successful")
 
     def _items2name(self, items):
         return [x.name for x in items]
@@ -213,16 +213,16 @@ class ConsistentScheduler(object):
     def _consistent_hash(self, members):
         if self._con_hash is None:
             self._con_hash = ConsistentHash(members)
-            self._logger.error('members: %s' % (str(self._con_hash.nodes)))
+            self._logger.info('members: %s' % (str(self._con_hash.nodes)))
         cur, updtd = set(self._con_hash.nodes), set(members)
         if cur != updtd:
             newm = updtd - cur
             rmvd = cur - updtd
             if newm:
-                self._logger.error('new members: %s' % (str(newm)))
+                self._logger.info('new members: %s' % (str(newm)))
                 self._con_hash.add_nodes(list(newm))
             if rmvd:
-                self._logger.error('members left: %s' % (str(rmvd)))
+                self._logger.info('members left: %s' % (str(rmvd)))
                 self._con_hash.del_nodes(list(rmvd))
         return self._con_hash
 
@@ -232,7 +232,7 @@ class ConsistentScheduler(object):
     def _partitioner_func(self, identifier, members, _partitions):
         partitions = [p for p in _partitions \
             if self._consistent_hash_get_node(members, p) == identifier]
-        self._logger.error('partitions: %s' % (str(partitions)))
+        self._logger.info('partitions: %s' % (str(partitions)))
         return partitions
 
     def _release(self):

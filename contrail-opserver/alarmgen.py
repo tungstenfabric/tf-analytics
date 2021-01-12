@@ -982,7 +982,7 @@ class Controller(object):
         mgrlist = extension.ExtensionManager('contrail.analytics.alarms')
         for elem in mgrlist:
             tables.add(elem.name)
-        self._logger.error('Found extenstions for %s' % str(tables))
+        self._logger.info('Found extensions for %s' % str(tables))
 
         self.mgrs = {}
         self.tab_alarms = {}
@@ -1065,7 +1065,7 @@ class Controller(object):
         AlarmConfigRequest.handle_request = self.handle_AlarmConfigRequest
 
     def partition_log(self, msg):
-        self._logger.error(msg)
+        self._logger.info(msg)
         AlarmgenPartitionTrace(msg).trace_msg(name='AlarmgenPartitionTrace',
             sandesh=self._sandesh)
     # end partition_log
@@ -1111,7 +1111,7 @@ class Controller(object):
         except SystemExit:
             raise SystemExit(1)
 
-        self._logger.error('Partition List done : new %s old %s' % \
+        self._logger.info('Partition List done : new %s old %s' % \
             (str(newset),str(oldset)))
 
     def start_libpart(self, ag_list):
@@ -1160,7 +1160,7 @@ class Controller(object):
         uveq_trace.part = part
         if part not in self._uveq:
             self._uveq[part] = OrderedDict()
-            self._logger.error('Created uveQ for part %s' % str(part))
+            self._logger.info('Created uveQ for part %s' % str(part))
             uveq_trace.oper = "create"
         else:
             uveq_trace.oper = "update"
@@ -1216,7 +1216,7 @@ class Controller(object):
         return disc_instances, coll_delete, chg_res
 
     def reconnect_agg_uve(self, lredis):
-        self._logger.error("Connected to Redis for Agg")
+        self._logger.info("Connected to Redis for Agg")
         lredis.set(self._moduleid + ':' + self._instance_id, "True")
         for pp in self._workers.keys():
             self._workers[pp].reset_acq_time()
@@ -1276,12 +1276,12 @@ class Controller(object):
             raise SystemExit(1)
         old_acq_time = redish.hget("AGPARTS:%s" % inst, part)
         if old_acq_time is None:
-            self._logger.error("Agg %s part %d new" % (inst, part))
+            self._logger.info("Agg %s part %d new" % (inst, part))
             redish.hset("AGPARTS:%s" % inst, part, acq_time)
         else:
             # Is there stale information for this partition?
             if int(old_acq_time) != acq_time:
-                self._logger.error("Agg %s stale info part %d, acqs %d,%d" % \
+                self._logger.info("Agg %s stale info part %d, acqs %d,%d" % \
                         (inst, part, int(old_acq_time), acq_time))
                 self.clear_agg_uve(redish, inst, part, acq_time)
 
@@ -1459,7 +1459,7 @@ class Controller(object):
         redis_changed = False
         while True:
             for part in list(self._uveqf.keys()):
-                self._logger.error("Stop UVE processing for %d:%d" % \
+                self._logger.info("Stop UVE processing for %d:%d" % \
                         (part, self._uveqf[part]))
                 self.stop_uve_partition(part)
                 del self._uveqf[part]
@@ -1506,7 +1506,7 @@ class Controller(object):
                 else:
                     redis_changed = False
                     if not lredis.exists(self._moduleid + ':' + self._instance_id):
-                        self._logger.error('Identified redis restart')
+                        self._logger.info('Identified redis restart')
                         redis_changed = True
                         self.reconnect_agg_uve(lredis)
                 gevs = {}
@@ -1803,11 +1803,11 @@ class Controller(object):
                         ustruct = UVEAlarms(name = rkey, deleted = True)
                         alarm_msg = AlarmTrace(data=ustruct, \
                                 table=tk, sandesh=self._sandesh)
-                        self._logger.error('send del alarm for stop: %s' % \
+                        self._logger.info('send del alarm for stop: %s' % \
                                 (alarm_msg.log()))
                         alarm_msg.send(sandesh=self._sandesh)
                 del self.ptab_info[part][tk][rkey]
-            self._logger.error("UVE stop removed %d UVEs of type %s" % \
+            self._logger.info("UVE stop removed %d UVEs of type %s" % \
                     (tcount, tk))
             del self.ptab_info[part][tk]
         del self.ptab_info[part]
@@ -1893,7 +1893,7 @@ class Controller(object):
             self.tab_perf[tab].record_get(UTCTimestampUsec() - prevt)
             # Handling Agg UVEs
             if not part in self.ptab_info:
-                self._logger.error("Creating UVE table for part %s" % str(part))
+                self._logger.info("Creating UVE table for part %s" % str(part))
                 self.ptab_info[part] = {}
 
             if not tab in self.ptab_info[part]:
@@ -2520,9 +2520,9 @@ class Controller(object):
         AnalyticsDiscovery (using zookeeper) will report this.
         '''
         if self._disable_cb:
-            self._logger.error("Discovery AG callback IGNORED: %s" % str(alist))
+            self._logger.info("Discovery AG callback IGNORED: %s" % str(alist))
             return
-        self._logger.error("Discovery AG callback : %s" % str(alist))
+        self._logger.info("Discovery AG callback : %s" % str(alist))
         newlist = []
         for elem in alist:
             ipaddr = elem["ip-address"]
@@ -2541,7 +2541,7 @@ class Controller(object):
                     self._logger.error('AlarmGen withdraw failed!')
                     raise SystemExit(1)
                 self._partset = set()
-                self._logger.error('AlarmGen withdrawn!')
+                self._logger.info('AlarmGen withdrawn!')
         else:
             if not self._libpart:
                 self._libpart = self.start_libpart(newlist)
@@ -2558,7 +2558,7 @@ class Controller(object):
             if duration < 60:
                 gevent.sleep(60 - duration)
             else:
-                self._logger.error("Periodic collection took %s sec" % duration)
+                self._logger.info("Periodic collection took %s sec" % duration)
 
     def _TraceRead(self, trace_sandesh, more):
         self._logger.error(trace_sandesh.log(trace=True))
@@ -2596,11 +2596,11 @@ class Controller(object):
 
         l = len(self.gevs)
         for idx in range(0,l):
-            self._logger.error('AlarmGen killing %d of %d' % (idx+1, l))
+            self._logger.info('AlarmGen killing %d of %d' % (idx+1, l))
             self.gevs[0].kill()
-            self._logger.error('AlarmGen joining %d of %d' % (idx+1, l))
+            self._logger.info('AlarmGen joining %d of %d' % (idx+1, l))
             self.gevs[0].join()
-            self._logger.error('AlarmGen stopped %d of %d' % (idx+1, l))
+            self._logger.info('AlarmGen stopped %d of %d' % (idx+1, l))
             self.gevs = self.gevs[1:]
 
     def sigterm_handler(self):

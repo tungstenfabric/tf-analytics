@@ -638,7 +638,7 @@ class UveStreamer(gevent.Greenlet):
         if self._q:
             msg = {'event': 'init', 'data':json.dumps(None)}
             self._q.put(sse_pack(msg))
-        self._logger.error("Starting UveStreamer")
+        self._logger.info("Starting UveStreamer")
         while True:
             try:
                 if self._rfile is not None:
@@ -669,7 +669,7 @@ class UveStreamer(gevent.Greenlet):
                 self._uvedbcache.update_agp(self._agp)
             except gevent.GreenletExit:
                 break
-        self._logger.error("Stopping UveStreamer")
+        self._logger.info("Stopping UveStreamer")
         for part, pi in self._agp.items():
             self.partition_stop(part)
             self._uvedbcache.clear_partition(elem, self.clear_callback)
@@ -680,7 +680,7 @@ class UveStreamer(gevent.Greenlet):
             self._ccb(self) #remove myself
 
     def partition_start(self, partno, pi):
-        self._logger.error("Starting agguve part %d using %s" % (partno, pi))
+        self._logger.info("Starting agguve part %d using %s" % (partno, pi))
         # If we are doing streaming, full UVE contents are needed
         # Otherwise, we only need key/type information for DBCache case
         if self._q:
@@ -693,7 +693,7 @@ class UveStreamer(gevent.Greenlet):
         self._parts[partno].start()
 
     def partition_stop(self, partno):
-        self._logger.error("Stopping agguve part %d" % partno)
+        self._logger.info("Stopping agguve part %d" % partno)
         self._parts[partno].kill()
         del self._parts[partno]
 
@@ -732,7 +732,7 @@ class PartitionHandler(gevent.Greenlet):
                 if pause:
                     gevent.sleep(5)
                     pause = False
-                self._logger.error("Newer KafkaClient %s" % self._topic)
+                self._logger.info("Newer KafkaClient %s" % self._topic)
                 self._failed = False
                 try:
                     if not self._kafka_use_ssl:
@@ -762,7 +762,7 @@ class PartitionHandler(gevent.Greenlet):
                     self._failed = True
                     raise RuntimeError(messag)
 
-                self._logger.error("Starting %s at position %d" % \
+                self._logger.info("Starting %s at position %d" % \
                         (self._topic, consumer.position(common.TopicPartition(self._topic,0))))
 
                 if self._limit:
@@ -821,7 +821,7 @@ class PartitionHandler(gevent.Greenlet):
                     if ex.errno == errno.EMFILE:
                        raise SystemExit(1)
 
-        self._logger.error("Stopping %s pcount %d" % (self._topic, pcount))
+        self._logger.info("Stopping %s pcount %d" % (self._topic, pcount))
         partdb = self.stop_partition()
         return self._partoffset, partdb
 
@@ -870,7 +870,7 @@ class UveStreamProc(PartitionHandler):
         '''
         newset , coll_delete, chg_res = self._resource_cb(self._partno, self.disc_rset)
         for coll in coll_delete:
-            self._logger.error("Part %d lost collector %s" % (self._partno, coll))
+            self._logger.info("Part %d lost collector %s" % (self._partno, coll))
             self.stop_partition(coll)
         if len(chg_res):
             self.start_partition(chg_res)
@@ -882,7 +882,7 @@ class UveStreamProc(PartitionHandler):
             clist = list(self._uvedb.keys())
         else:
             clist = [kcoll]
-        self._logger.error("Stopping part %d collectors %s" % \
+        self._logger.info("Stopping part %d collectors %s" % \
                 (self._partno,clist))
 
         partdb = {}
@@ -899,7 +899,7 @@ class UveStreamProc(PartitionHandler):
                             set(self._uvedb[coll][gen][tab][rkey].keys())
 
             del self._uvedb[coll]
-        self._logger.error("Stopping part %d UVEs %s" % \
+        self._logger.info("Stopping part %d UVEs %s" % \
                 (self._partno,str(list(chg.keys()))))
         if kcoll:
             self._callback(self._partno, chg)
@@ -915,7 +915,7 @@ class UveStreamProc(PartitionHandler):
             for the partition
         '''
         self._up = True
-        self._logger.error("Starting part %d collectors %s" % \
+        self._logger.info("Starting part %d collectors %s" % \
                 (self._partno, str(list(cbdb.keys()))))
         uves  = {}
         for kcoll,coll in cbdb.items():
@@ -940,7 +940,7 @@ class UveStreamProc(PartitionHandler):
                         # TODO: for loading only specific types:
                         #       uves[kk][typ] = contents
                     
-        self._logger.error("Starting part %d UVEs %d" % \
+        self._logger.info("Starting part %d UVEs %d" % \
                            (self._partno, len(uves)))
         self._callback(self._partno, uves)
 
