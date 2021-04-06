@@ -1636,6 +1636,7 @@ class Controller(object):
                     data = {
                         'ip-address': self._conf.host_ip(),
                         'instance-id': self._instance_id,
+                        'redis-ip': lredis.connection_pool.connection_kwargs['host'],
                         'redis-port': str(self._conf.redis_server_port()),
                         'redis-agg-db': self._conf.get_redis_agg_db(),
                         'partitions': json.dumps(workerset)

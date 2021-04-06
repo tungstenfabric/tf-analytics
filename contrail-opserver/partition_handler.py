@@ -30,7 +30,7 @@ from collections import namedtuple
 from .strict_redis_wrapper import StrictRedisWrapper
 from .opserver_util import convert_to_string
 
-PartInfo = namedtuple("PartInfo",["ip_address","instance_id","redis_agg_db","acq_time","port"])
+PartInfo = namedtuple("PartInfo",["ip_address","instance_id","redis_ip","redis_agg_db","acq_time","port"])
 
 def sse_pack(d):
     """Pack data in SSE format"""
@@ -446,7 +446,7 @@ class UveStreamPart(gevent.Greenlet):
                     gevent.sleep(2)
                     pause = False
                 lredis = StrictRedisWrapper(
-                        host=self._pi.ip_address,
+                        host=self._pi.redis_ip,
                         port=self._pi.port,
                         password=self._rpass,
                         db=self._pi.redis_agg_db, socket_timeout=30,
