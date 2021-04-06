@@ -2586,6 +2586,7 @@ class OpServer(object):
             ip_address = elem['ip-address']
             server_list.append(str(ip_address)+':'+str(port))
             redis_agg_db = elem['redis-agg-db']
+            redis_ip = elem['redis-ip']
             # If AlarmGenerator sends partitions as NULL, its
             # unable to provide service
             if not elem['partitions']:
@@ -2595,6 +2596,7 @@ class OpServer(object):
                 partno = int(partstr)
                 pi = PartInfo(instance_id=instance_id,
                               ip_address=ip_address,
+                              redis_ip=redis_ip,
                               redis_agg_db=redis_agg_db,
                               acq_time=acq_time,
                               port=port)
