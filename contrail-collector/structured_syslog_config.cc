@@ -141,7 +141,7 @@ StructuredSyslogConfig::RefreshNetworksMap(const std::string location){
 }
 
 std::string
-StructuredSyslogConfig::FindNetwork(std::string ip,  std::string key)
+StructuredSyslogConfig::FindNetwork(std::string ip,  std::string key, std::string src_location)
 {
     uint32_t network_addr = IPToUInt(ip);
     IPNetwork ip_network(network_addr, 0, ip);
@@ -153,11 +153,30 @@ StructuredSyslogConfig::FindNetwork(std::string ip,  std::string key)
 
         uint32_t idx = upper - it->second.begin();
         if (idx <= it->second.size() && idx != 0){
-            IPNetwork found_network_obj = it->second[idx - 1];
-            if ((network_addr >= found_network_obj.address_begin)
-                && (network_addr <= found_network_obj.address_end)){
+            IPNetwork found_network_obj(0, 0, unknown_location);
+            uint32_t min_range = UINT32_MAX;
+            //check for last idx (idx-1) before upper_bound idx.
+            //check for overlapping IP ranges in loop.
+            //network with min. range should take priority.
+            for (int i = idx - 1; i >= 0; i--) {
+                IPNetwork possible_network_obj = it->second[i];
+                LOG(DEBUG, "Checking for possible network-range match location " << possible_network_obj.id);
+                uint32_t possible_network_range = possible_network_obj.address_end - possible_network_obj.address_begin;
+                if ((network_addr >= possible_network_obj.address_begin)
+                    && (network_addr <= possible_network_obj.address_end)) {
+                    if (possible_network_range < min_range) {
+                        if (possible_network_obj.id != src_location) {
+                            found_network_obj = possible_network_obj;
+                            min_range = possible_network_range;
+                            LOG(DEBUG, "Possible Network found for " << ip << " from Tenant::VPN " <<  key << 
+                                " in Site : " << found_network_obj.id  << " with range : " << possible_network_range);
+                        }
+                    }
+                }
 
-                LOG(DEBUG, "Network found for " << ip << " from Tenant::VPN " <<  key <<
+            }
+            if (!(found_network_obj.id.empty())) {
+                LOG(DEBUG, "Network found for " << ip << " from Tenant::VPN " <<  key << 
                     " in Site : " << found_network_obj.id );
                 return found_network_obj.id;
             }

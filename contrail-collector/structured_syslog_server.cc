@@ -472,7 +472,7 @@ void StructuredSyslogUVESummarizeData(SyslogParser::syslog_m_t v, bool summarize
         //Find Network only if valid VPN name is parsed from routing instance
         if (vpn_name != routing_instance){
             std::string network_key = tenant + "::" + vpn_name;
-            destination_site = config_obj->FindNetwork(destination_address, network_key);
+            destination_site = config_obj->FindNetwork(destination_address, network_key, location);
         }
         // if VPN name == routing instance, then VPN name is not valid and assign destination site to "UNKNOWN"
         if ((vpn_name == routing_instance) || destination_site.empty() ){
@@ -1355,7 +1355,9 @@ void StructuredSyslogDecorate (SyslogParser::syslog_m_t &v, StructuredSyslogConf
                     //find the internet protocol (IP) version for destination-address
                     const std::string destination_address (SyslogParser::GetMapVals(v, "destination-address", "UNKNOWN"));
                     int ip_version = 4;
-                    ip_version = config_obj->get_ip_version (destination_address);
+                    if (destination_address != "UNKNOWN") {
+                        ip_version = config_obj->get_ip_version (destination_address);
+                    }
                     LOG(DEBUG, "StructuredSyslogDecorate: IP version for destination-address " << destination_address << " found to be IPv" << ip_version);
                     if (ip_version == 4) {
                         std::map< std::string, std::string > dscpmap_ipv4 = tr->dscpmap_ipv4();  
