@@ -386,7 +386,7 @@ class StructuredSyslogConfig {
         std::vector<std::string> split_into_vector(std::string  str, char delimiter) ;
         bool AddNetwork(const std::string& key, const std::string& network, const std::string& mask, const std::string& location);
         bool RefreshNetworksMap(const std::string location);
-        std::string FindNetwork(std::string ip, std::string key);
+        std::string FindNetwork(std::string ip, std::string key, std::string src_location);
         void AddHostnameRecord(const std::string &name, const std::string &hostaddr,
                                   const std::string &tenant, const std::string &location,
                                   const std::string &device, const std::string &tags,
