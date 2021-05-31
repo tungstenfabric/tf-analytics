@@ -428,13 +428,21 @@ void StructuredSyslogUVESummarizeData(SyslogParser::syslog_m_t v, bool summarize
     const std::string traffic_type(SyslogParser::GetMapVals(v, "active-probe-params", "UNKNOWN"));
     const std::string dscp_alias_code(SyslogParser::GetMapVals(v, "dscp-alias-code", "UNKNOWN"));
     const std::string dscp_value(SyslogParser::GetMapVals(v, "dscp-value", "UNKNOWN"));
-    const std::string nested_appname(SyslogParser::GetMapVals(v, "nested-application", "UNKNOWN"));
-    const std::string appname(SyslogParser::GetMapVals(v, "application", "UNKNOWN"));
+    std::string nested_appname(SyslogParser::GetMapVals(v, "nested-application", "UNKNOWN"));
+    std::string service_name(SyslogParser::GetMapVals(v, "service-name", "UNKNOWN"));
+    std::string appname(SyslogParser::GetMapVals(v, "application", "UNKNOWN"));
     const std::string tag(SyslogParser::GetMapVals(v, "tag", "UNKNOWN"));
     bool is_site_traffic_destination = true;
 
     LOG(DEBUG,"UVE: dscp-alias-code: " << dscp_alias_code);
     LOG(DEBUG,"UVE: dscp-value: " << dscp_value);
+
+    if (boost::iequals(nested_appname, "UNKNOWN") && boost::iequals(appname, "UNKNOWN")) {
+        if (!(boost::iequals(service_name, "UNKNOWN")) && !(boost::iequals(service_name, "None"))) {
+            nested_appname =  service_name;
+            appname = service_name;
+        }
+    }
 
     // nested_appname@UNKNOWN, nested_appname@dscp_alias_code nested_appname@DSCP-dscp_value
     std::string dscp_key = dscp_alias_code;
@@ -794,8 +802,9 @@ void StructuredSyslogUVESummarizeAppQoePSMR(SyslogParser::syslog_m_t v, bool sum
     const std::string traffic_type(SyslogParser::GetMapVals(v, "active-probe-params", "UNKNOWN"));
     const std::string ip_dscp(SyslogParser::GetMapVals(v, "ip-dscp", "UNKNOWN"));
     const std::string dscp_alias_code(SyslogParser::GetMapVals(v, "dscp-alias-code", "UNKNOWN"));
-    const std::string nested_appname(SyslogParser::GetMapVals(v, "nested-application", "UNKNOWN"));
-    const std::string appname(SyslogParser::GetMapVals(v, "application", "UNKNOWN"));
+    std::string nested_appname(SyslogParser::GetMapVals(v, "nested-application", "UNKNOWN"));
+    std::string service_name(SyslogParser::GetMapVals(v, "service-name", "UNKNOWN"));
+    std::string appname(SyslogParser::GetMapVals(v, "application", "UNKNOWN"));
 
     const std::string underlay_link = (SyslogParser::GetMapVals(v, "underlay-destination-interface-name", "UNKNOWN"));
     const std::string link_type_link = (SyslogParser::GetMapVals(v, "link-type-destination-interface-name", "UNKNOWN"));
@@ -806,6 +815,13 @@ void StructuredSyslogUVESummarizeAppQoePSMR(SyslogParser::syslog_m_t v, bool sum
 
     LOG(DEBUG,"UVE: dscp-alias-code: " << dscp_alias_code);
     LOG(DEBUG,"UVE: ip-dscp: " << ip_dscp);
+
+    if (boost::iequals(nested_appname, "UNKNOWN") && boost::iequals(appname, "UNKNOWN")) {
+        if (!(boost::iequals(service_name, "UNKNOWN")) && !(boost::iequals(service_name, "None"))) {
+            nested_appname =  service_name;
+            appname = service_name;
+        }
+    }
 
     // nested_appname@UNKNOWN, nested_appname@dscp_alias_code nested_appname@DSCP-dscp_value
     std::string dscp_key = "DSCP-" + dscp_alias_code;
@@ -916,8 +932,9 @@ void StructuredSyslogUVESummarizeAppQoeBPS(SyslogParser::syslog_m_t v, bool summ
     const std::string traffic_type(SyslogParser::GetMapVals(v, "active-probe-params", "UNKNOWN"));
     const std::string ip_dscp(SyslogParser::GetMapVals(v, "dscp-alias-code", "UNKNOWN"));
     const std::string dscp_alias_code(SyslogParser::GetMapVals(v, "ip-dscp", "UNKNOWN"));
-    const std::string nested_appname(SyslogParser::GetMapVals(v, "nested-application", "UNKNOWN"));
-    const std::string appname(SyslogParser::GetMapVals(v, "application", "UNKNOWN"));
+    std::string nested_appname(SyslogParser::GetMapVals(v, "nested-application", "UNKNOWN"));
+    std::string service_name(SyslogParser::GetMapVals(v, "service-name", "UNKNOWN"));
+    std::string appname(SyslogParser::GetMapVals(v, "application", "UNKNOWN"));
 
     const std::string underlay_link = (SyslogParser::GetMapVals(v, "underlay-destination-interface-name", "UNKNOWN"));
     const std::string link_type_link = (SyslogParser::GetMapVals(v, "link-type-destination-interface-name", "UNKNOWN"));
@@ -928,6 +945,13 @@ void StructuredSyslogUVESummarizeAppQoeBPS(SyslogParser::syslog_m_t v, bool summ
 
     LOG(DEBUG,"UVE: dscp-alias-code: " << dscp_alias_code);
     LOG(DEBUG,"UVE: ip-dscp: " << ip_dscp);
+
+    if (boost::iequals(nested_appname, "UNKNOWN") && boost::iequals(appname, "UNKNOWN")) {
+        if (!(boost::iequals(service_name, "UNKNOWN")) && !(boost::iequals(service_name, "None"))) {
+            nested_appname =  service_name;
+            appname = service_name;
+        }
+    }
 
     // nested_appname@UNKNOWN, nested_appname@dscp_alias_code nested_appname@DSCP-dscp_value
     std::string dscp_key = "DSCP-" + dscp_alias_code;
@@ -1017,8 +1041,9 @@ void StructuredSyslogUVESummarizeAppQoeSMV(SyslogParser::syslog_m_t v, bool summ
     const std::string traffic_type(SyslogParser::GetMapVals(v, "active-probe-params", "UNKNOWN"));
     const std::string ip_dscp(SyslogParser::GetMapVals(v, "ip-dscp", "UNKNOWN"));
     const std::string dscp_alias_code(SyslogParser::GetMapVals(v, "dscp-alias-code", "UNKNOWN"));
-    const std::string nested_appname(SyslogParser::GetMapVals(v, "nested-application", "UNKNOWN"));
-    const std::string appname(SyslogParser::GetMapVals(v, "application", "UNKNOWN"));
+    std::string nested_appname(SyslogParser::GetMapVals(v, "nested-application", "UNKNOWN"));
+    std::string appname(SyslogParser::GetMapVals(v, "application", "UNKNOWN"));
+    std::string service_name(SyslogParser::GetMapVals(v, "service-name", "UNKNOWN"));
 
     const std::string underlay_link = (SyslogParser::GetMapVals(v, "underlay-destination-interface-name", "UNKNOWN"));
     const std::string link_type_link = (SyslogParser::GetMapVals(v, "link-type-destination-interface-name", "UNKNOWN"));
@@ -1030,6 +1055,13 @@ void StructuredSyslogUVESummarizeAppQoeSMV(SyslogParser::syslog_m_t v, bool summ
 
     LOG(DEBUG,"UVE: dscp-alias-code: " << dscp_alias_code);
     LOG(DEBUG,"UVE: ip-dscp: " << ip_dscp);
+
+    if (boost::iequals(nested_appname, "UNKNOWN") && boost::iequals(appname, "UNKNOWN")) {
+        if (!(boost::iequals(service_name, "UNKNOWN")) && !(boost::iequals(service_name, "None"))) {
+            nested_appname =  service_name;
+            appname = service_name;
+        }
+    }
 
     // nested_appname@UNKNOWN, nested_appname@dscp_alias_code nested_appname@DSCP-dscp_value
     std::string dscp_key = "DSCP-" + dscp_alias_code;
