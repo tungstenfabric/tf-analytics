@@ -52,7 +52,7 @@ committers:
     - name: 'Pradeep Choudhary'
       email: 'pchoudhary@juniper.net'
       company: 'Juniper'
-      id: ''
+      id: 'pchoudhary'
       timezone: 'IST'
 tsc:
     # yamllint disable rule:line-length
