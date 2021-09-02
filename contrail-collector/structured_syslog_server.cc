@@ -851,22 +851,40 @@ void StructuredSyslogUVESummarizeAppQoePSMR(SyslogParser::syslog_m_t v, bool sum
     int64_t egress_jitter = SyslogParser::GetMapVal(v, "egress-jitter", -1);
     int64_t ingress_jitter = SyslogParser::GetMapVal(v, "ingress-jitter", -1);
 
-    if (rtt != -1) {
+    /*
+        Device sends high values for SLA parameters in syslog
+        when probe is not successfull or for some reason
+        device is not able to calculate SLA parameters.
+        High values for -
+        rtt -> 4294967295
+        rtt_jitter -> 4294967295
+        pkt_loss -> 255
+        These high values should NOT be used for calculation and
+        should be avoided.
+    */
+    if (rtt != -1 && rtt != 4294967295) {
         sdwanmetric.set_rtt(rtt);
     }
-    if (rtt_jitter != -1) {
+    if (rtt_jitter != -1 && rtt_jitter != 4294967295) {
         sdwanmetric.set_rtt_jitter(rtt_jitter);
     }
-    if (egress_jitter != -1) {
+    if (egress_jitter != -1 && egress_jitter != 4294967295) {
         sdwanmetric.set_egress_jitter(egress_jitter);
     }
-    if (ingress_jitter != -1) {
+    if (ingress_jitter != -1 && ingress_jitter != 4294967295) {
         sdwanmetric.set_ingress_jitter(ingress_jitter);
     }
-    if (pkt_loss != -1) {
+    if (pkt_loss != -1 && pkt_loss != 255) {
+        // this check is added to correct the cases in which device sends
+        // incorrect values containing loss% to be more than 100.
+        if (pkt_loss > 100) {
+            pkt_loss = 100;
+        }
         sdwanmetric.set_pkt_loss(pkt_loss);
     }
-    if ((rtt != -1) && (rtt_jitter != -1) && (pkt_loss != -1)) {
+    if ((rtt != -1) && (rtt != 4294967295) &&
+        (rtt_jitter != -1) && (rtt_jitter != 4294967295) &&
+        (pkt_loss != -1) && (pkt_loss != 255)) {
         sdwanmetric.set_score((int64_t)calculate_link_score(rtt/2, pkt_loss, rtt_jitter,
                              SyslogParser::GetMapVal(v, "effective-latency-threshold",0),
                              SyslogParser::GetMapVal(v, "latency-factor",0),
@@ -1197,22 +1215,40 @@ void StructuredSyslogUVESummarizeAppQoeASMR(SyslogParser::syslog_m_t v, bool sum
     int64_t rtt_jitter = SyslogParser::GetMapVal(v, "rtt-jitter", -1);
     int64_t egress_jitter = SyslogParser::GetMapVal(v, "egress-jitter", -1);
     int64_t ingress_jitter = SyslogParser::GetMapVal(v, "ingress-jitter", -1);
-    if (rtt != -1) {
+    /*
+        Device sends high values for SLA parameters in syslog
+        when probe is not successfull or for some reason
+        device is not able to calculate SLA parameters.
+        High values for -
+        rtt -> 4294967295
+        rtt_jitter -> 4294967295
+        pkt_loss -> 255
+        These high values should NOT be used for calculation and
+        should be avoided.
+    */
+    if (rtt != -1 && rtt != 4294967295) {
         sdwanmetric.set_rtt(rtt);
     }
-    if (rtt_jitter != -1) {
+    if (rtt_jitter != -1 && rtt_jitter != 4294967295) {
         sdwanmetric.set_rtt_jitter(rtt_jitter);
     }
-    if (egress_jitter != -1) {
+    if (egress_jitter != -1 && egress_jitter != 4294967295) {
         sdwanmetric.set_egress_jitter(egress_jitter);
     }
-    if (ingress_jitter != -1) {
+    if (ingress_jitter != -1 && ingress_jitter != 4294967295) {
         sdwanmetric.set_ingress_jitter(ingress_jitter);
     }
-    if (pkt_loss != -1) {
+    if (pkt_loss != -1 && pkt_loss != 255) {
+        // this check is added to correct the cases in which device sends
+        // incorrect values containing loss% to be more than 100.
+        if (pkt_loss > 100) {
+            pkt_loss = 100;
+        }
         sdwanmetric.set_pkt_loss(pkt_loss);
     }
-    if ((rtt != -1) && (rtt_jitter != -1) && (pkt_loss != -1)) {
+    if ((rtt != -1) && (rtt != 4294967295) &&
+        (rtt_jitter != -1) && (rtt_jitter != 4294967295) &&
+        (pkt_loss != -1) && (pkt_loss != 255)) {
         sdwanmetric.set_score((int64_t)calculate_link_score(rtt/2, pkt_loss, rtt_jitter,
                              SyslogParser::GetMapVal(v, "effective-latency-threshold",0),
                              SyslogParser::GetMapVal(v, "latency-factor",0),
