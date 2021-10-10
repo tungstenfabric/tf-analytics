@@ -5,8 +5,9 @@
 # -*- mode: python; -*-
 # src directory
 
-import sys
 import platform
+import subprocess
+import sys
 
 Import('contrail_common_base_doc_files')
 Import('contrail_common_io_doc_files')
@@ -47,7 +48,19 @@ else:
 
 common.Append(LIBPATH = libpath)
 common.Prepend(LIBS = libs)
-common.Append(CCFLAGS = '-Wall -Werror -Wsign-compare')
+
+common.Append(CCFLAGS = ['-Wall', '-Werror', '-Wsign-compare'])
+
+gpp_version = subprocess.check_output(
+    "g++ --version | grep g++ | awk '{print $3}'",
+    shell=True).rstrip()
+gpp_version_major = int(gpp_version.split(".")[0])
+if gpp_version == "4.8.5" or gpp_version_major >= 8:
+    common.Append(CCFLAGS =['-Wno-narrowing', '-Wno-conversion-null'])
+    if gpp_version_major >= 8:
+        # auto_ptr is depricated - dont error on deprication warnings
+        common.Append(CCFLAGS = ['-Wno-error=deprecated-declarations', '-Wno-deprecated-declarations'])
+
 if not sys.platform.startswith('darwin'):
     if platform.system().startswith('Linux'):
        if not platform.linux_distribution()[0].startswith('XenServer'):
