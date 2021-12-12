@@ -1787,6 +1787,10 @@ bool DbHandlerInitializer::Initialize() {
         zoo_locked_ = true;
     }
     if (!db_handler_->Init(true)) {
+        if (use_zookeeper_ && zoo_locked_) {
+            assert(zoo_mutex_->Release());
+            zoo_locked_ = false;
+        }
         // Update connection info
         ConnectionState::GetInstance()->Update(ConnectionType::DATABASE,
             db_name_, ConnectionStatus::DOWN, db_handler_->GetEndpoints(),
