@@ -22,7 +22,9 @@ using contrail::regex;
 using contrail::regex_match;
 using contrail::regex_search;
 
-StructuredSyslogConfig::StructuredSyslogConfig(ConfigClientCollector *config_client) {
+StructuredSyslogConfig::StructuredSyslogConfig(ConfigClientCollector *config_client, uint64_t structured_syslog_active_session_map_limit) {
+    activeSessionConfigMapLIMIT = structured_syslog_active_session_map_limit;
+    LOG(INFO, "StructuredSyslogConfig:Num of active session LIMIT in session config map: " << activeSessionConfigMapLIMIT);
     if (config_client) {
         config_client->RegisterConfigReceive("structured-systemlog", boost::bind(
                                  &StructuredSyslogConfig::ReceiveConfig, this, _1, _2));
@@ -39,8 +41,68 @@ StructuredSyslogConfig::~StructuredSyslogConfig() {
     tenant_application_records_.erase(tenant_application_records_.begin(),
                                       tenant_application_records_.end());
     networks_map_.erase(networks_map_.begin(), networks_map_.end());
+    session_config_map_.erase(session_config_map_.begin(),
+                                session_config_map_.end());
 }
 
+
+bool 
+StructuredSyslogConfig::AddSyslogSessionCounter(const std::string session_unique_key, 
+                                                std::map<std::string, uint64_t> session_traffic_counters) {
+    try {
+        SyslogSessionConfig::iterator it = session_config_map_.find(session_unique_key);
+        if (it != session_config_map_.end()) {
+            LOG(DEBUG, "Session key found in session counter map.");
+        }
+        else {
+            LOG(DEBUG, "Session key NOT found in session counter map.");
+            //Put a Limit to num of session entries in the map.
+            if(session_config_map_.size() >= activeSessionConfigMapLIMIT) {
+                LOG(ERROR, "active sessions Config Map LIMIT reached. Current active session count: "<< session_config_map_.size());
+                return false;
+            }
+        }
+        LOG(DEBUG, "Adding/Replacing session traffic counters for session key " << session_unique_key);
+        session_config_map_[session_unique_key] = session_traffic_counters;
+        return true;
+    }
+    catch (std::exception &e) {
+        LOG(ERROR, "Adding session traffic counters failed for session key: " << session_unique_key);
+        return false;
+    }
+ }
+
+int 
+StructuredSyslogConfig::RemoveSyslogSessionCounter(const std::string &session_unique_key) {
+    try {
+        LOG(DEBUG, "Removing Syslog Session Counter for " << session_unique_key);
+        return session_config_map_.erase(session_unique_key);
+    }
+    catch (std::exception &e) {
+        LOG(ERROR, "Removing session traffic counters failed for session key: " << session_unique_key);
+        return 0;
+    }
+}
+
+bool
+StructuredSyslogConfig::FetchSyslogSessionCounters(const std::string &session_unique_key,
+                                                    std::map<std::string, uint64_t> &session_traffic_counters) {
+    try {
+        SyslogSessionConfig::iterator itr = session_config_map_.find(session_unique_key);
+        if (itr != session_config_map_.end()) {
+            session_traffic_counters = itr->second;
+            return true;
+        }
+        else{
+            LOG(DEBUG, "Session counters not found for session key: " << session_unique_key);
+            return false;
+        }
+    }
+    catch (std::exception &e) {
+        LOG(ERROR, "ERROR in fetching Session traffic counters for session key: " << session_unique_key);
+        return false;
+    }
+}
 
 /*  Return int 4 when IP belongs to protocol IPv4 or
     Return int 6 when IP belongs to protocol IPv6, otherwise

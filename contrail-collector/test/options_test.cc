@@ -92,6 +92,7 @@ TEST_F(OptionsTest, NoArguments) {
     EXPECT_EQ(options_.cluster_id(), "");
     uint16_t structured_syslog_port(0);
     EXPECT_FALSE(options_.collector_structured_syslog_port(&structured_syslog_port));
+    EXPECT_EQ(options_.collector_active_session_map_limit(), 1000000);
     EXPECT_FALSE(options_.get_cassandra_options().use_ssl_);
     EXPECT_FALSE(options_.configdb_options().config_db_use_ssl);
 }
@@ -140,6 +141,7 @@ TEST_F(OptionsTest, DefaultConfFile) {
     EXPECT_EQ(options_.cluster_id(), "");
     uint16_t structured_syslog_port(0);
     EXPECT_FALSE(options_.collector_structured_syslog_port(&structured_syslog_port));
+    EXPECT_EQ(options_.collector_active_session_map_limit(), 1000000);
     EXPECT_FALSE(options_.get_cassandra_options().use_ssl_);
     EXPECT_FALSE(options_.configdb_options().config_db_use_ssl);
 }
@@ -190,6 +192,7 @@ TEST_F(OptionsTest, OverrideStringFromCommandLine) {
     EXPECT_EQ(options_.cluster_id(), "");
     uint16_t structured_syslog_port(0);
     EXPECT_FALSE(options_.collector_structured_syslog_port(&structured_syslog_port));
+    EXPECT_EQ(options_.collector_active_session_map_limit(), 1000000);
     EXPECT_FALSE(options_.get_cassandra_options().use_ssl_);
     EXPECT_FALSE(options_.configdb_options().config_db_use_ssl);
 }
@@ -257,6 +260,7 @@ TEST_F(OptionsTest, OverrideBooleanFromCommandLine) {
     EXPECT_EQ(options_.cluster_id(), "C1");
     uint16_t structured_syslog_port(0);
     EXPECT_FALSE(options_.collector_structured_syslog_port(&structured_syslog_port));
+    EXPECT_EQ(options_.collector_active_session_map_limit(), 1000000);
     EXPECT_TRUE(options_.get_cassandra_options().use_ssl_);
     EXPECT_TRUE(options_.configdb_options().config_db_use_ssl);
 }
@@ -288,6 +292,7 @@ TEST_F(OptionsTest, CustomConfigFile) {
         "\n"
         "[STRUCTURED_SYSLOG_COLLECTOR]\n"
         "port=3514\n"
+        "active_session_map_limit=100000\n"
         "\n"
         "[REDIS]\n"
         "server=1.2.3.4\n"
@@ -366,6 +371,7 @@ TEST_F(OptionsTest, CustomConfigFile) {
     uint16_t structured_syslog_port(0);
     EXPECT_TRUE(options_.collector_structured_syslog_port(&structured_syslog_port));
     EXPECT_EQ(structured_syslog_port, 3514);
+    EXPECT_EQ(options_.collector_active_session_map_limit(), 100000);
     Options::Cassandra cassandra_options(options_.get_cassandra_options());
     EXPECT_EQ(cassandra_options.user_, "cassandra1");
     EXPECT_EQ(cassandra_options.password_, "cassandra1");
@@ -408,6 +414,7 @@ TEST_F(OptionsTest, CustomConfigFileAndOverrideFromCommandLine) {
         "\n"
         "[STRUCTURED_SYSLOG_COLLECTOR]\n"
         "port=3514\n"
+        "active_session_map_limit=100000\n"
         "\n"
         "[REDIS]\n"
         "server=1.2.3.4\n"
@@ -418,7 +425,7 @@ TEST_F(OptionsTest, CustomConfigFileAndOverrideFromCommandLine) {
         "\n"
     ;
 
-    int argc = 14;
+    int argc = 15;
 
     ofstream config_file;
     config_file.open("./options_test_collector_config_file.conf");
@@ -450,6 +457,7 @@ TEST_F(OptionsTest, CustomConfigFileAndOverrideFromCommandLine) {
     char argv_11[] = "--DEFAULT.sandesh_send_rate_limit=7";
     char argv_12[] = "--STRUCTURED_SYSLOG_COLLECTOR.port=3515";
     char argv_13[] = "--SANDESH.disable_object_logs";
+    char argv_14[] = "--STRUCTURED_SYSLOG_COLLECTOR.active_session_map_limit=100";
     argv[0] = argv_0;
     argv[1] = argv_1;
     argv[2] = argv_2;
@@ -464,6 +472,7 @@ TEST_F(OptionsTest, CustomConfigFileAndOverrideFromCommandLine) {
     argv[11] = argv_11;
     argv[12] = argv_12;
     argv[13] = argv_13;
+    argv[14] = argv_14;
 
     options_.Parse(evm_, argc, argv);
 
@@ -506,6 +515,7 @@ TEST_F(OptionsTest, CustomConfigFileAndOverrideFromCommandLine) {
     uint16_t structured_syslog_port(0);
     EXPECT_TRUE(options_.collector_structured_syslog_port(&structured_syslog_port));
     EXPECT_EQ(structured_syslog_port, 3515);
+    EXPECT_EQ(options_.collector_active_session_map_limit(), 100);
     EXPECT_EQ(options_.sandesh_config().system_logs_rate_limit, 7);
     EXPECT_TRUE(options_.sandesh_config().disable_object_logs);
 }

@@ -185,6 +185,9 @@ public:
         }
         return collector_structured_syslog_port_configured_;
     }
+    const uint64_t collector_active_session_map_limit() const { 
+        return collector_structured_syslog_active_session_map_limit_; 
+    }
     const std::vector<std::string> config_file() const {
         return config_file_;
     }
@@ -261,6 +264,7 @@ private:
     std::vector<std::string> collector_structured_syslog_kafka_broker_list_;
     std::string collector_structured_syslog_kafka_topic_;
     uint16_t collector_structured_syslog_kafka_partitions_;
+    uint64_t collector_structured_syslog_active_session_map_limit_;
     std::vector<std::string> config_file_;
     std::string redis_server_;
     uint16_t redis_port_;

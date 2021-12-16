@@ -280,6 +280,7 @@ int main(int argc, char *argv[])
     string structured_syslog_kafka_broker("");
     string structured_syslog_kafka_topic("");
     uint16_t structured_syslog_kafka_partitions = 0;
+    uint64_t structured_syslog_active_session_map_limit = 1000000;
     vector<string> structured_syslog_kafka_broker_list = options.collector_structured_syslog_kafka_broker_list();
     for (vector<string>::const_iterator st = structured_syslog_kafka_broker_list.begin();
             st != structured_syslog_kafka_broker_list.end(); st++) {
@@ -292,6 +293,8 @@ int main(int argc, char *argv[])
         structured_syslog_kafka_topic = options.collector_structured_syslog_kafka_topic();
         structured_syslog_kafka_partitions = options.collector_structured_syslog_kafka_partitions();
     }
+
+    structured_syslog_active_session_map_limit = options.collector_active_session_map_limit();
 
     std::map<std::string, std::string> aggconf;
     vector<string> upl = options.uve_proxy_list();
@@ -390,6 +393,7 @@ int main(int argc, char *argv[])
             structured_syslog_kafka_broker,
             structured_syslog_kafka_topic,
             structured_syslog_kafka_partitions,
+            structured_syslog_active_session_map_limit,
             string("127.0.0.1"),
             options.redis_port(),
             options.redis_password(),

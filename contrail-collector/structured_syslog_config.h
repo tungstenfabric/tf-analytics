@@ -376,13 +376,19 @@ typedef std::map<std::string, boost::shared_ptr<MessageConfig> > Cmc_t;
 typedef std::map<std::string, boost::shared_ptr<SlaProfileRecord> > Csr_t;
 typedef std::vector<IPNetwork> IPNetworks;
 typedef std::map<std::string, IPNetworks> IPNetworks_map;
+typedef std::map<std::string, std::map<std::string, uint64_t> > SyslogSessionConfig;
 
 class StructuredSyslogConfig {
     public:
-        StructuredSyslogConfig(ConfigClientCollector *config_client);
+        StructuredSyslogConfig(ConfigClientCollector *config_client, uint64_t structured_syslog_active_session_map_limit);
         ~StructuredSyslogConfig();
         uint32_t IPToUInt(std::string ip);
         int get_ip_version (const std::string ip);
+        bool AddSyslogSessionCounter(const std::string session_unique_key,
+                                        std::map<std::string, uint64_t> session_traffic_counters);
+        int RemoveSyslogSessionCounter(const std::string &session_unique_key);
+        bool FetchSyslogSessionCounters(const std::string &session_unique_key,
+                                                    std::map<std::string, uint64_t> &session_traffic_counters);
         std::vector<std::string> split_into_vector(std::string  str, char delimiter) ;
         bool AddNetwork(const std::string& key, const std::string& network, const std::string& mask, const std::string& location);
         bool RefreshNetworksMap(const std::string location);
@@ -433,6 +439,8 @@ class StructuredSyslogConfig {
         //networks_map_refresh_mutex should be used only to refresh networks map
         boost::mutex networks_map_refresh_mutex;
         IPNetworks_map networks_map_;
+        SyslogSessionConfig session_config_map_;
+        uint64_t activeSessionConfigMapLIMIT;
 };
 
 

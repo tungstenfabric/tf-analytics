@@ -103,9 +103,19 @@ bool filter_msg(SyslogParser::syslog_m_t &v) {
   return true;
 }
 
+//filter out session close syslog for incoming traffic i.e. syslog coming from destination site.
 bool filter_session_close_msg(SyslogParser::syslog_m_t &v) {
   std::string routing_instance = SyslogParser::GetMapVals(v, "routing-instance", "UNKNOWN");
   if (routing_instance.size() > 3 && ( routing_instance.compare(0,4,"LAN-") == 0)) {
+      return true;
+  }
+  return false;
+}
+
+//filter out vol update syslog for incoming traffic i.e. syslog coming from destination site.
+bool filter_vol_update_msg(SyslogParser::syslog_m_t &v) {
+  std::string department = SyslogParser::GetMapVals(v, "source-zone-name", "UNKNOWN");
+  if ((department.compare(0,5,"trust") == 0) || (department.compare(0,7,"untrust") == 0)) {
       return true;
   }
   return false;
@@ -212,6 +222,12 @@ bool StructuredSyslogPostParsing (SyslogParser::syslog_m_t &v, StructuredSyslogC
   if(tag == "APPTRACK_SESSION_CLOSE" && filter_session_close_msg(v)){
     return false;
   }
+  
+  // Do not process APPTRACK_SESSION_VOL_UPDATE syslogs for incoming traffic. 
+  if(tag == "APPTRACK_SESSION_VOL_UPDATE" && filter_vol_update_msg(v)) {
+    return false;
+  }
+
   if (mc->process_and_store() == true || mc->process_before_forward() == true
       || mc->process_and_summarize() == true) {
       if (forwarder != NULL && mc->forward() == true) {
@@ -407,17 +423,53 @@ const std::string get_VPNName(const std::string &routing_instance){
     return routing_instance;
 }
 
+//Identify the VPN name from department depending upon the case
+// in which network segmentation is enabled or disabled.
+const std::string get_VPNName(const std::string &department, 
+                            const std::string &network_segmentation, 
+                            const std::string &tenant_name) {
+    std::string vpn_name = department;
+    if (boost::iequals(network_segmentation, "Disabled") || boost::iequals(department, "Default")) {
+            vpn_name = tenant_name + "_DefaultVPN";
+    }
+    return vpn_name;
+}
+
 
 void StructuredSyslogUVESummarizeData(SyslogParser::syslog_m_t v, bool summarize_user, StructuredSyslogConfig *config_obj) {
     SDWANMetricsRecord sdwanmetricrecord;
     SDWANTenantMetricsRecord sdwantenantmetricrecord;
     SDWANKPIMetricsRecord sdwankpimetricrecord_source;
 
+    const std::string tag(SyslogParser::GetMapVals(v, "tag", "UNKNOWN"));
+    const std::string process_vol_update(SyslogParser::GetMapVals(v, "process-vol-update", "False"));
+    // process_vol_update as True enables diff calculation
+    // from cumulative counters across sequence of traffic syslogs.
+    // Note that VOL_UPDATE should be considered for counters with SLA-PROFILE
+    // or TRAFFIC-TYPE because the VOL_UPDATE doesn't contain such information.
+    LOG(DEBUG, "StructuredSyslogUVESummarizeData - process-vol-update : " << process_vol_update);
+    bool is_close = boost::equals(tag, "APPTRACK_SESSION_CLOSE");
+    bool is_vol_update = boost::equals(tag, "APPTRACK_SESSION_VOL_UPDATE");
+
+    if (!boost::iequals(process_vol_update, "True")) {
+        /*
+        For certain sites VOL_UPDATE syslog may not supported.
+        For such sites only SESSION_CLOSE syslog should be used.
+        */
+        if (is_vol_update) {
+            // reject vol_update syslogs.
+            LOG(DEBUG, "StructuredSyslogUVESummarizeData - VOL_UPDATE msg rejected.");
+            return;
+        }
+    }
+    
+
     const std::string location(SyslogParser::GetMapVals(v, "location", "UNKNOWN"));
     const std::string tenant(SyslogParser::GetMapVals(v, "tenant", "UNKNOWN"));
-    const std::string sla_profile(SyslogParser::GetMapVals(v, "sla-profile", "UNKNOWN"));
+    std::string sla_profile(SyslogParser::GetMapVals(v, "sla-profile", "UNKNOWN"));
     const std::string app_category(SyslogParser::GetMapVals(v, "app-category", "UNKNOWN"));
     const std::string department(SyslogParser::GetMapVals(v, "source-zone-name", "UNKNOWN"));
+    const std::string dest_zone(SyslogParser::GetMapVals(v, "destination-zone-name", "UNKNOWN"));
     const std::string device_id(SyslogParser::GetMapVals(v, "device", "UNKNOWN"));
     const std::string region(SyslogParser::GetMapVals(v, "region", "DEFAULT"));
     const std::string opco(SyslogParser::GetMapVals(v, "OPCO", "DEFAULT"));
@@ -425,17 +477,112 @@ void StructuredSyslogUVESummarizeData(SyslogParser::syslog_m_t v, bool summarize
     const std::string uvename = tenant + "::" + location + "::" + device_id;
     const std::string tenantuvename = region + "::" + opco + "::" + tenant;
     const std::string kpi_uvename_source = location;
-    const std::string traffic_type(SyslogParser::GetMapVals(v, "active-probe-params", "UNKNOWN"));
+    std::string traffic_type(SyslogParser::GetMapVals(v, "active-probe-params", "UNKNOWN"));
     const std::string dscp_alias_code(SyslogParser::GetMapVals(v, "dscp-alias-code", "UNKNOWN"));
     const std::string dscp_value(SyslogParser::GetMapVals(v, "dscp-value", "UNKNOWN"));
     std::string nested_appname(SyslogParser::GetMapVals(v, "nested-application", "UNKNOWN"));
     std::string service_name(SyslogParser::GetMapVals(v, "service-name", "UNKNOWN"));
     std::string appname(SyslogParser::GetMapVals(v, "application", "UNKNOWN"));
-    const std::string tag(SyslogParser::GetMapVals(v, "tag", "UNKNOWN"));
+    const std::string tenant_name(SyslogParser::GetMapVals(v, "tenantaddr", "UNKNOWN"));
+    const std::string network_segmentation(SyslogParser::GetMapVals(v, "network-segmentation", "UNKNOWN"));
     bool is_site_traffic_destination = true;
 
-    LOG(DEBUG,"UVE: dscp-alias-code: " << dscp_alias_code);
-    LOG(DEBUG,"UVE: dscp-value: " << dscp_value);
+    //counters for cumulative to differential value conversation
+    int64_t prev_total_bytes=0, prev_bytes_from_client=0,
+            prev_bytes_from_server=0, prev_packets_from_client=0,
+            prev_packets_from_server=0;
+    bool process_curr_counter = true;
+
+    if (boost::iequals(process_vol_update, "True")) {
+        // ToDo: Remove this once vol-update syslog provides sla-profile.
+        sla_profile = "DEFAULT";
+        // ToDo: Remove this once vol-update syslog provides traffic-type.
+        traffic_type = "DEFAULT";
+    }
+
+    /*
+    If VOL_UPDATE syslogs were processed, compute diff values
+    from cumulative traffic counters for each session-id.
+    Note that prev counters for the session has to be checked in all cases
+    to handle shift from
+    cumulative -> diff computation (in case of process vol-update)
+    to just diff computation (in case of session-close only).
+    */
+    const std::string session_id_32(SyslogParser::GetMapVals(v, "session-id-32", "-1"));
+    const std::string session_unique_key = uvename + "::" + session_id_32;
+    std::map<std::string, uint64_t> session_prev_traffic_counters;
+    bool found_session_prev_counters =
+            config_obj->FetchSyslogSessionCounters(session_unique_key,
+                                            session_prev_traffic_counters);
+    if (found_session_prev_counters) {
+        // read previous counters
+        prev_total_bytes = session_prev_traffic_counters["total-bytes"];
+        prev_bytes_from_client = session_prev_traffic_counters["bytes-from-client"];
+        prev_bytes_from_server = session_prev_traffic_counters["bytes-from-server"];
+        prev_packets_from_server = session_prev_traffic_counters["packets-from-server"];
+        prev_packets_from_client = session_prev_traffic_counters["packets-from-client"];
+
+        // update & process the counter which are new and greater than before.
+        if ((prev_total_bytes > SyslogParser::GetMapVal(v, "total-bytes", 0)) ||
+            (prev_packets_from_client > SyslogParser::GetMapVal(v, "packets-from-client", 0))) {
+                process_curr_counter = false;
+                LOG(ERROR, "Syslog Session Counter is OLD !. Discarding ...");
+        }
+
+        if (is_close) {
+            // session is closed.
+            // Remove session counters from syslog session counter map.
+            int removed_sess_counter =
+                config_obj->RemoveSyslogSessionCounter(session_unique_key);
+            if (removed_sess_counter == 0) {
+                LOG(ERROR, "Syslog Session Counter NOT removed for key " << session_unique_key);
+            }
+        }
+    }
+
+    // either this is a new session,
+    // or this update has new cumulative counter count.
+    // add/update counters to syslog session counter map if
+    // processing vol update is enabled.
+    if (!is_close && boost::iequals(process_vol_update, "True")) {
+        if (process_curr_counter) {
+            std::map<std::string, uint64_t> session_curr_traffic_counters;
+            session_curr_traffic_counters["total-bytes"] = SyslogParser::GetMapVal(v, "total-bytes", 0);
+            session_curr_traffic_counters["bytes-from-client"] = SyslogParser::GetMapVal(v, "bytes-from-client", 0);
+            session_curr_traffic_counters["bytes-from-server"] = SyslogParser::GetMapVal(v, "bytes-from-server", 0);
+            session_curr_traffic_counters["packets-from-server"] = SyslogParser::GetMapVal(v, "packets-from-server", 0);
+            session_curr_traffic_counters["packets-from-client"] = SyslogParser::GetMapVal(v, "packets-from-client", 0);
+            bool addSessionCounter = config_obj->AddSyslogSessionCounter(session_unique_key, session_curr_traffic_counters);
+            if (!addSessionCounter) {
+                LOG(ERROR, "StructuredSyslogUVESummarizeData - Syslog message rejected.");
+                return;
+            }
+
+        }
+    }
+
+
+    // compute diff counters
+    //LOG(DEBUG, "prev-total-bytes: " << prev_total_bytes);
+    int64_t diff_total_bytes=0, diff_bytes_from_client=0,
+            diff_bytes_from_server=0, diff_packets_from_server=0,
+            diff_packets_from_client=0;
+
+    if (process_curr_counter) {
+        diff_total_bytes = SyslogParser::GetMapVal(v, "total-bytes", 0) - prev_total_bytes;
+        diff_bytes_from_client = SyslogParser::GetMapVal(v, "bytes-from-client", 0) - prev_bytes_from_client;
+        diff_bytes_from_server = SyslogParser::GetMapVal(v, "bytes-from-server", 0) - prev_bytes_from_server;
+        diff_packets_from_server = SyslogParser::GetMapVal(v, "packets-from-server", 0) - prev_packets_from_server;
+        diff_packets_from_client = SyslogParser::GetMapVal(v, "packets-from-client", 0) - prev_packets_from_client;
+    }
+    LOG(DEBUG, "Diff total-bytes: " << diff_total_bytes);
+    LOG(DEBUG, "Diff bytes-from-client: " << diff_bytes_from_client);
+    LOG(DEBUG, "Diff bytes-from-server: " << diff_bytes_from_server);
+    LOG(DEBUG, "Diff packets-from-server: " << diff_packets_from_server);
+    LOG(DEBUG, "Diff packets-from-client: " << diff_packets_from_client);
+
+    LOG(DEBUG, "UVE: dscp-alias-code: " << dscp_alias_code);
+    LOG(DEBUG, "UVE: dscp-value: " << dscp_value);
 
     if (boost::iequals(nested_appname, "UNKNOWN") && boost::iequals(appname, "UNKNOWN")) {
         if (!(boost::iequals(service_name, "UNKNOWN")) && !(boost::iequals(service_name, "None"))) {
@@ -456,12 +603,13 @@ void StructuredSyslogUVESummarizeData(SyslogParser::syslog_m_t v, bool summarize
     const std::string nested_appname_with_alias_code = nested_appname + "@" + dscp_key;
     const std::string tt_app_dept_info = traffic_type + "(" + nested_appname_with_alias_code + ":" + appname
                                          + "/" + app_category +  ")" + "::" + department + "::";
+                                         
     //username => syslog.username or syslog.source-address
     std::string username(SyslogParser::GetMapVals(v, "username", "UNKNOWN"));
     if (boost::iequals(username, "unknown")) {
         username = SyslogParser::GetMapVals(v, "source-address", "UNKNOWN");
     }
-    bool is_close = boost::equals(tag, "APPTRACK_SESSION_CLOSE");
+
     sdwanmetricrecord.set_name(uvename);
     sdwantenantmetricrecord.set_name(tenantuvename);
     sdwankpimetricrecord_source.set_name(kpi_uvename_source);
@@ -469,14 +617,31 @@ void StructuredSyslogUVESummarizeData(SyslogParser::syslog_m_t v, bool summarize
     //Update maps for SDWANKPI metrics record
     SDWANKPIMetrics_diff sdwankpimetricdiff;
     std::map<std::string, SDWANKPIMetrics_diff> sdwan_kpi_metrics_diff_source;
-    if (is_close) {
+    if ((is_close || is_vol_update) && (boost::iequals(dest_zone, "trust"))) {
         const std::string routing_instance (SyslogParser::GetMapVals(v, "routing-instance", "UNKNOWN"));
-        const std::string vpn_name = get_VPNName(routing_instance);
+        std::string vpn_name = "UNKNOWN";
+        if (routing_instance != "UNKNOWN") {
+            vpn_name = get_VPNName(routing_instance);
+        }
+        else {
+            // this case will be true for vol_update syslogs.
+            vpn_name = 
+                get_VPNName(department, network_segmentation, tenant_name);
+        }
+
         const std::string destination_address (SyslogParser::GetMapVals(v, "destination-address", "UNKNOWN"));
         const std::string destination_interface_name (SyslogParser::GetMapVals(v, "destination-interface-name", "UNKNOWN"));
-        sdwankpimetricdiff.set_session_close_count(1);
+        if (is_close)
+        {
+            sdwankpimetricdiff.set_session_close_count(1);
+        }
+        else if (is_vol_update)
+        {   
+            sdwankpimetricdiff.set_bps(diff_total_bytes);
+        }
+        
         std::string destination_site;
-        sdwankpimetricdiff.set_bps(SyslogParser::GetMapVal(v, "total-bytes", 0));
+        
         //Find Network only if valid VPN name is parsed from routing instance
         if (vpn_name != routing_instance){
             std::string network_key = tenant + "::" + vpn_name;
@@ -510,18 +675,29 @@ void StructuredSyslogUVESummarizeData(SyslogParser::syslog_m_t v, bool summarize
             sdwankpimetricrecord_source.set_kpi_metrics_lesser_diff(sdwan_kpi_metrics_diff_source);
         }
     }//End of Update maps for SDWANKPI metrics record
+    SDWANKPIMetrics::Send(sdwankpimetricrecord_source,"ObjectCPETable");
 
     std::string link1, link2, link1_info, link2_info, traffic_destination_link1, traffic_destination_link2, link_type_link1, link_type_link2;
     int64_t link1_bytes = SyslogParser::GetMapVal(v, "uplink-tx-bytes", -1);
     int64_t link2_bytes = SyslogParser::GetMapVal(v, "uplink-rx-bytes", -1);
-    if (link1_bytes == -1)
-        link1_bytes = SyslogParser::GetMapVal(v, "bytes-from-client", 0);
-    if (link2_bytes == -1)
-        link2_bytes = SyslogParser::GetMapVal(v, "bytes-from-server", 0);
 
-    if (is_close) {
+
+    if (link1_bytes < 0 || (boost::iequals(process_vol_update, "True"))) {
+        link1_bytes = diff_bytes_from_client;
+    }
+    if (link2_bytes < 0 || (boost::iequals(process_vol_update, "True"))) {
+        link2_bytes = diff_bytes_from_server;
+    }
+
+    if (is_close || is_vol_update) {
+        // Fetch Interfaces for VOL_UPDATE or SESSION_CLOSE syslogs.
+
         link1 = (SyslogParser::GetMapVals(v, "destination-interface-name", "UNKNOWN"));
-        link2 = (SyslogParser::GetMapVals(v, "uplink-incoming-interface-name", "N/A"));
+        //vol-update syslogs does NOT contain uplink interfaces and counters.
+        if (!(boost::iequals(process_vol_update, "True"))) {
+            link2 = (SyslogParser::GetMapVals(v, "uplink-incoming-interface-name", "N/A"));
+        }
+        else {link2 = "N/A";}
 
         std::string underlay_link1 = (SyslogParser::GetMapVals(v, "underlay-destination-interface-name", "UNKNOWN"));
         link_type_link1 = (SyslogParser::GetMapVals(v, "link-type-destination-interface-name", "UNKNOWN"));
@@ -541,8 +717,10 @@ void StructuredSyslogUVESummarizeData(SyslogParser::syslog_m_t v, bool summarize
 
         if (boost::iequals(link2, "N/A")) {
             link2 = link1;
-            link1_bytes = SyslogParser::GetMapVal(v, "bytes-from-client", 0);
-            link2_bytes = SyslogParser::GetMapVal(v, "bytes-from-server", 0);
+            //link1_bytes = SyslogParser::GetMapVal(v, "bytes-from-client", 0);
+            //link2_bytes = SyslogParser::GetMapVal(v, "bytes-from-server", 0);
+            link1_bytes = diff_bytes_from_client;
+            link2_bytes = diff_bytes_from_server;
             link2_info = link1_info;
         }
         else {
@@ -557,39 +735,63 @@ void StructuredSyslogUVESummarizeData(SyslogParser::syslog_m_t v, bool summarize
         LOG(DEBUG,"UVE: link1_info :" << link1_info);
         LOG(DEBUG,"UVE: link2_info :" << link2_info);
     } else {
-        link1 = (SyslogParser::GetMapVals(v, "last-destination-interface-name", "UNKNOWN"));
-        link2 = (SyslogParser::GetMapVals(v, "last-incoming-interface-name", "UNKNOWN"));
+        // Fetch Interfaces for RT_FLOW_NEXTHOP_CHANGE syslog.
 
-        std::string underlay_link1 = (SyslogParser::GetMapVals(v, "underlay-last-destination-interface-name", "UNKNOWN"));
-        link_type_link1 = (SyslogParser::GetMapVals(v, "link-type-last-destination-interface-name", "UNKNOWN"));
-        traffic_destination_link1 = (SyslogParser::GetMapVals(v, "traffic-destination-last-destination-interface-name", "UNKNOWN"));
-        std::string metadata_link1 = (SyslogParser::GetMapVals(v, "metadata-last-destination-interface-name", "UNKNOWN"));
-        link1_info = link1 + "@" + underlay_link1
+        if (!(boost::iequals(process_vol_update, "True"))) {
+            link1 = (SyslogParser::GetMapVals(v, "last-destination-interface-name", "UNKNOWN"));
+            link2 = (SyslogParser::GetMapVals(v, "last-incoming-interface-name", "UNKNOWN"));
+
+            std::string underlay_link1 = (SyslogParser::GetMapVals(v, "underlay-last-destination-interface-name", "UNKNOWN"));
+            link_type_link1 = (SyslogParser::GetMapVals(v, "link-type-last-destination-interface-name", "UNKNOWN"));
+            traffic_destination_link1 = (SyslogParser::GetMapVals(v, "traffic-destination-last-destination-interface-name", "UNKNOWN"));
+            std::string metadata_link1 = (SyslogParser::GetMapVals(v, "metadata-last-destination-interface-name", "UNKNOWN"));
+
+            link1_info = link1 + "@" + underlay_link1
               + "@" + link_type_link1 + "@" + traffic_destination_link1 + "@" + metadata_link1 ;
 
-        std::string underlay_link2 = (SyslogParser::GetMapVals(v, "underlay-last-incoming-interface-name", "UNKNOWN"));
-        link_type_link2 = (SyslogParser::GetMapVals(v, "link-type-last-incoming-interface-name", "UNKNOWN"));
-        traffic_destination_link2 = (SyslogParser::GetMapVals(v, "traffic-destination-last-incoming-interface-name", "UNKNOWN"));
-        std::string metadata_link2 = (SyslogParser::GetMapVals(v, "metadata-last-incoming-interface-name", "UNKNOWN"));
-        link2_info = link2 + "@" + underlay_link2
-              + "@" + link_type_link2 + "@" + traffic_destination_link2 + "@" + metadata_link2 ;
+            std::string underlay_link2 = (SyslogParser::GetMapVals(v, "underlay-last-incoming-interface-name", "UNKNOWN"));
+            link_type_link2 = (SyslogParser::GetMapVals(v, "link-type-last-incoming-interface-name", "UNKNOWN"));
+            traffic_destination_link2 = (SyslogParser::GetMapVals(v, "traffic-destination-last-incoming-interface-name", "UNKNOWN"));
+            std::string metadata_link2 = (SyslogParser::GetMapVals(v, "metadata-last-incoming-interface-name", "UNKNOWN"));
+
+            link2_info = link2 + "@" + underlay_link2
+                + "@" + link_type_link2 + "@" + traffic_destination_link2 + "@" + metadata_link2 ;
+        }
+        else {
+            link1 = SyslogParser::GetMapVals(v, "destination-interface-name", "UNKNOWN");
+            link2 = link1;
+
+            std::string underlay_link1 = (SyslogParser::GetMapVals(v, "underlay-destination-interface-name", "UNKNOWN"));
+            link_type_link1 = (SyslogParser::GetMapVals(v, "link-type-destination-interface-name", "UNKNOWN"));
+            traffic_destination_link1 = (SyslogParser::GetMapVals(v, "traffic-destination-destination-interface-name", "UNKNOWN"));
+            std::string metadata_link1 = (SyslogParser::GetMapVals(v, "metadata-destination-interface-name", "UNKNOWN"));
+
+            link1_info = link1 + "@" + underlay_link1
+              + "@" + link_type_link1 + "@" + traffic_destination_link1 + "@" + metadata_link1 ;
+            
+            link2_info = link1_info;
+        }
 
         LOG(DEBUG,"UVE: link1_info :" << link1_info);
         LOG(DEBUG,"UVE: link2_info :" << link2_info);
     }
     SDWANMetrics_diff sdwanmetric;
-    if (is_close) {
-        int64_t output_pkts = SyslogParser::GetMapVal(v, "packets-from-client", 0);
-        int64_t input_pkts = SyslogParser::GetMapVal(v, "packets-from-server", 0);
+    if (is_close || is_vol_update) {
+        //int64_t output_pkts = SyslogParser::GetMapVal(v, "packets-from-client", 0);
+        //int64_t input_pkts = SyslogParser::GetMapVal(v, "packets-from-server", 0);
+        int64_t output_pkts = diff_packets_from_client;
+        int64_t input_pkts = diff_packets_from_server;
         sdwanmetric.set_total_pkts(input_pkts + output_pkts);
         sdwanmetric.set_input_pkts(input_pkts);
         sdwanmetric.set_output_pkts(output_pkts);
-        sdwanmetric.set_total_bytes(SyslogParser::GetMapVal(v, "total-bytes", 0));
-        sdwanmetric.set_output_bytes(SyslogParser::GetMapVal(v, "bytes-from-client", 0));
-        sdwanmetric.set_input_bytes(SyslogParser::GetMapVal(v, "bytes-from-server", 0));
-        sdwanmetric.set_session_duration(SyslogParser::GetMapVal(v, "elapsed-time", 0));
-        sdwanmetric.set_session_count(1);
-
+        sdwanmetric.set_total_bytes(diff_total_bytes);
+        sdwanmetric.set_output_bytes(diff_bytes_from_client);
+        sdwanmetric.set_input_bytes(diff_bytes_from_server);
+        if (is_close) {
+            sdwanmetric.set_session_duration(SyslogParser::GetMapVal(v, "elapsed-time", 0));
+            sdwanmetric.set_session_count(1);
+        }
+        
         // Map: app_metrics_diff_sla
         std::map<std::string, SDWANMetrics_diff> app_metrics_diff_sla;
         std::string slamap_key(tt_app_dept_info + sla_profile);
@@ -631,18 +833,27 @@ void StructuredSyslogUVESummarizeData(SyslogParser::syslog_m_t v, bool summarize
         std::string linkmap_key(tt_app_dept_info + link1_info);
         std::string linkmetricmap_key(link1_info + "::" + sla_profile + "::" + traffic_type);
         LOG(DEBUG,"UVE: app_metrics_diff_link key :" << linkmap_key);
-        LOG(DEBUG,"UVE: link_metrics_*_traffic_type key :" << linkmetricmap_key);
         app_metrics_diff_link.insert(std::make_pair(linkmap_key, sdwanmetric1));
-        link_metrics_diff_traffic_type.insert(std::make_pair(linkmetricmap_key, sdwanmetric1));
         sdwanmetricrecord.set_app_metrics_diff_link(app_metrics_diff_link);
-        sdwanmetricrecord.set_link_metrics_diff_traffic_type(link_metrics_diff_traffic_type);
 
         // Map: tenant_metrics_diff_sla
         std::map<std::string, SDWANMetrics_diff> tenant_metrics_diff_sla;
-        std::string tenantmetric_key(location + "::" + sla_profile + "::" + traffic_type + "@" + traffic_destination_link1 + "@" + link_type_link1);
+        LOG(DEBUG,"UVE: link_metrics_*_traffic_type key :" << linkmetricmap_key);
+        link_metrics_diff_traffic_type.insert(std::make_pair(linkmetricmap_key, sdwanmetric1));
+        sdwanmetricrecord.set_link_metrics_diff_traffic_type(link_metrics_diff_traffic_type);
+
+        // Update Map: tenant_metrics_diff_sla
+        std::string tenantmetric_key(location + "::" + sla_profile +
+                                    "::" + traffic_type +
+                                    "@" + traffic_destination_link1 +
+                                    "@" + link_type_link1);
+
         LOG(DEBUG,"UVE: tenant_metrics_diff_sla key :" << tenantmetric_key);
         tenant_metrics_diff_sla.insert(std::make_pair(tenantmetric_key, sdwanmetric1));
         sdwantenantmetricrecord.set_tenant_metrics_diff_sla(tenant_metrics_diff_sla);
+
+
+
 
         /*
         // Update maps for underlay links if needed
@@ -673,24 +884,32 @@ void StructuredSyslogUVESummarizeData(SyslogParser::syslog_m_t v, bool summarize
 
         std::string linkmap_key1(tt_app_dept_info + link1_info);
         std::string linkmap_key2(tt_app_dept_info + link2_info);
-        std::string linkmetricmap_key1(link1_info + "::" + sla_profile + "::" + traffic_type);
-        std::string linkmetricmap_key2(link2_info + "::" + sla_profile + "::" + traffic_type);
         LOG(DEBUG,"UVE: app_metrics_diff_link key1 :" << linkmap_key1);
         LOG(DEBUG,"UVE: app_metrics_diff_link key2 :" << linkmap_key2);
-        LOG(DEBUG,"UVE: link_metrics_*_traffic_type key1 :" << linkmetricmap_key1);
-        LOG(DEBUG,"UVE: link_metrics_*_traffic_type key2 :" << linkmetricmap_key2);
         app_metrics_diff_link.insert(std::make_pair(linkmap_key1, sdwanmetric1));
         app_metrics_diff_link.insert(std::make_pair(linkmap_key2, sdwanmetric2));
+        sdwanmetricrecord.set_app_metrics_diff_link(app_metrics_diff_link);
+
+        std::string linkmetricmap_key1(link1_info + "::" + sla_profile + "::" + traffic_type);
+        std::string linkmetricmap_key2(link2_info + "::" + sla_profile + "::" + traffic_type);
+        LOG(DEBUG,"UVE: link_metrics_*_traffic_type key1 :" << linkmetricmap_key1);
+        LOG(DEBUG,"UVE: link_metrics_*_traffic_type key2 :" << linkmetricmap_key2);
         link_metrics_diff_traffic_type.insert(std::make_pair(linkmetricmap_key1, sdwanmetric1));
         link_metrics_diff_traffic_type.insert(std::make_pair(linkmetricmap_key2, sdwanmetric2));
-        sdwanmetricrecord.set_app_metrics_diff_link(app_metrics_diff_link);
         sdwanmetricrecord.set_link_metrics_diff_traffic_type(link_metrics_diff_traffic_type);
-
 
         // Map: tenant_metrics_diff_sla
         std::map<std::string, SDWANMetrics_diff> tenant_metrics_diff_sla;
-        std::string tenantmetric_key1(location + "::" + sla_profile + "::" + traffic_type + "@" + traffic_destination_link1 + "@" + link_type_link1);
-        std::string tenantmetric_key2(location + "::" + sla_profile + "::" + traffic_type + "@" + traffic_destination_link2 + "@" + link_type_link2);
+        std::string tenantmetric_key1(location + "::" +
+                                    sla_profile + "::" +
+                                    traffic_type + "@" +
+                                    traffic_destination_link1 + "@" +
+                                    link_type_link1);
+        std::string tenantmetric_key2(location + "::" +
+                                    sla_profile + "::" +
+                                    traffic_type + "@" +
+                                    traffic_destination_link2 + "@" + 
+                                    link_type_link2);
         LOG(DEBUG,"UVE: tenant_metrics_diff_sla key1 :" << tenantmetric_key1);
         LOG(DEBUG,"UVE: tenant_metrics_diff_sla key2 :" << tenantmetric_key2);
         tenant_metrics_diff_sla.insert(std::make_pair(tenantmetric_key1, sdwanmetric1));
@@ -725,7 +944,6 @@ void StructuredSyslogUVESummarizeData(SyslogParser::syslog_m_t v, bool summarize
         */
     }
 
-    SDWANKPIMetrics::Send(sdwankpimetricrecord_source,"ObjectCPETable");
     SDWANMetrics::Send(sdwanmetricrecord, "ObjectCPETable");
     SDWANTenantMetrics::Send(sdwantenantmetricrecord, "ObjectCPETable");
 
@@ -851,7 +1069,7 @@ void StructuredSyslogUVESummarizeAppQoePSMR(SyslogParser::syslog_m_t v, bool sum
     int64_t egress_jitter = SyslogParser::GetMapVal(v, "egress-jitter", -1);
     int64_t ingress_jitter = SyslogParser::GetMapVal(v, "ingress-jitter", -1);
 
-    /*
+     /*
         Device sends high values for SLA parameters in syslog
         when probe is not successfull or for some reason
         device is not able to calculate SLA parameters.
@@ -1280,6 +1498,9 @@ void StructuredSyslogUVESummarize(SyslogParser::syslog_m_t v, bool summarize_use
     if (boost::equals(tag, "APPTRACK_SESSION_CLOSE")) {
         StructuredSyslogUVESummarizeData(v, summarize_user, config_obj);
     }
+    else if (boost::equals(tag, "APPTRACK_SESSION_VOL_UPDATE")) {
+        StructuredSyslogUVESummarizeData(v, summarize_user, config_obj);
+    }
     else if (boost::equals(tag, "RT_FLOW_NEXTHOP_CHANGE")) {
         StructuredSyslogUVESummarizeData(v, summarize_user, config_obj);
     }
@@ -1403,14 +1624,25 @@ void StructuredSyslogDecorate (SyslogParser::syslog_m_t &v, StructuredSyslogConf
                 }
             }
 
-            const std::string tenant_record_default_tenant = "DEFAULT";
+            //const std::string tenant_record_default_tenant = "DEFAULT";
             boost::shared_ptr<TenantRecord> tr = config_obj->GetTenantRecord(tenant);
             LOG(DEBUG, "StructuredSyslogDecorate: Processing Tenant Record !!");
-            if (tr == NULL) {
-                tr = config_obj->GetTenantRecord(tenant_record_default_tenant);
-                LOG(DEBUG, "StructuredSyslogDecorate: Tenant \"" << tenant << "\" not found. Reading \"DEFAULT\" Tenant Record !!");
-            }
+            // if (tr == NULL) {
+            //     tr = config_obj->GetTenantRecord(tenant_record_default_tenant);
+            //     LOG(DEBUG, "StructuredSyslogDecorate: Tenant \"" << tenant << "\" not found. Reading \"DEFAULT\" Tenant Record !!");
+            // }
             if (tr != NULL) {
+                const std::string tenantaddr = tr->tenantaddr();
+                if (!tenantaddr.empty()){
+                    v.insert(std::pair<std::string, SyslogParser::Holder>("tenantaddr",
+                        SyslogParser::Holder("tenantaddr", tenantaddr)));
+                }
+
+                const std::string tenant_tags = tr->tags();
+                if (!tenant_tags.empty()) {
+                    ParseStructuredPart(&v, tenant_tags, int_fields, msg);
+                }
+
                 //check if the syslog contains dscp-value(or ip-dscp) then find the corresponding alias-code 
                 std::string dscp_value = SyslogParser::GetMapVals(v, "dscp-value", "");
                 std::string ip_dscp = SyslogParser::GetMapVals(v, "ip-dscp", "");
@@ -1457,6 +1689,9 @@ void StructuredSyslogDecorate (SyslogParser::syslog_m_t &v, StructuredSyslogConf
                         LOG(ERROR, "StructuredSyslogDecorate: destination-address IP does not have any valid version. Skipping search for dscp-alias-code!");
                     }
                 }
+            }
+            else {
+                LOG(DEBUG, "StructuredSyslogDecorate: Tenant Record not found for: " << tenant);
             }
 
 
@@ -1718,13 +1953,14 @@ public:
         const std::string &structured_syslog_kafka_topic,
         const Options::Kafka &kafka_options,
         uint16_t structured_syslog_kafka_partitions,
+        uint64_t structured_syslog_active_session_map_limit,
         ConfigClientCollector *config_client,
         StatWalker::StatTableInsertFn stat_db_callback) :
         udp_server_(new StructuredSyslogUdpServer(evm, port,
             stat_db_callback)),
         tcp_server_(new StructuredSyslogTcpServer(evm, port,
             stat_db_callback)),
-        structured_syslog_config_(new StructuredSyslogConfig(config_client)) {
+        structured_syslog_config_(new StructuredSyslogConfig(config_client, structured_syslog_active_session_map_limit)) {
         if ((structured_syslog_tcp_forward_dst.size() != 0) || structured_syslog_kafka_broker != "") {
             forwarder_.reset(new StructuredSyslogForwarder (evm, structured_syslog_tcp_forward_dst,
                                                             structured_syslog_kafka_broker,
@@ -1910,6 +2146,7 @@ StructuredSyslogServer::StructuredSyslogServer(EventManager *evm,
     const std::string &structured_syslog_kafka_broker,
     const std::string &structured_syslog_kafka_topic,
     uint16_t structured_syslog_kafka_partitions,
+    uint64_t structured_syslog_active_session_map_limit,
     const Options::Kafka &kafka_options,
     ConfigClientCollector *config_client,
     StatWalker::StatTableInsertFn stat_db_fn) {
@@ -1918,6 +2155,7 @@ StructuredSyslogServer::StructuredSyslogServer(EventManager *evm,
                                            structured_syslog_kafka_topic,
                                            kafka_options,
                                            structured_syslog_kafka_partitions,
+                                           structured_syslog_active_session_map_limit,
                                            config_client, stat_db_fn);
 }
 
