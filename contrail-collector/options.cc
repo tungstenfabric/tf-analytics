@@ -128,6 +128,7 @@ void Options::Initialize(EventManager &evm,
 
     string default_structured_syslog_kafka_topic("structured_syslog");
     uint16_t default_structured_syslog_kafka_partitions = 30;
+    uint64_t default_structured_syslog_active_session_map_limit = 1000000;
 
     // Command line and config file options.
     opt::options_description cassandra_config("Cassandra Configuration options");
@@ -267,6 +268,10 @@ void Options::Initialize(EventManager &evm,
            opt::value<uint16_t>()->default_value(
                default_structured_syslog_kafka_partitions),
              "Structured Syslog Number of Kafka Partitions")
+        ("STRUCTURED_SYSLOG_COLLECTOR.active_session_map_limit",
+           opt::value<uint64_t>()->default_value(
+               default_structured_syslog_active_session_map_limit),
+             "Structured Syslog Max Num of Active Sessions in Session Config Map")
         ;
 
     // Command line and config file options.
@@ -634,6 +639,9 @@ void Options::Process(int argc, char *argv[],
 
     GetOptValue<uint16_t>(var_map, collector_structured_syslog_kafka_partitions_,
                                   "STRUCTURED_SYSLOG_COLLECTOR.kafka_partitions");
+    
+    GetOptValue<uint64_t>(var_map, collector_structured_syslog_active_session_map_limit_,
+                                  "STRUCTURED_SYSLOG_COLLECTOR.active_session_map_limit");
 
     GetOptValue<uint64_t>(var_map, analytics_data_ttl_,
                      "DEFAULT.analytics_data_ttl");

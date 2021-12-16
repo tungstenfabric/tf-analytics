@@ -43,6 +43,7 @@ public:
             const std::string &structured_syslog_kafka_broker,
             const std::string &structured_syslog_kafka_topic,
             uint16_t structured_syslog_kafka_partitions,
+            uint64_t structured_syslog_active_session_map_limit,
             const std::string &redis_uve_ip, unsigned short redis_uve_port,
             const std::string &redis_password,
             const std::map<std::string, std::string>& aggconf,
