@@ -71,6 +71,8 @@ class GeneratorFixture(fixtures.Fixture):
             self._sandesh_config = SandeshConfig(
                 keyfile = sandesh_config.get('sandesh_keyfile'),
                 certfile = sandesh_config.get('sandesh_certfile'),
+                server_keyfile = sandesh_config.get('sandesh_server_keyfile'),
+                server_certfile = sandesh_config.get('sandesh_server_certfile'),
                 ca_cert = sandesh_config.get('sandesh_ca_cert'),
                 sandesh_ssl_enable = sandesh_config.get('sandesh_ssl_enable', False),
                 introspect_ssl_enable = sandesh_config.get('introspect_ssl_enable', False),
@@ -122,6 +124,8 @@ class GeneratorFixture(fixtures.Fixture):
             self._sandesh_config = SandeshConfig(
                 keyfile = sandesh_config.get('sandesh_keyfile'),
                 certfile = sandesh_config.get('sandesh_certfile'),
+                server_keyfile = sandesh_config.get('sandesh_server_keyfile'),
+                server_certfile = sandesh_config.get('sandesh_server_certfile'),
                 ca_cert = sandesh_config.get('sandesh_ca_cert'),
                 sandesh_ssl_enable = \
                         sandesh_config.get('sandesh_ssl_enable', False),
