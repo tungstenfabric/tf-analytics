@@ -179,6 +179,12 @@ class Collector(object):
             if 'sandesh_certfile' in self.sandesh_config:
                 args.append('--SANDESH.sandesh_certfile')
                 args.append(self.sandesh_config['sandesh_certfile'])
+            if 'sandesh_server_keyfile' in self.sandesh_config:
+                args.append('--SANDESH.sandesh_server_keyfile')
+                args.append(self.sandesh_config['sandesh_server_keyfile'])
+            if 'sandesh_server_certfile' in self.sandesh_config:
+                args.append('--SANDESH.sandesh_server_certfile')
+                args.append(self.sandesh_config['sandesh_server_certfile'])
             if 'sandesh_ca_cert' in self.sandesh_config:
                 args.append('--SANDESH.sandesh_ca_cert')
                 args.append(self.sandesh_config['sandesh_ca_cert'])
@@ -303,6 +309,12 @@ class AlarmGen(object):
             if 'sandesh_certfile' in self.sandesh_config:
                 args.append('--sandesh_certfile')
                 args.append(self.sandesh_config['sandesh_certfile'])
+            if 'sandesh_server_keyfile' in self.sandesh_config:
+                args.append('--sandesh_server_keyfile')
+                args.append(self.sandesh_config['sandesh_server_keyfile'])
+            if 'sandesh_server_certfile' in self.sandesh_config:
+                args.append('--sandesh_server_certfile')
+                args.append(self.sandesh_config['sandesh_server_certfile'])
             if 'sandesh_ca_cert' in self.sandesh_config:
                 args.append('--sandesh_ca_cert')
                 args.append(self.sandesh_config['sandesh_ca_cert'])
@@ -449,6 +461,12 @@ class OpServer(object):
             if 'sandesh_certfile' in self.sandesh_config:
                 args.append('--sandesh_certfile')
                 args.append(self.sandesh_config['sandesh_certfile'])
+            if 'sandesh_server_keyfile' in self.sandesh_config:
+                args.append('--sandesh_server_keyfile')
+                args.append(self.sandesh_config['sandesh_server_keyfile'])
+            if 'sandesh_server_certfile' in self.sandesh_config:
+                args.append('--sandesh_server_certfile')
+                args.append(self.sandesh_config['sandesh_server_certfile'])
             if 'sandesh_ca_cert' in self.sandesh_config:
                 args.append('--sandesh_ca_cert')
                 args.append(self.sandesh_config['sandesh_ca_cert'])
@@ -590,6 +608,12 @@ class QueryEngine(object):
             if 'sandesh_certfile' in self.sandesh_config:
                 args.append('--SANDESH.sandesh_certfile')
                 args.append(self.sandesh_config['sandesh_certfile'])
+            if 'sandesh_server_keyfile' in self.sandesh_config:
+                args.append('--SANDESH.sandesh_server_keyfile')
+                args.append(self.sandesh_config['sandesh_server_keyfile'])
+            if 'sandesh_server_certfile' in self.sandesh_config:
+                args.append('--SANDESH.sandesh_server_certfile')
+                args.append(self.sandesh_config['sandesh_server_certfile'])
             if 'sandesh_ca_cert' in self.sandesh_config:
                 args.append('--SANDESH.sandesh_ca_cert')
                 args.append(self.sandesh_config['sandesh_ca_cert'])
@@ -742,6 +766,10 @@ class AnalyticsFixture(fixtures.Fixture):
             self.sandesh_config_struct = SandeshConfig(
                 keyfile = sandesh_config.get('sandesh_keyfile'),
                 certfile = sandesh_config.get('sandesh_certfile'),
+                server_keyfile = sandesh_config.get(
+                    'sandesh_server_keyfile'),
+                server_certfile = sandesh_config.get(
+                    'sandesh_server_certfile'),
                 ca_cert = sandesh_config.get('sandesh_ca_cert'),
                 sandesh_ssl_enable = \
                     sandesh_config.get('sandesh_ssl_enable', False),

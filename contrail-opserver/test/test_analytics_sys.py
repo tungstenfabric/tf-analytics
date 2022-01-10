@@ -472,6 +472,8 @@ class AnalyticsTest(testtools.TestCase, fixtures.TestWithFixtures):
         sandesh_cfg = {
             'sandesh_keyfile': builddir+'/opserver/test/data/ssl/server-privkey.pem',
             'sandesh_certfile': builddir+'/opserver/test/data/ssl/server.pem',
+            'sandesh_server_keyfile': builddir+'/opserver/test/data/ssl/server-privkey.pem',
+            'sandesh_server_certfile': builddir+'/opserver/test/data/ssl/server.pem',
             'sandesh_ca_cert': builddir+'/opserver/test/data/ssl/ca-cert.pem',
             'sandesh_ssl_enable': 'True'
         }
@@ -602,6 +604,8 @@ class AnalyticsTest(testtools.TestCase, fixtures.TestWithFixtures):
         sandesh_cfg = {
             'sandesh_keyfile': builddir+'/opserver/test/data/ssl/server-privkey.pem',
             'sandesh_certfile': builddir+'/opserver/test/data/ssl/server.pem',
+            'sandesh_server_keyfile': builddir+'/opserver/test/data/ssl/server-privkey.pem',
+            'sandesh_server_certfile': builddir+'/opserver/test/data/ssl/server.pem',
             'sandesh_ca_cert': builddir+'/opserver/test/data/ssl/ca-cert.pem',
             'introspect_ssl_enable': 'True'
         }
@@ -639,6 +643,8 @@ class AnalyticsTest(testtools.TestCase, fixtures.TestWithFixtures):
         sandesh_cfg = {
             'sandesh_keyfile': builddir+'/opserver/test/data/ssl/server-privkey.pem',
             'sandesh_certfile': builddir+'/opserver/test/data/ssl/server.pem',
+            'sandesh_server_keyfile': builddir+'/opserver/test/data/ssl/server-privkey.pem',
+            'sandesh_server_certfile': builddir+'/opserver/test/data/ssl/server.pem',
             'sandesh_ca_cert': builddir+'/opserver/test/data/ssl/ca-cert.pem',
             'introspect_ssl_enable': 'True',
             'introspect_ssl_insecure': 'True'
