@@ -613,6 +613,10 @@ class OpServer(object):
                                     column.name)
                 if found_uve_type:
                     return
+            if tabl in ['StatTable.EndpointSecurityStats.eps.server','StatTable.EndpointSecurityStats.eps.client']:
+                perms = self._vnc_api_client._get_user_token_info(self.get_user_token())
+                if perms:
+                    return
         if not self.is_role_cloud_admin():
             raise bottle.HTTPResponse(status = 403,
                         body = 'Operation Forbidden',
