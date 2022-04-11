@@ -198,7 +198,7 @@ TEST_F(StructuredSyslogStatWalkerTest, Basic) {
     boost::asio::ip::udp::endpoint rep(raddr, 0);
     const uint8_t* p = reinterpret_cast<const uint8_t*>(test_structured_syslog.c_str());
     boost::scoped_ptr<EventManager> evm_(new EventManager());
-    StructuredSyslogConfig *config_obj = new StructuredSyslogConfig(NULL);
+    StructuredSyslogConfig *config_obj = new StructuredSyslogConfig(NULL, 1);
     bool r = structured_syslog::impl::ProcessStructuredSyslog(p, test_structured_syslog.length(), rep.address(),
         boost::bind(&StatCbTester::Cb, &ct, _1, _2, _3, _4, _5), config_obj,
         boost::shared_ptr<structured_syslog::StructuredSyslogForwarder>(),
@@ -220,7 +220,7 @@ TEST_F(StructuredSyslogStatWalkerTest, DeviceMultiSyslog) {
     boost::asio::ip::udp::endpoint rep(raddr, 0);
     const uint8_t* p = reinterpret_cast<const uint8_t*>(test_structured_syslog.c_str());
     boost::scoped_ptr<EventManager> evm_(new EventManager());
-    StructuredSyslogConfig *config_obj = new StructuredSyslogConfig(NULL);
+    StructuredSyslogConfig *config_obj = new StructuredSyslogConfig(NULL, 1);
     bool r = structured_syslog::impl::ProcessStructuredSyslog(p, test_structured_syslog.length(), rep.address(),
         boost::bind(&StatCbTester::Cb, &ct, _1, _2, _3, _4, _5), config_obj,
         boost::shared_ptr<structured_syslog::StructuredSyslogForwarder>(),
@@ -241,7 +241,7 @@ TEST_F(StructuredSyslogStatWalkerTest, DeviceSyslog) {
     boost::asio::ip::udp::endpoint rep(raddr, 0);
     const uint8_t* p = reinterpret_cast<const uint8_t*>(test_structured_syslog.c_str());
     boost::scoped_ptr<EventManager> evm_(new EventManager());
-    StructuredSyslogConfig *config_obj = new StructuredSyslogConfig(NULL);
+    StructuredSyslogConfig *config_obj = new StructuredSyslogConfig(NULL, 1);
     bool r = structured_syslog::impl::ProcessStructuredSyslog(p, test_structured_syslog.length(), rep.address(),
         boost::bind(&StatCbTester::Cb, &ct, _1, _2, _3, _4, _5), config_obj,
         boost::shared_ptr<structured_syslog::StructuredSyslogForwarder>(),
@@ -263,7 +263,7 @@ TEST_F(StructuredSyslogStatWalkerTest, DeviceSyslogTz) {
     boost::asio::ip::udp::endpoint rep(raddr, 0);
     const uint8_t* p = reinterpret_cast<const uint8_t*>(test_structured_syslog.c_str());
     boost::scoped_ptr<EventManager> evm_(new EventManager());
-    StructuredSyslogConfig *config_obj = new StructuredSyslogConfig(NULL);
+    StructuredSyslogConfig *config_obj = new StructuredSyslogConfig(NULL, 1);
     bool r = structured_syslog::impl::ProcessStructuredSyslog(p, test_structured_syslog.length(), rep.address(),
         boost::bind(&StatCbTester::Cb, &ct, _1, _2, _3, _4, _5), config_obj,
         boost::shared_ptr<structured_syslog::StructuredSyslogForwarder>(),
@@ -285,7 +285,7 @@ TEST_F(StructuredSyslogStatWalkerTest, ParseError) {
     boost::asio::ip::udp::endpoint rep(raddr, 0);
     const uint8_t* p = reinterpret_cast<const uint8_t*>(test_structured_syslog.c_str());
     boost::scoped_ptr<EventManager> evm_(new EventManager());
-    StructuredSyslogConfig *config_obj = new StructuredSyslogConfig(NULL);
+    StructuredSyslogConfig *config_obj = new StructuredSyslogConfig(NULL, 1);
     bool r = structured_syslog::impl::ProcessStructuredSyslog(p, test_structured_syslog.length(), rep.address(),
         boost::bind(&StatCbTester::Cb, &ct, _1, _2, _3, _4, _5), config_obj,
         boost::shared_ptr<structured_syslog::StructuredSyslogForwarder>(),
@@ -305,7 +305,7 @@ TEST_F(StructuredSyslogStatWalkerTest, BadStruct) {
     boost::asio::ip::udp::endpoint rep(raddr, 0);
     const uint8_t* p = reinterpret_cast<const uint8_t*>(test_structured_syslog.c_str());
     boost::scoped_ptr<EventManager> evm_(new EventManager());
-    StructuredSyslogConfig *config_obj = new StructuredSyslogConfig(NULL);
+    StructuredSyslogConfig *config_obj = new StructuredSyslogConfig(NULL, 1);
     bool r = structured_syslog::impl::ProcessStructuredSyslog(p, test_structured_syslog.length(), rep.address(),
         boost::bind(&StatCbTester::Cb, &ct, _1, _2, _3, _4, _5), config_obj,
         boost::shared_ptr<structured_syslog::StructuredSyslogForwarder>(),
@@ -347,7 +347,7 @@ TEST_F(StructuredSyslogStatWalkerTest, MessageLengthSplit_1) {
         reinterpret_cast<const uint8_t*>
         (test_structured_syslog_rest_of_buffer.c_str());
     //boost::scoped_ptr<EventManager> evm_(new EventManager());
-    StructuredSyslogConfig *config_obj = new StructuredSyslogConfig(NULL);
+    StructuredSyslogConfig *config_obj = new StructuredSyslogConfig(NULL, 1);
     bool r1 =
         structured_syslog::impl::ProcessStructuredSyslog(p,
         test_structured_syslog.length(),rep.address(),
@@ -403,7 +403,7 @@ TEST_F(StructuredSyslogStatWalkerTest, MessageLengthSplit_2) {
     const uint8_t* p_rest_of_buffer = 
         reinterpret_cast<const uint8_t*>(test_structured_syslog_rest_of_buffer.c_str());
     //boost::scoped_ptr<EventManager> evm_(new EventManager());
-    StructuredSyslogConfig *config_obj = new StructuredSyslogConfig(NULL);
+    StructuredSyslogConfig *config_obj = new StructuredSyslogConfig(NULL, 1);
     bool r1 = structured_syslog::impl::ProcessStructuredSyslog(p, 
         test_structured_syslog.length(), rep.address(),
         boost::bind(&StatCbTester::Cb, &ct, _1, _2, _3, _4, _5), config_obj,
@@ -456,7 +456,7 @@ TEST_F(StructuredSyslogStatWalkerTest, MessageLengthSplit_3) {
     const uint8_t* p_rest_of_buffer =
         reinterpret_cast<const uint8_t*>(test_structured_syslog_rest_of_buffer.c_str());
     //boost::scoped_ptr<EventManager> evm_(new EventManager());
-    StructuredSyslogConfig *config_obj = new StructuredSyslogConfig(NULL);
+    StructuredSyslogConfig *config_obj = new StructuredSyslogConfig(NULL, 1);
     bool r1 = structured_syslog::impl::ProcessStructuredSyslog(p,
         test_structured_syslog.length(), rep.address(),
         boost::bind(&StatCbTester::Cb, &ct, _1, _2, _3, _4, _5), config_obj,
@@ -508,7 +508,7 @@ TEST_F(StructuredSyslogStatWalkerTest, MessageLengthBad) {
         reinterpret_cast<const uint8_t*>(
             test_structured_syslog_rest_of_buffer.c_str());
     //boost::scoped_ptr<EventManager> evm_(new EventManager());
-    StructuredSyslogConfig *config_obj = new StructuredSyslogConfig(NULL);
+    StructuredSyslogConfig *config_obj = new StructuredSyslogConfig(NULL, 1);
     bool r1 = structured_syslog::impl::ProcessStructuredSyslog(p, 
         test_structured_syslog.length(), rep.address(),
         boost::bind(&StatCbTester::Cb, &ct, _1, _2, _3, _4, _5), config_obj,
@@ -545,7 +545,7 @@ TEST_F(StructuredSyslogStatWalkerTest, SNMP_TRAPSyslog) {
     const uint8_t* p =
         reinterpret_cast<const uint8_t*>(test_structured_syslog.c_str());
     //boost::scoped_ptr<EventManager> evm_(new EventManager());
-    StructuredSyslogConfig *config_obj = new StructuredSyslogConfig(NULL);
+    StructuredSyslogConfig *config_obj = new StructuredSyslogConfig(NULL, 1);
     bool r = structured_syslog::impl::ProcessStructuredSyslog(p,
         test_structured_syslog.length(), rep.address(),
         boost::bind(&StatCbTester::Cb, &ct, _1, _2, _3, _4, _5), config_obj,
