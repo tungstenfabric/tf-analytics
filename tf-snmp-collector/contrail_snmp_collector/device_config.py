@@ -9,6 +9,8 @@ from .snmp import SnmpSession
 import copy, traceback, time
 from six.moves import configparser
 
+_SECLEVEL_2_SNMP = {'none': 'noAuthNoPriv', 'auth': 'authNoPriv', 'authpriv': 'authPriv'}
+
 class DeviceDict(dict):
     def __init__(self, name, obj, *a, **k):
         super(DeviceDict, self).__init__(*a, **k)
@@ -90,7 +92,8 @@ class DeviceConfig(object):
                     if snmp.get_v3_security_name():
                         nd['SecName'] = snmp.get_v3_security_name()
                     if snmp.get_v3_security_level():
-                        nd['SecLevel'] = snmp.get_v3_security_level()
+                        orig_val = snmp.get_v3_security_level()
+                        nd['SecLevel'] = _SECLEVEL_2_SNMP[orig_val] if orig_val in _SECLEVEL_2_SNMP else orig_val
                     if snmp.get_v3_security_engine_id():
                         nd['SecEngineId'] = snmp.get_v3_security_engine_id()
                     if snmp.get_v3_context():
@@ -104,7 +107,7 @@ class DeviceConfig(object):
                     if snmp.get_v3_privacy_protocol():
                         nd['PrivProto'] = snmp.get_v3_privacy_protocol()
                     if snmp.get_v3_privacy_password():
-                        nd['PrivProto'] = snmp.get_v3_privacy_password()
+                        nd['PrivPass'] = snmp.get_v3_privacy_password()
                 devices.append(DeviceConfig(
                             pr.name,
                             nd, [], pr.obj.get_physical_router_management_ip(),
