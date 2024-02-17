@@ -18,16 +18,13 @@ import os.path
 import subprocess
 import logging
 import socket
-import platform
 import time
-import platform
-from cassandra.cluster import Cluster
-from cassandra.auth import PlainTextAuthProvider
 
 logging.basicConfig(level=logging.INFO,
                             format='%(asctime)s %(levelname)s %(message)s')
 
 cassandra_bdir = '/tmp/cache-' + os.environ['USER'] + '-systemless_test'
+
 
 def start_cassandra(cport, sport_arg=None, cassandra_user=None, cassandra_password = None):
     '''
@@ -35,24 +32,14 @@ def start_cassandra(cport, sport_arg=None, cassandra_user=None, cassandra_passwo
     Arguments:
         cport : An unused TCP port for Cassandra to use as the client port
     '''
-    jdk_8_download = 'wget -P ' + cassandra_bdir + ' https://github.com/tungstenfabric/tf-third-party-cache/raw/master/openjdk-1.8.0/java-1.8.0-openjdk-amd64.tar.gz'
-
-    jdk_url = cassandra_bdir + '/java-1.8.0-openjdk-amd64.tar.gz'
-
     if not os.path.exists(cassandra_bdir):
-        output,_ = call_command_("mkdir " + cassandra_bdir)
-
-    if not os.path.exists(jdk_url):
-        process = subprocess.Popen(jdk_8_download.split(' '))
-        process.wait()
-        if process.returncode is not 0:
-            return
+        call_command_("mkdir " + cassandra_bdir)
 
     cassandra_version = '3.10'
     cassandra_url = cassandra_bdir + '/apache-cassandra-'+cassandra_version+'-bin.tar.gz'
 
     if not os.path.exists(cassandra_bdir):
-        output,_ = call_command_("mkdir " + cassandra_bdir)
+        call_command_("mkdir " + cassandra_bdir)
 
     cassandra_download = 'wget -P ' + cassandra_bdir + ' http://archive.apache.org/dist/cassandra/'+\
         cassandra_version+'/apache-cassandra-'+cassandra_version+'-bin.tar.gz'
@@ -67,11 +54,9 @@ def start_cassandra(cport, sport_arg=None, cassandra_user=None, cassandra_passwo
     tarfile = cassandra_url
     cassbase = "/tmp/cassandra.%s.%d/" % (os.getenv('USER', 'None'), cport)
     confdir = cassbase + basefile + "/conf/"
-    output,_ = call_command_("rm -rf " + cassbase)
-    output,_ = call_command_("mkdir " + cassbase)
+    call_command_("rm -rf " + cassbase)
+    call_command_("mkdir " + cassbase)
 
-    logging.info('Installing jdk in ' + cassbase)
-    os.system("cat " + jdk_url + " | tar -xpzf - -C " + cassbase)
     logging.info('Installing cassandra in ' + cassbase)
     os.system("cat " + tarfile + " | tar -xpzf - -C " + cassbase)
 
@@ -123,9 +108,7 @@ def start_cassandra(cport, sport_arg=None, cassandra_user=None, cassandra_passwo
     js.close()
     o_clients.close()
 
-    output,_ = call_command_(cassbase + basefile + "/bin/cassandra -R -p " +
-                             cassbase + "pid", cassbase +
-                             'jvm/java-1.8.0-openjdk-amd64')
+    call_command_(cassbase + basefile + "/bin/cassandra -R -p " + cassbase + "pid")
     assert(verify_cassandra(thriftport, cqlport, cassandra_user, cassandra_password))
 
     return cassbase, basefile
@@ -142,8 +125,8 @@ def stop_cassandra(cport):
     input = open(cassbase + "pid")
     s=input.read()
     logging.info('Killing Cassandra pid %d' % int(s))
-    output,_ = call_command_("kill -9 %d" % int(s))
-    output,_ = call_command_("rm -rf " + cassbase)
+    call_command_("kill -9 %d" % int(s))
+    call_command_("rm -rf " + cassbase)
     
 def replace_string_(filePath, findreplace):
     "replaces all findStr by repStr in file filePath"
@@ -160,6 +143,7 @@ def replace_string_(filePath, findreplace):
     input.close()
     os.rename(tempName,filePath)
 
+
 def verify_cassandra(thriftport, cqlport, cassandra_user, cassandra_password):
     retry_threshold = 10
     retry = 1
@@ -170,24 +154,21 @@ def verify_cassandra(thriftport, cqlport, cassandra_user, cassandra_password):
         process.wait()
         if process.returncode == 0:
             return True
-        else:
-            retry = retry + 1
-            time.sleep(5)
+        retry = retry + 1
+        time.sleep(5)
     return False
 
-def call_command_(command ,jpath=None):
 
-    distribution = platform.dist()[0]
-
-    if jpath:
-        jenv = { "JAVA_HOME" : jpath }
-    else:
-        jenv = None
-
-    process = subprocess.Popen(command.split(' '), env = jenv,
+def call_command_(command):
+    process = subprocess.Popen(command.split(' '),
                                stdout=subprocess.PIPE,
                                stderr=subprocess.PIPE)
-    return process.communicate()
+    stdout, stderr = process.communicate()
+    if stderr != "":
+        logging.error('command fails: ' + command)
+        logging.error(stdout)
+        logging.error(stderr)
+
 
 if __name__ == "__main__":
     cs = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
